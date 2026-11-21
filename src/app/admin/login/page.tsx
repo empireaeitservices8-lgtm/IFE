@@ -164,7 +164,7 @@ export default function AdminLoginPage() {
               </label>
 
               <Link
-                href="/admin/forgot-password"
+                href="/forgot-password"
                 className="text-[#D4AF6A] transition hover:text-white"
               >
                 Forgot password?
