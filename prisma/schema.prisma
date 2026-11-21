@@ -1,0 +1,466 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+// ======================================
+// ENUMS
+// ======================================
+
+enum UserRole {
+  CUSTOMER
+  ADMIN
+  STAFF
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+}
+
+enum EventCategory {
+  FASHION
+  ENTERTAINMENT
+  AWARDS
+  CONCERT
+  CULTURAL
+  OTHER
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  CANCELLED
+  COMPLETED
+}
+
+enum VenueStatus {
+  AVAILABLE
+  BOOKED
+  MAINTENANCE
+  INACTIVE
+}
+
+enum TicketStatus {
+  ACTIVE
+  PAUSED
+  SOLD_OUT
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  CAPTURED
+  FAILED
+  REFUNDED
+  PARTIALLY_REFUNDED
+}
+
+enum PaymentGateway {
+  RAZORPAY
+  STRIPE
+  UPI
+  CASH
+  OTHER
+}
+
+enum PaymentMethod {
+  CARD
+  UPI
+  NET_BANKING
+  WALLET
+  CASH
+  UNKNOWN
+}
+
+enum RefundStatus {
+  PENDING
+  PROCESSED
+  FAILED
+  CANCELLED
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+enum MediaStatus {
+  DRAFT
+  PUBLISHED
+  HIDDEN
+}
+
+enum NotificationType {
+  BOOKING
+  PAYMENT
+  EVENT
+  ACCOUNT
+  SYSTEM
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  READ
+}
+
+// ======================================
+// USERS
+// ======================================
+
+model User {
+  id           String     @id @default(cuid())
+  name         String
+  email        String     @unique
+  passwordHash String
+  phone        String?    @unique
+  role         UserRole   @default(CUSTOMER)
+  status       UserStatus @default(ACTIVE)
+
+  bookings       Booking[]
+  notifications Notification[]
+  auditLogs      AuditLog[] @relation("AuditActor")
+  createdEvents  Event[]     @relation("EventCreator")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([role, status])
+  @@index([createdAt])
+}
+
+// ======================================
+// VENUES
+// ======================================
+
+model Venue {
+  id          String      @id @default(cuid())
+  name        String
+  address     String
+  city        String
+  state       String?
+  country     String      @default("India")
+  postalCode  String?
+  capacity    Int
+  description String?     @db.Text
+  facilities  String?     @db.Text
+  status      VenueStatus @default(AVAILABLE)
+
+  events Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([city])
+  @@index([status])
+}
+
+// ======================================
+// ARTISTS
+// ======================================
+
+model Artist {
+  id       String  @id @default(cuid())
+  name     String
+  email    String? @unique
+  phone    String?
+  role     String
+  location String?
+  imageUrl String? @db.Text
+  bio      String? @db.Text
+  isActive Boolean @default(true)
+
+  events ArtistEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([name])
+  @@index([role])
+}
+
+model ArtistEvent {
+  artistId  String
+  eventId   String
+  eventRole String?
+
+  artist Artist @relation(fields: [artistId], references: [id], onDelete: Cascade)
+  event  Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@id([artistId, eventId])
+  @@index([eventId])
+}
+
+// ======================================
+// EVENTS
+// ======================================
+
+model Event {
+  id               String        @id @default(cuid())
+  title            String
+  slug             String        @unique
+  category         EventCategory
+  shortDescription String?       @db.Text
+  description      String        @db.LongText
+  bannerUrl        String?       @db.Text
+
+  startAt DateTime
+  endAt   DateTime
+
+  capacity Int
+  status   EventStatus @default(DRAFT)
+
+  venueId String?
+  venue   Venue? @relation(fields: [venueId], references: [id], onDelete: SetNull)
+
+  createdById String?
+  createdBy   User? @relation("EventCreator", fields: [createdById], references: [id], onDelete: SetNull)
+
+  artists     ArtistEvent[]
+  ticketTypes TicketType[]
+  bookings    Booking[]
+  gallery     GalleryMedia[]
+
+  publishedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category, status])
+  @@index([startAt])
+  @@index([venueId])
+  @@index([createdById])
+}
+
+// ======================================
+// TICKET TYPES
+// ======================================
+
+model TicketType {
+  id          String       @id @default(cuid())
+  eventId     String
+  name        String
+  description String?      @db.Text
+
+  price         Decimal      @db.Decimal(10, 2)
+  totalQuantity Int
+  soldQuantity  Int          @default(0)
+  status        TicketStatus @default(ACTIVE)
+
+  event        Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  bookingItems BookingItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([eventId, name])
+  @@index([eventId, status])
+}
+
+// ======================================
+// BOOKINGS
+// ======================================
+
+model Booking {
+  id          String @id @default(cuid())
+  bookingCode String @unique
+
+  userId String?
+  user   User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  eventId String
+  event   Event @relation(fields: [eventId], references: [id], onDelete: Restrict)
+
+  customerName  String
+  customerEmail String
+  customerPhone String
+
+  subtotal    Decimal @db.Decimal(10, 2)
+  taxAmount   Decimal @default(0) @db.Decimal(10, 2)
+  serviceFee  Decimal @default(0) @db.Decimal(10, 2)
+  totalAmount Decimal @db.Decimal(10, 2)
+  currency    String  @default("INR")
+
+  status        BookingStatus @default(PENDING)
+  paymentStatus PaymentStatus @default(PENDING)
+
+  items    BookingItem[]
+  payments Payment[]
+
+  confirmedAt DateTime?
+  cancelledAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([eventId, status])
+  @@index([customerEmail])
+  @@index([paymentStatus])
+}
+
+// ======================================
+// BOOKING ITEMS
+// ======================================
+
+model BookingItem {
+  id           String @id @default(cuid())
+  bookingId    String
+  ticketTypeId String
+
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
+  lineTotal Decimal @db.Decimal(10, 2)
+
+  booking    Booking    @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  ticketType TicketType @relation(fields: [ticketTypeId], references: [id], onDelete: Restrict)
+
+  createdAt DateTime @default(now())
+
+  @@index([bookingId])
+  @@index([ticketTypeId])
+}
+
+// ======================================
+// PAYMENTS
+// ======================================
+
+model Payment {
+  id        String @id @default(cuid())
+  bookingId String
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Restrict)
+
+  gateway PaymentGateway
+  method  PaymentMethod  @default(UNKNOWN)
+  status  PaymentStatus  @default(PENDING)
+
+  amount   Decimal @db.Decimal(10, 2)
+  currency String  @default("INR")
+
+  gatewayOrderId   String? @unique
+  gatewayPaymentId String? @unique
+  gatewaySignature String? @db.Text
+
+  gatewayResponse Json?
+
+  refunds Refund[]
+
+  paidAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([bookingId, status])
+  @@index([gateway, createdAt])
+}
+
+// ======================================
+// REFUNDS
+// ======================================
+
+model Refund {
+  id        String @id @default(cuid())
+  paymentId String
+
+  payment Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+
+  amount          Decimal      @db.Decimal(10, 2)
+  status          RefundStatus @default(PENDING)
+  reason          String?      @db.Text
+  gatewayRefundId String?      @unique
+
+  processedAt DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([paymentId, status])
+}
+
+// ======================================
+// GALLERY
+// ======================================
+
+model GalleryMedia {
+  id           String        @id @default(cuid())
+  title        String
+  description  String?       @db.Text
+  type         MediaType
+  category     EventCategory
+  url          String        @db.Text
+  thumbnailUrl String?       @db.Text
+  altText      String?       @db.Text
+
+  isFeatured Boolean     @default(false)
+  status     MediaStatus @default(DRAFT)
+
+  eventId String?
+  event   Event? @relation(fields: [eventId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category, status])
+  @@index([isFeatured])
+  @@index([eventId])
+}
+
+// ======================================
+// NOTIFICATIONS
+// ======================================
+
+model Notification {
+  id     String @id @default(cuid())
+  userId String?
+
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  type   NotificationType
+  status NotificationStatus @default(PENDING)
+
+  recipientEmail String?
+  subject        String
+  message        String      @db.Text
+
+  sentAt    DateTime?
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, status])
+  @@index([type, createdAt])
+}
+
+// ======================================
+// ADMIN AUDIT LOGS
+// ======================================
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  actorId String?
+  actor   User? @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+
+  action      String
+  entityType  String
+  entityId    String?
+  description String? @db.Text
+  ipAddress   String?
+
+  createdAt DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([entityType, entityId])
+}

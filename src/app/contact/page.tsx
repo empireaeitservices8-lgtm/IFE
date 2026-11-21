@@ -1,0 +1,553 @@
+"use client";
+
+import { useRef, useState } from "react";
+import Link from "next/link";
+import {
+  FiArrowRight,
+  FiBriefcase,
+  FiCalendar,
+  FiCamera,
+  FiCheck,
+  FiClock,
+  FiMail,
+  FiMapPin,
+  FiMinus,
+  FiPhone,
+  FiPlus,
+  FiSend,
+} from "react-icons/fi";
+import { FaFacebookF, FaInstagram, FaYoutube } from "react-icons/fa6";
+
+import Header from "@/components/layout/Header";
+import Footer from "@/components/layout/Footer";
+
+const enquiryChannels = [
+  {
+    title: "Event Bookings & VIP",
+    subject: "Event Booking",
+    description:
+      "Private tables, group reservations, and bespoke VIP hospitality for upcoming IFE showcases.",
+    icon: FiCalendar,
+  },
+  {
+    title: "Partnerships & Sponsors",
+    subject: "Partnership",
+    description:
+      "Collaborate with International Fashion Entertainment on brand activations and runway sponsorships.",
+    icon: FiBriefcase,
+  },
+  {
+    title: "Press & Media",
+    subject: "Media Enquiry",
+    description:
+      "Media accreditation, press kits, interviews, and backstage photography requests.",
+    icon: FiCamera,
+  },
+];
+
+const faqs = [
+  {
+    question: "How can I reserve VIP tickets or group tables?",
+    answer:
+      "You can browse upcoming showcases on our Events page or select 'Event Booking' in the enquiry form above. Our hospitality team will follow up with tailored seating and VIP access options.",
+  },
+  {
+    question: "How do designers or brands apply to participate?",
+    answer:
+      "Choose 'Partnership' or 'Sponsorship' in the form and share a brief overview of your brand or collection. Our curation team reviews all submissions ahead of each season.",
+  },
+  {
+    question: "Do you offer press and photographer accreditation?",
+    answer:
+      "Yes. Accredited journalists, stylists, and photographers can request media passes by selecting 'Media Enquiry' with their publication or portfolio link.",
+  },
+  {
+    question: "What is the typical response time for enquiries?",
+    answer:
+      "Our team responds to all general, booking, and partnership enquiries within 1 to 2 business days.",
+  },
+];
+
+const subjects = [
+  "General Enquiry",
+  "Event Booking",
+  "Partnership",
+  "Sponsorship",
+  "Media Enquiry",
+];
+
+export default function ContactPage() {
+  const formSectionRef = useRef<HTMLDivElement>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [openFaq, setOpenFaq] = useState<number | null>(0);
+
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "General Enquiry",
+    message: "",
+  });
+
+  const handleSelectChannel = (subject: string) => {
+    setSubmitted(false);
+    setForm((prev) => ({ ...prev, subject }));
+    formSectionRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setSubmitted(true);
+  };
+
+  return (
+    <>
+      <Header />
+
+      <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
+        {/* Hero */}
+        <section
+          className="relative flex min-h-[500px] items-end overflow-hidden border-b border-white/10 bg-cover bg-center"
+          style={{
+            backgroundImage:
+              "linear-gradient(90deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0.78) 55%, rgba(5,5,5,0.45) 100%), linear-gradient(0deg, #050505 0%, transparent 65%), url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=85&w=2000')",
+          }}
+        >
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,106,0.16),transparent_60%)]" />
+
+          <div className="container-main relative z-10 pb-16 pt-40">
+            <div className="mb-7 flex items-center gap-4">
+              <span className="h-px w-12 bg-[#D4AF6A]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-[#D4AF6A]">
+                Concierge &amp; Enquiries
+              </p>
+            </div>
+
+            <h1 className="max-w-3xl font-[var(--font-playfair)] text-5xl leading-[1.1] sm:text-7xl">
+              Let&apos;s Start a
+              <span className="block italic text-[#D4AF6A]">
+                Conversation.
+              </span>
+            </h1>
+
+            <p className="mt-7 max-w-xl text-sm leading-8 text-white/65 md:text-base">
+              Whether you are planning a VIP attendance, exploring a brand
+              partnership, or requesting press credentials, our team is here to
+              help create something extraordinary.
+            </p>
+          </div>
+        </section>
+
+        {/* Department / Enquiry Channels */}
+        <section className="border-b border-white/10 bg-[#080808] py-16">
+          <div className="container-main grid gap-6 md:grid-cols-3">
+            {enquiryChannels.map((channel) => {
+              const Icon = channel.icon;
+              const isSelected = form.subject === channel.subject;
+
+              return (
+                <button
+                  key={channel.title}
+                  type="button"
+                  onClick={() => handleSelectChannel(channel.subject)}
+                  className={`group flex flex-col justify-between border p-7 text-left transition duration-300 ${
+                    isSelected
+                      ? "border-[#D4AF6A] bg-[#D4AF6A]/[0.06]"
+                      : "border-white/10 bg-[#0E0E0E] hover:border-[#D4AF6A]/50"
+                  }`}
+                >
+                  <div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex size-11 items-center justify-center border border-[#D4AF6A]/40 bg-black/50 text-[#D4AF6A]">
+                        <Icon size={19} />
+                      </div>
+                      <FiArrowRight
+                        size={16}
+                        className="text-white/30 transition-transform group-hover:translate-x-1 group-hover:text-[#D4AF6A]"
+                      />
+                    </div>
+
+                    <h2 className="mt-6 font-[var(--font-playfair)] text-2xl text-white">
+                      {channel.title}
+                    </h2>
+                    <p className="mt-3 text-sm leading-7 text-white/55">
+                      {channel.description}
+                    </p>
+                  </div>
+
+                  <span className="mt-6 inline-block text-[10px] font-semibold uppercase tracking-[2.5px] text-[#D4AF6A]">
+                    Select {channel.subject}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Contact Content */}
+        <section
+          ref={formSectionRef}
+          className="container-main grid gap-14 py-24 lg:grid-cols-[0.82fr_1.18fr]"
+        >
+          {/* Contact Information */}
+          <div className="flex flex-col justify-between">
+            <div>
+              <div className="mb-4 flex items-center gap-3">
+                <span className="h-px w-9 bg-[#D4AF6A]" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF6A]">
+                  Get In Touch
+                </p>
+              </div>
+
+              <h2 className="font-[var(--font-playfair)] text-4xl leading-tight">
+                Connect With{" "}
+                <span className="italic text-[#D4AF6A]">IFE.</span>
+              </h2>
+
+              <p className="mt-6 max-w-md text-sm leading-8 text-white/55">
+                Our dedicated team assists guests, designers, sponsors, and
+                media partners across international events.
+              </p>
+
+              <div className="mt-10 space-y-5">
+                <div className="flex items-start gap-5 border border-white/10 bg-[#0B0B0B] p-5 transition hover:border-[#D4AF6A]/40">
+                  <div className="flex size-11 shrink-0 items-center justify-center border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
+                    <FiMail size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[2.5px] text-white/45">
+                      Email
+                    </p>
+                    <p className="mt-1.5 text-sm text-white">
+                      concierge@ife-events.com
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-5 border border-white/10 bg-[#0B0B0B] p-5 transition hover:border-[#D4AF6A]/40">
+                  <div className="flex size-11 shrink-0 items-center justify-center border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
+                    <FiPhone size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[2.5px] text-white/45">
+                      Phone
+                    </p>
+                    <p className="mt-1.5 text-sm text-white">
+                      +44 (0) 20 7946 0000
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-5 border border-white/10 bg-[#0B0B0B] p-5 transition hover:border-[#D4AF6A]/40">
+                  <div className="flex size-11 shrink-0 items-center justify-center border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
+                    <FiMapPin size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[2.5px] text-white/45">
+                      Headquarters
+                    </p>
+                    <p className="mt-1.5 text-sm text-white">
+                      International Fashion &amp; Entertainment House
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-5 border border-white/10 bg-[#0B0B0B] p-5 transition hover:border-[#D4AF6A]/40">
+                  <div className="flex size-11 shrink-0 items-center justify-center border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
+                    <FiClock size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-semibold uppercase tracking-[2.5px] text-white/45">
+                      Business Hours
+                    </p>
+                    <p className="mt-1.5 text-sm text-white">
+                      Monday – Friday, 09:00 – 18:00
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Social Follow */}
+            <div className="mt-10 border-t border-white/10 pt-8">
+              <p className="text-[10px] font-semibold uppercase tracking-[3px] text-white/45">
+                Follow IFE
+              </p>
+              <div className="mt-4 flex gap-3">
+                <a
+                  href="#"
+                  aria-label="Instagram"
+                  className="flex size-10 items-center justify-center border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                >
+                  <FaInstagram size={16} />
+                </a>
+                <a
+                  href="#"
+                  aria-label="Facebook"
+                  className="flex size-10 items-center justify-center border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                >
+                  <FaFacebookF size={15} />
+                </a>
+                <a
+                  href="#"
+                  aria-label="YouTube"
+                  className="flex size-10 items-center justify-center border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                >
+                  <FaYoutube size={17} />
+                </a>
+              </div>
+            </div>
+          </div>
+
+          {/* Contact Form */}
+          <div className="border border-white/10 bg-[#0D0D0D] p-6 sm:p-10">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h3 className="font-[var(--font-playfair)] text-3xl">
+                  Send Us a Message
+                </h3>
+                <p className="mt-2 text-sm text-white/50">
+                  Fill in the details below and our team will respond promptly.
+                </p>
+              </div>
+              <span className="border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[2px] text-[#D4AF6A]">
+                {form.subject}
+              </span>
+            </div>
+
+            {submitted ? (
+              <div className="mt-10 border border-[#D4AF6A]/35 bg-[#D4AF6A]/[0.05] p-8 text-center">
+                <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-[#D4AF6A] text-[#D4AF6A]">
+                  <FiCheck size={24} />
+                </div>
+
+                <h4 className="mt-5 font-[var(--font-playfair)] text-2xl">
+                  Enquiry Received
+                </h4>
+
+                <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-white/60">
+                  Thank you, <span className="text-white">{form.name}</span>.
+                  Your{" "}
+                  <span className="text-[#D4AF6A]">{form.subject}</span>{" "}
+                  message has been validated in this preview. Connect your
+                  backend endpoint when ready to deliver live emails.
+                </p>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSubmitted(false);
+                    setForm({
+                      name: "",
+                      email: "",
+                      phone: "",
+                      subject: "General Enquiry",
+                      message: "",
+                    });
+                  }}
+                  className="mt-7 inline-flex items-center gap-2 border border-[#D4AF6A] px-6 py-3 text-xs font-bold uppercase tracking-[2px] text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
+                >
+                  <FiSend size={14} />
+                  Send Another Message
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleSubmit} className="mt-9 space-y-6">
+                {/* Subject Pills */}
+                <div>
+                  <label className="mb-3 block text-xs text-white/60">
+                    Enquiry Topic
+                  </label>
+                  <div className="flex flex-wrap gap-2">
+                    {subjects.map((subject) => {
+                      const active = form.subject === subject;
+                      return (
+                        <button
+                          key={subject}
+                          type="button"
+                          onClick={() => setForm({ ...form, subject })}
+                          className={`px-4 py-2 text-[11px] font-medium uppercase tracking-[1.5px] transition ${
+                            active
+                              ? "bg-[#D4AF6A] font-semibold text-black"
+                              : "border border-white/15 bg-black text-white/65 hover:border-[#D4AF6A]/50 hover:text-white"
+                          }`}
+                        >
+                          {subject}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid gap-6 sm:grid-cols-2">
+                  <div>
+                    <label
+                      htmlFor="contact-name"
+                      className="mb-2 block text-xs text-white/60"
+                    >
+                      Full Name *
+                    </label>
+                    <input
+                      id="contact-name"
+                      required
+                      value={form.name}
+                      onChange={(e) =>
+                        setForm({ ...form, name: e.target.value })
+                      }
+                      placeholder="Enter your name"
+                      className="w-full border border-white/10 bg-black px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="contact-email"
+                      className="mb-2 block text-xs text-white/60"
+                    >
+                      Email Address *
+                    </label>
+                    <input
+                      id="contact-email"
+                      type="email"
+                      required
+                      value={form.email}
+                      onChange={(e) =>
+                        setForm({ ...form, email: e.target.value })
+                      }
+                      placeholder="Enter your email"
+                      className="w-full border border-white/10 bg-black px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label
+                    htmlFor="contact-phone"
+                    className="mb-2 block text-xs text-white/60"
+                  >
+                    Phone Number (Optional)
+                  </label>
+                  <input
+                    id="contact-phone"
+                    type="tel"
+                    value={form.phone}
+                    onChange={(e) =>
+                      setForm({ ...form, phone: e.target.value })
+                    }
+                    placeholder="Enter phone number"
+                    className="w-full border border-white/10 bg-black px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
+                  />
+                </div>
+
+                <div>
+                  <div className="mb-2 flex items-center justify-between">
+                    <label
+                      htmlFor="contact-message"
+                      className="text-xs text-white/60"
+                    >
+                      Your Message *
+                    </label>
+                    <span className="text-[11px] text-white/35">
+                      {form.message.length} / 1000
+                    </span>
+                  </div>
+                  <textarea
+                    id="contact-message"
+                    required
+                    maxLength={1000}
+                    rows={5}
+                    value={form.message}
+                    onChange={(e) =>
+                      setForm({ ...form, message: e.target.value })
+                    }
+                    placeholder="Tell us about your event, partnership idea, or enquiry..."
+                    className="w-full resize-none border border-white/10 bg-black px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
+                  />
+                </div>
+
+                <button
+                  type="submit"
+                  className="flex w-full items-center justify-center gap-3 bg-[#D4AF6A] px-7 py-4 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
+                >
+                  Submit Enquiry
+                  <FiArrowRight size={17} />
+                </button>
+              </form>
+            )}
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="border-t border-white/10 bg-[#080808] py-20">
+          <div className="container-main grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+            <div>
+              <div className="mb-4 flex items-center gap-3">
+                <span className="h-px w-9 bg-[#D4AF6A]" />
+                <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF6A]">
+                  Frequently Asked
+                </p>
+              </div>
+              <h2 className="font-[var(--font-playfair)] text-3xl sm:text-4xl">
+                Quick Answers{" "}
+                <span className="italic text-[#D4AF6A]">Before You Write.</span>
+              </h2>
+              <p className="mt-4 max-w-sm text-sm leading-7 text-white/55">
+                Find immediate details on VIP reservations, brand partnerships,
+                and press accreditation.
+              </p>
+            </div>
+
+            <div className="divide-y divide-white/10 border-y border-white/10">
+              {faqs.map((faq, idx) => {
+                const isOpen = openFaq === idx;
+                return (
+                  <div key={faq.question} className="py-5">
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaq(isOpen ? null : idx)}
+                      aria-expanded={isOpen}
+                      className="flex w-full items-center justify-between gap-4 text-left"
+                    >
+                      <span className="font-[var(--font-playfair)] text-lg text-white sm:text-xl">
+                        {faq.question}
+                      </span>
+                      <span className="flex size-8 shrink-0 items-center justify-center border border-white/15 text-[#D4AF6A]">
+                        {isOpen ? <FiMinus size={15} /> : <FiPlus size={15} />}
+                      </span>
+                    </button>
+
+                    {isOpen && (
+                      <p className="mt-4 pr-10 text-sm leading-7 text-white/60">
+                        {faq.answer}
+                      </p>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+
+        {/* Bottom CTA */}
+        <section className="border-t border-white/10 bg-[#0B0B0B] py-16 text-center">
+          <div className="container-main">
+            <h2 className="font-[var(--font-playfair)] text-3xl sm:text-4xl">
+              Explore the World of{" "}
+              <span className="italic text-[#D4AF6A]">IFE.</span>
+            </h2>
+
+            <Link
+              href="/events"
+              className="mt-7 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-[#D4AF6A] transition hover:text-white"
+            >
+              Discover Events
+              <FiArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
+      </main>
+
+      <Footer />
+    </>
+  );
+}
