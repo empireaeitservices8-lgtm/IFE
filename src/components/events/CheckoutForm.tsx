@@ -1,8 +1,9 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 type CheckoutFormProps = {
   eventId: string;
@@ -36,21 +37,87 @@ export default function CheckoutForm({
   ticketType,
   quantity,
 }: CheckoutFormProps) {
-  const ticket = ticketOptions[ticketType];
+  const router = useRouter();
+  const fallbackTicket = ticketOptions[ticketType] || ticketOptions.general;
+  const [liveTicket, setLiveTicket] = useState<{ name: string; price: number }>(
+    fallbackTicket
+  );
+  const [isGuest, setIsGuest] = useState(true);
 
-  const subtotal = ticket.price * quantity;
+  const subtotal = liveTicket.price * quantity;
   const tax = Math.round(subtotal * 0.18);
   const total = subtotal + tax;
 
-  const [billing, setBilling] = useState<BillingDetails>({
-    fullName: "",
-    email: "",
-    phone: "",
-    address: "",
-    city: "",
-    state: "",
-    pincode: "",
+  const [billing, setBilling] = useState<BillingDetails>(() => {
+    const base: BillingDetails = {
+      fullName: "",
+      email: "",
+      phone: "",
+      address: "",
+      city: "",
+      state: "",
+      pincode: "",
+    };
+    if (typeof window === "undefined") return base;
+    try {
+      const storedAttendees = sessionStorage.getItem(
+        `ife-attendees-${eventId}`
+      );
+      if (storedAttendees) {
+        const parsed = JSON.parse(storedAttendees) as {
+          fullName?: string;
+          email?: string;
+          phone?: string;
+        }[];
+        const primary = Array.isArray(parsed) ? parsed[0] : null;
+        if (primary) {
+          base.fullName = primary.fullName || "";
+          base.email = primary.email || "";
+          base.phone = primary.phone || "";
+        }
+      }
+    } catch {}
+    return base;
   });
+
+  useEffect(() => {
+    let active = true;
+
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((json) => {
+        if (!active || !json.success || !json.data?.user) return;
+        setIsGuest(false);
+        const u = json.data.user;
+        setBilling((prev) => ({
+          ...prev,
+          fullName: prev.fullName || u.name || "",
+          email: prev.email || u.email || "",
+          phone: prev.phone || u.phone || "",
+        }));
+      })
+      .catch(() => {});
+
+    fetch(`/api/events/${eventId}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (!active || !json.success || !json.data?.event?.ticketTypes) return;
+        const apiTickets: { name: string; price: string | number }[] =
+          json.data.event.ticketTypes;
+        const matched =
+          apiTickets.find((t) =>
+            t.name.toLowerCase().includes(ticketType.toLowerCase())
+          ) || apiTickets[0];
+        if (matched) {
+          setLiveTicket({ name: matched.name, price: Number(matched.price) });
+        }
+      })
+      .catch(() => {});
+
+    return () => {
+      active = false;
+    };
+  }, [eventId, ticketType]);
 
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -141,6 +208,11 @@ export default function CheckoutForm({
       const bookingId = bookingJson.data.booking.id;
       const bookingCode = bookingJson.data.booking.bookingCode;
 
+      sessionStorage.setItem(
+        `ife-booking-${eventId}`,
+        JSON.stringify({ bookingId, bookingCode })
+      );
+
       const orderRes = await fetch("/api/payments/create-order", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -189,6 +261,13 @@ export default function CheckoutForm({
           email: orderData.customerEmail,
           contact: orderData.customerPhone,
         },
+        modal: {
+          ondismiss: () => {
+            setMessage(
+              `Payment window closed. Your guest booking (${bookingCode}) is reserved—you can retry payment.`
+            );
+          },
+        },
         handler: async (response: {
           razorpay_order_id: string;
           razorpay_payment_id: string;
@@ -205,9 +284,13 @@ export default function CheckoutForm({
             }),
           });
           if (verifyRes.ok) {
-            window.location.href = `/events/${eventId}/payment-success?bookingCode=${encodeURIComponent(bookingCode)}`;
+            router.push(
+              `/events/${eventId}/payment-success?bookingCode=${encodeURIComponent(bookingCode)}`
+            );
           } else {
-            window.location.href = `/events/${eventId}/payment-failed?bookingCode=${encodeURIComponent(bookingCode)}`;
+            router.push(
+              `/events/${eventId}/payment-failed?bookingCode=${encodeURIComponent(bookingCode)}`
+            );
           }
         },
       });
@@ -542,9 +625,10 @@ export default function CheckoutForm({
 
               <button
                 type="submit"
-                className="bg-[#D4AF6A] px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5]"
+                disabled={processing}
+                className="bg-[#D4AF6A] px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Save Checkout Details →
+                {processing ? "Processing..." : "Proceed to Payment →"}
               </button>
             </div>
           </form>
@@ -564,7 +648,14 @@ export default function CheckoutForm({
             <div className="space-y-5 text-sm">
               <div className="flex justify-between gap-4">
                 <span className="text-white/45">Ticket Type</span>
-                <span className="text-right">{ticket.name}</span>
+                <span className="text-right">{liveTicket.name}</span>
+              </div>
+
+              <div className="flex justify-between gap-4">
+                <span className="text-white/45">Checkout Mode</span>
+                <span className="text-right text-[#D4AF6A]">
+                  {isGuest ? "Guest Checkout" : "Member Account"}
+                </span>
               </div>
 
               <div className="flex justify-between">
