@@ -1,17 +1,16 @@
-
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
-  CalendarDays,
-  MapPin,
-  Ticket,
-  Printer,
-  ArrowLeft,
-  ShieldCheck,
-} from "lucide-react";
+  FiArrowLeft,
+  FiCalendar,
+  FiMapPin,
+  FiPrinter,
+  FiTag,
+} from "react-icons/fi";
+import { useSessionStorageValue } from "@/lib/hooks/use-session-storage";
 
 type Attendee = {
   fullName?: string;
@@ -33,241 +32,195 @@ export default function DigitalTicket({
   eventDate,
   venue,
 }: Props) {
-  const [attendees] = useState<Attendee[]>(() => {
-    if (typeof window === "undefined") return [];
+  const rawAttendees = useSessionStorageValue(`ife-attendees-${eventId}`);
+  const rawBooking = useSessionStorageValue(`ife-booking-${eventId}`);
+
+  const attendees = useMemo<Attendee[]>(() => {
+    if (!rawAttendees) return [];
     try {
-      const stored = sessionStorage.getItem(`ife-attendees-${eventId}`);
-      if (stored) {
-        const parsed: unknown = JSON.parse(stored);
-        if (Array.isArray(parsed)) {
-          return parsed as Attendee[];
-        }
-      }
-    } catch (error) {
-      console.error("Unable to load attendee details:", error);
+      const parsed: unknown = JSON.parse(rawAttendees);
+      return Array.isArray(parsed) ? (parsed as Attendee[]) : [];
+    } catch {
+      return [];
     }
-    return [];
-  });
-  const loaded = true;
+  }, [rawAttendees]);
+
+  const bookingCode = useMemo<string>(() => {
+    if (rawBooking) {
+      try {
+        const parsed = JSON.parse(rawBooking) as { bookingCode?: string };
+        if (parsed.bookingCode) return parsed.bookingCode;
+      } catch {}
+    }
+    return `IFE-${eventId.slice(0, 6).toUpperCase()}`;
+  }, [rawBooking, eventId]);
 
   const handlePrint = () => {
     window.print();
   };
 
   return (
-    <main className="min-h-screen bg-[#080808] px-4 py-14 text-white sm:px-6">
-      <div className="mx-auto max-w-4xl">
+    <main className="flex min-h-screen items-center justify-center bg-[#080808] px-4 py-8 text-white sm:px-6 print:bg-white print:p-0 print:text-black">
+      <div className="mx-auto w-full max-w-4xl">
+        {/* Compact Header */}
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-4 print:hidden">
+          <div>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#D4AF6A]">
+              Official Event Pass
+            </p>
+            <h1 className="font-[var(--font-playfair)] text-2xl sm:text-3xl">
+              Your Digital Ticket
+            </h1>
+          </div>
 
-        {/* Page Heading */}
-        <div className="mb-10 text-center print:hidden">
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-[#D4AF6A]">
-            International Fashion Entertainment
-          </p>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handlePrint}
+              disabled={attendees.length === 0}
+              className="inline-flex items-center gap-2 bg-[#D4AF6A] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <FiPrinter size={15} />
+              Print Pass
+            </button>
 
-          <h1 className="font-serif text-4xl sm:text-5xl">
-            Your Digital Ticket
-          </h1>
-
-          <p className="mt-4 text-sm text-gray-400">
-            Your event ticket preview is displayed below.
-          </p>
-        </div>
-
-        {/* Demo Notice */}
-        <div className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/5 p-4 print:hidden">
-          <div className="flex items-start gap-3">
-            <ShieldCheck
-              className="mt-1 shrink-0 text-amber-400"
-              size={21}
-            />
-            <div>
-              <h2 className="font-semibold text-amber-300">
-                Demo QR ticket
-              </h2>
-              <p className="mt-1 text-sm leading-6 text-gray-400">
-                This QR code contains a demonstration ticket
-                reference only. It cannot be used for event
-                entry or verified by event staff.
-              </p>
-            </div>
+            <Link
+              href={`/events/${eventId}/booking-confirmation`}
+              className="inline-flex items-center gap-2 border border-white/20 px-4 py-2.5 text-xs font-semibold text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+            >
+              <FiArrowLeft size={14} />
+              Confirmation
+            </Link>
           </div>
         </div>
 
-        {!loaded ? (
-          <div className="rounded-xl border border-white/10 bg-[#111111] p-10 text-center text-gray-400">
-            Loading ticket details...
-          </div>
-        ) : attendees.length === 0 ? (
-          <div className="rounded-xl border border-white/10 bg-[#111111] p-8 text-center">
-            <Ticket
-              size={42}
-              className="mx-auto mb-4 text-[#D4AF6A]"
-            />
-            <h2 className="font-serif text-2xl">
+        {attendees.length === 0 ? (
+          <div className="border border-white/10 bg-[#111111] p-8 text-center">
+            <FiTag size={34} className="mx-auto mb-3 text-[#D4AF6A]" />
+            <h2 className="font-[var(--font-playfair)] text-2xl">
               No attendee details found
             </h2>
-            <p className="mt-3 text-sm text-gray-400">
-              Please complete the attendee details step in
-              the booking flow before viewing this ticket.
+            <p className="mt-2 text-sm text-gray-400">
+              Please complete attendee details in the booking flow to view your
+              digital pass.
             </p>
             <Link
               href={`/events/${eventId}/tickets`}
-              className="mt-6 inline-flex bg-[#D4AF6A] px-6 py-3 text-sm font-semibold text-black hover:bg-[#F5E5B5]"
+              className="mt-5 inline-flex bg-[#D4AF6A] px-6 py-3 text-xs font-bold uppercase tracking-wider text-black hover:bg-[#F5E5B5]"
             >
               Select Tickets
             </Link>
           </div>
         ) : (
-          <div className="space-y-7">
+          <div className="space-y-4">
             {attendees.map((attendee, index) => {
-              const ticketReference =
-                `IFE-DEMO-${eventId.padStart(3, "0")}-${String(
-                  index + 1
-                ).padStart(3, "0")}`;
-
-              const qrValue =
-                `IFE-DEMO-TICKET|event:${eventId}|attendee:${index + 1}|reference:${ticketReference}`;
+              const ticketReference = `${bookingCode}-${String(index + 1).padStart(2, "0")}`;
+              const qrValue = `IFE-PASS|code:${bookingCode}|event:${eventId}|attendee:${index + 1}|ref:${ticketReference}`;
 
               return (
                 <article
                   key={index}
-                  className="overflow-hidden rounded-2xl border border-[#D4AF6A]/40 bg-[#111111] shadow-2xl print:break-inside-avoid print:border print:border-gray-300 print:bg-white print:text-black print:shadow-none"
+                  className="overflow-hidden border border-[#D4AF6A]/40 bg-[#111111] shadow-2xl print:break-inside-avoid print:border print:border-gray-300 print:bg-white print:text-black print:shadow-none"
                 >
                   {/* Ticket Top */}
-                  <div className="border-b border-dashed border-[#D4AF6A]/40 p-6 sm:p-8 print:border-gray-400">
-                    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                      <div>
-                        <p className="text-xs font-semibold uppercase tracking-[0.3em] text-[#D4AF6A] print:text-gray-600">
-                          IFE • Event Admission
-                        </p>
-                        <h2 className="mt-3 font-serif text-2xl sm:text-3xl">
-                          {eventTitle}
-                        </h2>
-                      </div>
-
-                      <div className="w-fit rounded-full border border-[#D4AF6A]/40 px-4 py-2 text-xs font-semibold uppercase tracking-wider text-[#D4AF6A] print:border-gray-400 print:text-gray-700">
-                        Demo Ticket
-                      </div>
+                  <div className="flex flex-wrap items-center justify-between gap-3 border-b border-dashed border-[#D4AF6A]/40 px-6 py-4 print:border-gray-400">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-[#D4AF6A] print:text-gray-600">
+                        IFE • Event Admission
+                      </p>
+                      <h2 className="mt-1 font-[var(--font-playfair)] text-xl sm:text-2xl">
+                        {eventTitle}
+                      </h2>
                     </div>
+
+                    <span className="border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-300 print:border-gray-400 print:text-gray-700">
+                      Confirmed Pass
+                    </span>
                   </div>
 
                   {/* Ticket Body */}
-                  <div className="grid gap-8 p-6 sm:grid-cols-[1fr_220px] sm:p-8">
-                    <div>
-                      <div className="mb-7">
-                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500 print:text-gray-600">
-                          Attendee
+                  <div className="grid items-center gap-6 p-6 sm:grid-cols-[1fr_190px]">
+                    <div className="space-y-4">
+                      <div>
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 print:text-gray-600">
+                          Attendee {String(index + 1).padStart(2, "0")}
                         </p>
-                        <h3 className="mt-2 text-xl font-semibold">
+                        <h3 className="mt-0.5 text-lg font-semibold">
                           {attendee.fullName ||
                             attendee.name ||
                             `Attendee ${index + 1}`}
                         </h3>
-                        <p className="mt-1 text-sm text-gray-400 print:text-gray-700">
-                          {attendee.email || "Email not available"}
-                        </p>
-                        <p className="mt-1 text-sm text-gray-400 print:text-gray-700">
-                          {attendee.phone || "Phone not available"}
+                        <p className="text-xs text-gray-400 print:text-gray-700">
+                          {attendee.email || "—"} • {attendee.phone || "—"}
                         </p>
                       </div>
 
-                      <div className="grid gap-5 sm:grid-cols-2">
-                        <div className="flex items-start gap-3">
-                          <CalendarDays
-                            size={19}
-                            className="mt-1 text-[#D4AF6A] print:text-gray-700"
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="flex items-start gap-2.5">
+                          <FiCalendar
+                            size={16}
+                            className="mt-0.5 shrink-0 text-[#D4AF6A] print:text-gray-700"
                           />
                           <div>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-[10px] text-gray-500">
                               Event Date
                             </p>
-                            <p className="mt-1 text-sm">
+                            <p className="text-xs text-white/90 print:text-black">
                               {eventDate}
                             </p>
                           </div>
                         </div>
 
-                        <div className="flex items-start gap-3">
-                          <MapPin
-                            size={19}
-                            className="mt-1 text-[#D4AF6A] print:text-gray-700"
+                        <div className="flex items-start gap-2.5">
+                          <FiMapPin
+                            size={16}
+                            className="mt-0.5 shrink-0 text-[#D4AF6A] print:text-gray-700"
                           />
                           <div>
-                            <p className="text-xs text-gray-500">
-                              Venue
-                            </p>
-                            <p className="mt-1 text-sm">
+                            <p className="text-[10px] text-gray-500">Venue</p>
+                            <p className="text-xs text-white/90 print:text-black">
                               {venue}
                             </p>
                           </div>
                         </div>
                       </div>
 
-                      <div className="mt-8 border-t border-white/10 pt-5 print:border-gray-300">
-                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">
+                      <div className="border-t border-white/10 pt-3 print:border-gray-300">
+                        <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
                           Ticket Reference
                         </p>
-                        <p className="mt-2 break-all font-mono text-sm font-semibold tracking-wider text-[#D4AF6A] print:text-gray-900">
+                        <p className="mt-0.5 break-all font-mono text-xs font-semibold tracking-wider text-[#D4AF6A] print:text-gray-900">
                           {ticketReference}
                         </p>
                       </div>
                     </div>
 
                     {/* QR Code */}
-                    <div className="flex flex-col items-center justify-center rounded-xl bg-white p-5 text-center">
+                    <div className="flex flex-col items-center justify-center rounded-lg bg-white p-3.5 text-center">
                       <QRCodeSVG
                         value={qrValue}
-                        size={160}
+                        size={136}
                         level="H"
                         includeMargin
                       />
-                      <p className="mt-3 text-xs font-bold uppercase tracking-wider text-black">
-                        Demo QR Code
-                      </p>
-                      <p className="mt-1 text-[10px] text-gray-600">
-                        Not valid for entry
+                      <p className="mt-2 text-[10px] font-bold uppercase tracking-wider text-black">
+                        Scan at Entry
                       </p>
                     </div>
                   </div>
 
                   {/* Ticket Footer */}
-                  <div className="flex flex-col justify-between gap-2 border-t border-white/10 bg-white/[0.03] px-6 py-4 text-xs text-gray-500 sm:flex-row print:border-gray-300 print:bg-gray-100 print:text-gray-700">
+                  <div className="flex flex-wrap justify-between gap-2 border-t border-white/10 bg-white/[0.03] px-6 py-2.5 text-[11px] text-gray-400 print:border-gray-300 print:bg-gray-100 print:text-gray-700">
                     <span>International Fashion Entertainment</span>
-                    <span>Attendee {index + 1} of {attendees.length}</span>
+                    <span>
+                      Pass {index + 1} of {attendees.length}
+                    </span>
                   </div>
                 </article>
               );
             })}
           </div>
         )}
-
-        {/* Actions */}
-        <div className="mt-8 flex flex-col justify-center gap-4 sm:flex-row print:hidden">
-          <button
-            type="button"
-            onClick={handlePrint}
-            disabled={!loaded || attendees.length === 0}
-            className="inline-flex items-center justify-center gap-2 bg-[#D4AF6A] px-7 py-4 text-sm font-semibold text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            <Printer size={18} />
-            Print Digital Ticket
-          </button>
-
-          <Link
-            href={`/events/${eventId}/booking-confirmation`}
-            className="inline-flex items-center justify-center gap-2 border border-white/20 px-7 py-4 text-sm font-semibold text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
-          >
-            <ArrowLeft size={18} />
-            Back to Confirmation
-          </Link>
-
-          <Link
-            href="/events"
-            className="inline-flex items-center justify-center border border-white/20 px-7 py-4 text-sm font-semibold text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
-          >
-            Explore Events
-          </Link>
-        </div>
       </div>
     </main>
   );

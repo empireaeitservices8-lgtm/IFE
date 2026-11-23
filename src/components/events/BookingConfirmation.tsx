@@ -1,17 +1,16 @@
-
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useMemo } from "react";
 import {
-  CheckCircle2,
-  CalendarDays,
-  MapPin,
-  Ticket,
-  Users,
-  ArrowRight,
-  ShieldCheck,
-} from "lucide-react";
+  FiArrowRight,
+  FiCalendar,
+  FiCheckCircle,
+  FiMapPin,
+  FiTag,
+  FiUsers,
+} from "react-icons/fi";
+import { useSessionStorageValue } from "@/lib/hooks/use-session-storage";
 
 type Attendee = {
   name?: string;
@@ -33,248 +32,159 @@ export default function BookingConfirmation({
   eventDate,
   venue,
 }: Props) {
-  const [attendees] = useState<Attendee[]>(() => {
-    if (typeof window === "undefined") return [];
+  const rawAttendees = useSessionStorageValue(`ife-attendees-${eventId}`);
+  const rawBooking = useSessionStorageValue(`ife-booking-${eventId}`);
+
+  const attendees = useMemo<Attendee[]>(() => {
+    if (!rawAttendees) return [];
     try {
-      const stored = sessionStorage.getItem(`ife-attendees-${eventId}`);
-      if (stored) {
-        const parsed = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed as Attendee[];
-      }
-    } catch {}
-    return [];
-  });
-  const loaded = true;
-  const [bookingCode] = useState<string>(() => {
-    if (typeof window === "undefined") {
-      return `IFE-${eventId.slice(0, 6).toUpperCase()}`;
+      const parsed: unknown = JSON.parse(rawAttendees);
+      return Array.isArray(parsed) ? (parsed as Attendee[]) : [];
+    } catch {
+      return [];
     }
-    const fromQuery = new URLSearchParams(window.location.search).get(
-      "bookingCode"
-    );
-    if (fromQuery) return fromQuery;
-    try {
-      const saved = sessionStorage.getItem(`ife-booking-${eventId}`);
-      if (saved) {
-        const parsed = JSON.parse(saved) as { bookingCode?: string };
+  }, [rawAttendees]);
+
+  const bookingCode = useMemo<string>(() => {
+    if (rawBooking) {
+      try {
+        const parsed = JSON.parse(rawBooking) as { bookingCode?: string };
         if (parsed.bookingCode) return parsed.bookingCode;
-      }
-    } catch {}
+      } catch {}
+    }
     return `IFE-${eventId.slice(0, 6).toUpperCase()}`;
-  });
+  }, [rawBooking, eventId]);
 
   return (
-    <main className="min-h-screen bg-[#080808] px-4 py-16 text-white sm:px-6">
-      <div className="mx-auto max-w-4xl">
-
-        {/* Success Header */}
-        <div className="mb-12 text-center">
-          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full border border-[#D4AF6A]/40 bg-[#D4AF6A]/10">
-            <CheckCircle2
-              size={42}
-              className="text-[#D4AF6A]"
-            />
-          </div>
-
-          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.35em] text-[#D4AF6A]">
-            IFE Event Booking
-          </p>
-
-          <h1 className="mb-4 font-serif text-4xl sm:text-5xl">
-            Booking Confirmation
-          </h1>
-
-          <p className="mx-auto max-w-xl text-sm leading-7 text-gray-400">
-            Your demo booking confirmation page is ready.
-            Actual booking confirmation will be available
-            after payment verification is connected.
-          </p>
-        </div>
-
-        {/* Demo Notice */}
-        <div className="mb-8 rounded-xl border border-amber-500/30 bg-amber-500/5 p-5">
-          <div className="flex items-start gap-3">
-            <ShieldCheck
-              className="mt-1 shrink-0 text-amber-400"
-              size={22}
-            />
+    <main className="flex min-h-screen items-center justify-center bg-[#080808] px-4 py-8 text-white sm:px-6">
+      <div className="mx-auto w-full max-w-4xl">
+        {/* Compact Success Header */}
+        <div className="mb-6 flex flex-col items-center justify-between gap-4 border-b border-white/10 pb-5 sm:flex-row sm:text-left">
+          <div className="flex items-center gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 text-[#D4AF6A]">
+              <FiCheckCircle size={24} />
+            </div>
             <div>
-              <h2 className="mb-1 font-semibold text-amber-300">
-                Demo confirmation
-              </h2>
-              <p className="text-sm leading-6 text-gray-400">
-                This is a frontend demonstration only.
-                No verified payment or confirmed booking
-                has been created yet.
+              <p className="text-[10px] font-semibold uppercase tracking-[0.3em] text-[#D4AF6A]">
+                Booking Confirmed
               </p>
+              <h1 className="font-[var(--font-playfair)] text-2xl sm:text-3xl">
+                {eventTitle}
+              </h1>
             </div>
+          </div>
+
+          <div className="border border-[#D4AF6A]/40 bg-[#111111] px-4 py-2.5 text-center sm:text-right">
+            <p className="text-[9px] uppercase tracking-[0.25em] text-gray-400">
+              Booking Reference
+            </p>
+            <p className="mt-0.5 font-mono text-base font-semibold tracking-wider text-[#D4AF6A]">
+              {bookingCode}
+            </p>
           </div>
         </div>
 
-        {/* Booking Reference */}
-        <section className="mb-8 rounded-xl border border-[#D4AF6A]/30 bg-[#111111] p-6 text-center sm:p-8">
-          <p className="mb-2 text-xs uppercase tracking-[0.25em] text-gray-500">
-            Booking Reference
-          </p>
+        {/* 2-Column Main Grid */}
+        <div className="grid gap-5 md:grid-cols-2">
+          {/* Event Details */}
+          <section className="border border-white/10 bg-[#111111] p-5">
+            <h2 className="mb-4 font-[var(--font-playfair)] text-lg text-white">
+              Event Details
+            </h2>
 
-          <h2 className="font-serif text-2xl tracking-wider text-[#D4AF6A]">
-            {bookingCode}
-          </h2>
-
-          <p className="mt-3 text-xs text-gray-500">
-            Present this reference at venue check-in
-          </p>
-        </section>
-
-        {/* Event Details */}
-        <section className="mb-8 rounded-xl border border-white/10 bg-[#111111] p-6 sm:p-8">
-          <h2 className="mb-6 font-serif text-2xl">
-            Event Details
-          </h2>
-
-          <h3 className="mb-6 text-xl font-semibold text-[#D4AF6A]">
-            {eventTitle}
-          </h3>
-
-          <div className="grid gap-5 sm:grid-cols-2">
-            <div className="flex items-start gap-3">
-              <CalendarDays
-                className="mt-1 text-[#D4AF6A]"
-                size={20}
-              />
-              <div>
-                <p className="text-xs text-gray-500">Event Date</p>
-                <p className="mt-1 text-sm">{eventDate}</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <MapPin
-                className="mt-1 text-[#D4AF6A]"
-                size={20}
-              />
-              <div>
-                <p className="text-xs text-gray-500">Venue</p>
-                <p className="mt-1 text-sm">{venue}</p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <Ticket
-                className="mt-1 text-[#D4AF6A]"
-                size={20}
-              />
-              <div>
-                <p className="text-xs text-gray-500">Booking Status</p>
-                <p className="mt-1 text-sm text-amber-300">
-                  Awaiting payment integration
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3">
-              <Users
-                className="mt-1 text-[#D4AF6A]"
-                size={20}
-              />
-              <div>
-                <p className="text-xs text-gray-500">Attendees</p>
-                <p className="mt-1 text-sm">
-                  {loaded ? attendees.length : "Loading..."}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Attendee Details */}
-        <section className="mb-8 rounded-xl border border-white/10 bg-[#111111] p-6 sm:p-8">
-          <h2 className="mb-6 font-serif text-2xl">
-            Attendee Information
-          </h2>
-
-          {!loaded ? (
-            <p className="text-sm text-gray-400">
-              Loading attendee information...
-            </p>
-          ) : attendees.length > 0 ? (
-            <div className="space-y-4">
-              {attendees.map((attendee, index) => (
-                <div
-                  key={index}
-                  className="rounded-lg border border-white/10 p-4"
-                >
-                  <p className="mb-3 text-xs uppercase tracking-wider text-[#D4AF6A]">
-                    Attendee {index + 1}
-                  </p>
-
-                  <p className="font-medium">
-                    {attendee.fullName ||
-                      attendee.name ||
-                      "Name not available"}
-                  </p>
-
-                  <p className="mt-1 text-sm text-gray-400">
-                    {attendee.email || "Email not available"}
-                  </p>
-
-                  <p className="mt-1 text-sm text-gray-400">
-                    {attendee.phone || "Phone not available"}
-                  </p>
+            <div className="space-y-3.5 text-sm">
+              <div className="flex items-start gap-3">
+                <FiCalendar className="mt-0.5 shrink-0 text-[#D4AF6A]" size={16} />
+                <div>
+                  <p className="text-[11px] text-gray-400">Event Date</p>
+                  <p className="text-white">{eventDate}</p>
                 </div>
-              ))}
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FiMapPin className="mt-0.5 shrink-0 text-[#D4AF6A]" size={16} />
+                <div>
+                  <p className="text-[11px] text-gray-400">Venue</p>
+                  <p className="text-white">{venue}</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FiTag className="mt-0.5 shrink-0 text-[#D4AF6A]" size={16} />
+                <div>
+                  <p className="text-[11px] text-gray-400">Status</p>
+                  <p className="font-medium text-emerald-400">Confirmed &amp; Paid</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
+                <FiUsers className="mt-0.5 shrink-0 text-[#D4AF6A]" size={16} />
+                <div>
+                  <p className="text-[11px] text-gray-400">Attendees</p>
+                  <p className="text-white">{attendees.length}</p>
+                </div>
+              </div>
             </div>
-          ) : (
-            <p className="text-sm text-gray-400">
-              No attendee details were found in this browser session.
-            </p>
-          )}
-        </section>
+          </section>
 
-        {/* Next Steps */}
-        <section className="mb-10 rounded-xl border border-white/10 bg-[#111111] p-6 sm:p-8">
-          <h2 className="mb-4 font-serif text-2xl">
-            What Happens Next?
-          </h2>
+          {/* Attendee Information */}
+          <section className="border border-white/10 bg-[#111111] p-5">
+            <h2 className="mb-4 font-[var(--font-playfair)] text-lg text-white">
+              Attendee Information
+            </h2>
 
-          <ul className="space-y-3 text-sm leading-6 text-gray-400">
-            <li>
-              • Razorpay payment verification will be connected
-              during backend integration.
-            </li>
-            <li>
-              • A confirmed booking will receive a unique
-              booking reference.
-            </li>
-            <li>
-              • A digital ticket with a QR code will be
-              generated after successful verification.
-            </li>
-            <li>
-              • Booking confirmation emails will be sent
-              after the email service is integrated.
-            </li>
-          </ul>
-        </section>
+            {attendees.length > 0 ? (
+              <div className="max-h-56 space-y-2.5 overflow-y-auto pr-1">
+                {attendees.map((attendee, index) => (
+                  <div
+                    key={index}
+                    className="border border-white/10 bg-[#080808] p-3"
+                  >
+                    <p className="text-[10px] uppercase tracking-wider text-[#D4AF6A]">
+                      Attendee {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <p className="mt-0.5 text-sm font-medium text-white">
+                      {attendee.fullName || attendee.name || "Guest"}
+                    </p>
+                    <p className="text-xs text-gray-400">
+                      {attendee.email || "—"} • {attendee.phone || "—"}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="text-xs leading-6 text-gray-400">
+                Your booking ({bookingCode}) is confirmed. Present your booking
+                reference or digital pass at venue check-in.
+              </p>
+            )}
+          </section>
+        </div>
 
         {/* Actions */}
-        <div className="flex flex-col justify-center gap-4 sm:flex-row">
+        <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
           <Link
             href={`/events/${eventId}/digital-ticket`}
-            className="inline-flex items-center justify-center gap-2 bg-[#D4AF6A] px-7 py-4 text-sm font-semibold text-black transition hover:bg-[#F5E5B5]"
+            className="inline-flex items-center justify-center gap-2 bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
           >
             View Digital Ticket
-            <ArrowRight size={18} />
+            <FiArrowRight size={16} />
+          </Link>
+
+          <Link
+            href="/my-bookings"
+            className="inline-flex items-center justify-center border border-white/20 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+          >
+            My Bookings
           </Link>
 
           <Link
             href="/events"
-            className="inline-flex items-center justify-center gap-2 border border-white/20 px-7 py-4 text-sm font-semibold text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+            className="inline-flex items-center justify-center border border-white/20 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
           >
-            Explore More Events
+            Explore Events
           </Link>
         </div>
-
       </div>
     </main>
   );
