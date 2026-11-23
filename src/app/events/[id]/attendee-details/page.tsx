@@ -4,12 +4,14 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import AttendeeForm from "@/components/events/AttendeeForm";
 import { resolveBookingEvent } from "@/lib/events/resolve-booking-event";
+import { parseTicketSelection } from "@/lib/events/ticket-selection";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{
+    items?: string;
     ticket?: string;
     quantity?: string;
   }>;
@@ -41,20 +43,13 @@ export default async function AttendeeDetailsPage({
     notFound();
   }
 
-  const ticketType = query.ticket || "single";
-  const allowedTickets = ["single", "couple", "group5", "vip"];
+  const selectedItems = parseTicketSelection({
+    items: query.items,
+    ticket: query.ticket,
+    quantity: query.quantity,
+  });
 
-  if (!allowedTickets.includes(ticketType)) {
-    redirect(`/events/${id}/tickets`);
-  }
-
-  const parsedQuantity = Number(query.quantity || "1");
-
-  if (
-    !Number.isInteger(parsedQuantity) ||
-    parsedQuantity < 1 ||
-    parsedQuantity > 10
-  ) {
+  if (selectedItems.length === 0) {
     redirect(`/events/${id}/tickets`);
   }
 
@@ -65,8 +60,7 @@ export default async function AttendeeDetailsPage({
         <AttendeeForm
           eventId={id}
           eventTitle={event.title}
-          ticketType={ticketType}
-          quantity={parsedQuantity}
+          selectedItems={selectedItems}
         />
       </main>
       <Footer />

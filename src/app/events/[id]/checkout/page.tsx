@@ -4,18 +4,18 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import CheckoutForm from "@/components/events/CheckoutForm";
 import { resolveBookingEvent } from "@/lib/events/resolve-booking-event";
+import { parseTicketSelection } from "@/lib/events/ticket-selection";
 
 export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ id: string }>;
   searchParams: Promise<{
+    items?: string;
     ticket?: string;
     quantity?: string;
   }>;
 };
-
-const allowedTickets = ["single", "couple", "group5", "vip"];
 
 export async function generateMetadata({
   params,
@@ -41,15 +41,13 @@ export default async function CheckoutPage({
     notFound();
   }
 
-  const ticketType = query.ticket || "single";
-  const quantity = Number(query.quantity || "1");
+  const selectedItems = parseTicketSelection({
+    items: query.items,
+    ticket: query.ticket,
+    quantity: query.quantity,
+  });
 
-  if (
-    !allowedTickets.includes(ticketType) ||
-    !Number.isInteger(quantity) ||
-    quantity < 1 ||
-    quantity > 10
-  ) {
+  if (selectedItems.length === 0) {
     redirect(`/events/${id}/tickets`);
   }
 
@@ -60,8 +58,7 @@ export default async function CheckoutPage({
         <CheckoutForm
           eventId={id}
           eventTitle={event.title}
-          ticketType={ticketType}
-          quantity={quantity}
+          selectedItems={selectedItems}
         />
       </main>
       <Footer />

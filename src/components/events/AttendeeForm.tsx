@@ -1,9 +1,13 @@
 
 "use client";
 
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  serializeTicketSelection,
+  type SelectedTicketItem,
+} from "@/lib/events/ticket-selection";
 
 type Attendee = {
   fullName: string;
@@ -14,26 +18,29 @@ type Attendee = {
 type AttendeeFormProps = {
   eventId: string;
   eventTitle: string;
-  ticketType: string;
-  quantity: number;
-};
-
-const ticketNames: Record<string, string> = {
-  single: "Single Entry",
-  couple: "Couple Entry",
-  group5: "Group of 5",
-  vip: "VIP Pass",
+  selectedItems: SelectedTicketItem[];
 };
 
 export default function AttendeeForm({
   eventId,
   eventTitle,
-  ticketType,
-  quantity,
+  selectedItems,
 }: AttendeeFormProps) {
   const router = useRouter();
 
-  const [attendees, setAttendees] = useState<Attendee[]>(
+  const slotPassLabels = useMemo(() => {
+    const labels: string[] = [];
+    for (const item of selectedItems) {
+      for (let i = 0; i < item.quantity; i += 1) {
+        labels.push(item.name);
+      }
+    }
+    return labels;
+  }, [selectedItems]);
+
+  const quantity = slotPassLabels.length;
+
+  const [attendees, setAttendees] = useState<Attendee[]>(() =>
     Array.from({ length: quantity }, () => ({
       fullName: "",
       email: "",
@@ -87,17 +94,11 @@ export default function AttendeeForm({
       return;
     }
 
-    const params = new URLSearchParams({
-      ticket: ticketType,
-      quantity: String(quantity),
-    });
-
+    const selectionQuery = serializeTicketSelection(selectedItems);
     router.push(
-      `/events/${eventId}/booking-summary?${params.toString()}`
+      `/events/${eventId}/booking-summary?${selectionQuery}`
     );
   };
-
-  const ticketName = ticketNames[ticketType] || "Selected Ticket";
 
   return (
     <section className="min-h-[calc(100vh-5rem)] bg-[#050505] px-5 py-6 text-white md:px-10">
@@ -149,7 +150,9 @@ export default function AttendeeForm({
                     </h2>
                   </div>
 
-                  <span className="text-xs text-white/40">{ticketName}</span>
+                  <span className="text-xs text-white/40">
+                    {slotPassLabels[index] || "Event Pass"}
+                  </span>
                 </div>
 
                 <div className="grid gap-4 sm:grid-cols-2">
@@ -266,20 +269,21 @@ export default function AttendeeForm({
 
             <div className="my-4 border-t border-white/10" />
 
-            <div className="space-y-3 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-white/45">Ticket Type</span>
-                <span className="text-right">{ticketName}</span>
-              </div>
+            <div className="space-y-2.5 text-sm">
+              {selectedItems.map((item) => (
+                <div key={item.id} className="flex justify-between gap-4">
+                  <span className="text-white/60">
+                    {item.quantity} × {item.name}
+                  </span>
+                  <span className="text-right font-medium text-white">
+                    ₹{(item.price * item.quantity).toLocaleString("en-IN")}
+                  </span>
+                </div>
+              ))}
 
-              <div className="flex justify-between">
-                <span className="text-white/45">Number of Passes</span>
+              <div className="flex justify-between border-t border-white/10 pt-2.5">
+                <span className="text-white/45">Total Passes</span>
                 <span>{quantity}</span>
-              </div>
-
-              <div className="flex justify-between">
-                <span className="text-white/45">Attendees</span>
-                <span>{attendees.length}</span>
               </div>
             </div>
 

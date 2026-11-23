@@ -1,7 +1,6 @@
-
 "use client";
 
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import {
   FiArrowLeft,
@@ -12,6 +11,11 @@ import {
   FiTag,
   FiUser,
 } from "react-icons/fi";
+import {
+  serializeTicketSelection,
+  type SelectedTicketItem,
+} from "@/lib/events/ticket-selection";
+import { useSessionStorageValue } from "@/lib/hooks/use-session-storage";
 
 type Attendee = {
   fullName: string;
@@ -24,30 +28,7 @@ type BookingSummaryProps = {
   eventTitle: string;
   eventDate?: string;
   venue?: string;
-  ticketType: string;
-  quantity: number;
-};
-
-const ticketOptions: Record<
-  string,
-  { name: string; price: number }
-> = {
-  single: {
-    name: "Single Entry",
-    price: 1499,
-  },
-  couple: {
-    name: "Couple Entry",
-    price: 2699,
-  },
-  group5: {
-    name: "Group of 5",
-    price: 6999,
-  },
-  vip: {
-    name: "VIP Pass",
-    price: 3499,
-  },
+  selectedItems: SelectedTicketItem[];
 };
 
 export default function BookingSummary({
@@ -55,55 +36,37 @@ export default function BookingSummary({
   eventTitle,
   eventDate = "To be announced",
   venue = "Venue to be announced",
-  ticketType,
-  quantity,
+  selectedItems,
 }: BookingSummaryProps) {
-  const [attendees] = useState<Attendee[]>(() => {
-    if (typeof window === "undefined") return [];
+  const rawAttendees = useSessionStorageValue(`ife-attendees-${eventId}`);
+
+  const attendees = useMemo<Attendee[]>(() => {
+    if (!rawAttendees) return [];
     try {
-      const stored = sessionStorage.getItem(`ife-attendees-${eventId}`);
-      if (stored) {
-        const parsed: unknown = JSON.parse(stored);
-        if (Array.isArray(parsed)) return parsed as Attendee[];
-      }
-    } catch {}
-    return [];
-  });
-  const attendeesLoaded = true;
+      const parsed: unknown = JSON.parse(rawAttendees);
+      return Array.isArray(parsed) ? (parsed as Attendee[]) : [];
+    } catch {
+      return [];
+    }
+  }, [rawAttendees]);
 
-  const fallbackTicket = ticketOptions[ticketType] || ticketOptions.single;
-  const [ticket, setTicket] = useState<{ name: string; price: number }>(
-    fallbackTicket
+  const totalQuantity = useMemo(
+    () => selectedItems.reduce((sum, item) => sum + item.quantity, 0),
+    [selectedItems]
   );
-  const subtotal = ticket.price * quantity;
 
-  // Tax calculation: 18% GST.
+  const subtotal = useMemo(
+    () =>
+      selectedItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      ),
+    [selectedItems]
+  );
+
   const tax = Math.round(subtotal * 0.18);
   const total = subtotal + tax;
-
-  useEffect(() => {
-    let active = true;
-    fetch(`/api/events/${eventId}`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (!active || !json.success || !json.data?.event?.ticketTypes) return;
-        const apiTickets: { name: string; price: string | number }[] =
-          json.data.event.ticketTypes;
-        const targetName = (ticketOptions[ticketType]?.name || ticketType).toLowerCase();
-        const matched = apiTickets.find(
-          (t) =>
-            t.name.toLowerCase() === targetName ||
-            t.name.toLowerCase().includes(ticketType.toLowerCase())
-        );
-        if (matched) {
-          setTicket({ name: matched.name, price: Number(matched.price) });
-        }
-      })
-      .catch(() => {});
-    return () => {
-      active = false;
-    };
-  }, [eventId, ticketType]);
+  const selectionQuery = serializeTicketSelection(selectedItems);
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("en-IN", {
@@ -113,7 +76,7 @@ export default function BookingSummary({
     }).format(amount);
 
   const hasValidAttendees =
-    attendees.length === quantity &&
+    attendees.length === totalQuantity &&
     attendees.every(
       (attendee) =>
         attendee.fullName?.trim() &&
@@ -172,7 +135,7 @@ export default function BookingSummary({
                   className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 text-[11px] text-white/75 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
                 >
                   <FiEdit2 size={12} />
-                  Change Pass
+                  Change Passes
                 </Link>
               </div>
 
@@ -200,11 +163,15 @@ export default function BookingSummary({
                 <div className="border border-white/10 bg-[#080808] p-3.5">
                   <p className="flex items-center gap-1.5 text-[10px] uppercase tracking-wider text-white/45">
                     <FiTag size={12} className="text-[#D4AF6A]" />
-                    Selected Pass
+                    Selected Passes ({totalQuantity})
                   </p>
-                  <p className="mt-1.5 text-sm font-medium text-[#D4AF6A]">
-                    {ticket.name} × {quantity}
-                  </p>
+                  <div className="mt-1.5 space-y-0.5 text-xs font-medium text-[#D4AF6A]">
+                    {selectedItems.map((item) => (
+                      <p key={item.id}>
+                        {item.quantity} × {item.name}
+                      </p>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>
@@ -220,7 +187,7 @@ export default function BookingSummary({
                 </div>
 
                 <Link
-                  href={`/events/${eventId}/attendee-details?ticket=${ticketType}&quantity=${quantity}`}
+                  href={`/events/${eventId}/attendee-details?${selectionQuery}`}
                   className="inline-flex items-center gap-1.5 border border-white/15 px-3 py-1.5 text-[11px] text-white/75 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
                 >
                   <FiEdit2 size={12} />
@@ -228,11 +195,7 @@ export default function BookingSummary({
                 </Link>
               </div>
 
-              {!attendeesLoaded ? (
-                <p className="text-sm text-white/40">
-                  Loading attendee details...
-                </p>
-              ) : hasValidAttendees ? (
+              {hasValidAttendees ? (
                 <div className="grid gap-3 sm:grid-cols-2">
                   {attendees.map((attendee, index) => (
                     <div
@@ -262,7 +225,7 @@ export default function BookingSummary({
                   </p>
 
                   <Link
-                    href={`/events/${eventId}/attendee-details?ticket=${ticketType}&quantity=${quantity}`}
+                    href={`/events/${eventId}/attendee-details?${selectionQuery}`}
                     className="mt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-[#D4AF6A] hover:text-[#F5E5B5]"
                   >
                     Enter Attendee Details
@@ -286,19 +249,16 @@ export default function BookingSummary({
             <div className="my-4 border-t border-white/10" />
 
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-white/50">
-                  {ticket.name} ({formatPrice(ticket.price)})
-                </span>
-                <span>{formatPrice(subtotal)}</span>
-              </div>
+              {selectedItems.map((item) => (
+                <div key={item.id} className="flex justify-between gap-4">
+                  <span className="text-white/60">
+                    {item.quantity} × {item.name}
+                  </span>
+                  <span>{formatPrice(item.price * item.quantity)}</span>
+                </div>
+              ))}
 
-              <div className="flex justify-between">
-                <span className="text-white/50">Quantity</span>
-                <span>{quantity}</span>
-              </div>
-
-              <div className="flex justify-between">
+              <div className="flex justify-between border-t border-white/10 pt-3">
                 <span className="text-white/50">Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
@@ -322,9 +282,9 @@ export default function BookingSummary({
               Includes 18% GST. Instant digital pass issued after payment.
             </p>
 
-            {hasValidAttendees && attendeesLoaded ? (
+            {hasValidAttendees ? (
               <Link
-                href={`/events/${eventId}/checkout?ticket=${ticketType}&quantity=${quantity}`}
+                href={`/events/${eventId}/checkout?${selectionQuery}`}
                 className="mt-5 flex w-full items-center justify-center gap-2 bg-[#D4AF6A] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5]"
               >
                 Proceed to Checkout

@@ -1,15 +1,18 @@
 
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  serializeTicketSelection,
+  type SelectedTicketItem,
+} from "@/lib/events/ticket-selection";
 
 type CheckoutFormProps = {
   eventId: string;
   eventTitle: string;
-  ticketType: string;
-  quantity: number;
+  selectedItems: SelectedTicketItem[];
 };
 
 type BillingDetails = {
@@ -22,32 +25,31 @@ type BillingDetails = {
   pincode: string;
 };
 
-const ticketOptions: Record<
-  string,
-  { name: string; price: number }
-> = {
-  single: { name: "Single Entry", price: 1499 },
-  couple: { name: "Couple Entry", price: 2699 },
-  group5: { name: "Group of 5", price: 6999 },
-  vip: { name: "VIP Pass", price: 3499 },
-};
-
 export default function CheckoutForm({
   eventId,
   eventTitle,
-  ticketType,
-  quantity,
+  selectedItems,
 }: CheckoutFormProps) {
   const router = useRouter();
-  const fallbackTicket = ticketOptions[ticketType] || ticketOptions.single;
-  const [liveTicket, setLiveTicket] = useState<{ name: string; price: number }>(
-    fallbackTicket
-  );
   const [isGuest, setIsGuest] = useState(true);
 
-  const subtotal = liveTicket.price * quantity;
+  const totalQuantity = useMemo(
+    () => selectedItems.reduce((sum, item) => sum + item.quantity, 0),
+    [selectedItems]
+  );
+
+  const subtotal = useMemo(
+    () =>
+      selectedItems.reduce(
+        (sum, item) => sum + item.price * item.quantity,
+        0
+      ),
+    [selectedItems]
+  );
+
   const tax = Math.round(subtotal * 0.18);
   const total = subtotal + tax;
+  const selectionQuery = serializeTicketSelection(selectedItems);
 
   const [billing, setBilling] = useState<BillingDetails>(() => {
     const base: BillingDetails = {
@@ -99,28 +101,10 @@ export default function CheckoutForm({
       })
       .catch(() => {});
 
-    fetch(`/api/events/${eventId}`)
-      .then((res) => res.json())
-      .then((json) => {
-        if (!active || !json.success || !json.data?.event?.ticketTypes) return;
-        const apiTickets: { name: string; price: string | number }[] =
-          json.data.event.ticketTypes;
-        const targetName = (ticketOptions[ticketType]?.name || ticketType).toLowerCase();
-        const matched = apiTickets.find(
-          (t) =>
-            t.name.toLowerCase() === targetName ||
-            t.name.toLowerCase().includes(ticketType.toLowerCase())
-        );
-        if (matched) {
-          setLiveTicket({ name: matched.name, price: Number(matched.price) });
-        }
-      })
-      .catch(() => {});
-
     return () => {
       active = false;
     };
-  }, [eventId, ticketType]);
+  }, []);
 
   const [paymentMethod, setPaymentMethod] = useState("razorpay");
   const [acceptedTerms, setAcceptedTerms] = useState(false);
@@ -181,15 +165,29 @@ export default function CheckoutForm({
 
       const apiTickets: { id: string; name: string }[] =
         eventJson.data.event?.ticketTypes || [];
-      const matchedTicket =
-        apiTickets.find((t) =>
-          t.name.toLowerCase().includes(ticketType.toLowerCase())
-        ) || apiTickets[0];
 
-      if (!matchedTicket) {
+      if (apiTickets.length === 0) {
         setMessage("No active ticket types available for this event.");
         return;
       }
+
+      const itemTotals = new Map<string, number>();
+      for (const selected of selectedItems) {
+        const matched =
+          apiTickets.find(
+            (t) =>
+              t.name.toLowerCase() === selected.name.toLowerCase() ||
+              t.name.toLowerCase().includes(selected.id.toLowerCase())
+          ) || apiTickets[0];
+        itemTotals.set(
+          matched.id,
+          (itemTotals.get(matched.id) || 0) + selected.quantity
+        );
+      }
+
+      const bookingItems = Array.from(itemTotals.entries()).map(
+        ([ticketTypeId, quantity]) => ({ ticketTypeId, quantity })
+      );
 
       const bookingRes = await fetch("/api/bookings", {
         method: "POST",
@@ -199,7 +197,7 @@ export default function CheckoutForm({
           customerName: billing.fullName.trim(),
           customerEmail: billing.email.trim(),
           customerPhone: billing.phone.trim(),
-          items: [{ ticketTypeId: matchedTicket.id, quantity }],
+          items: bookingItems,
         }),
       });
       const bookingJson = await bookingRes.json();
@@ -324,7 +322,7 @@ export default function CheckoutForm({
               </Link>
               <span>/</span>
               <Link
-                href={`/events/${eventId}/booking-summary?ticket=${ticketType}&quantity=${quantity}`}
+                href={`/events/${eventId}/booking-summary?${selectionQuery}`}
                 className="hover:text-[#D4AF6A]"
               >
                 Booking Summary
@@ -605,7 +603,7 @@ export default function CheckoutForm({
 
             <div className="flex flex-col-reverse justify-between gap-3 pt-1 sm:flex-row sm:items-center">
               <Link
-                href={`/events/${eventId}/booking-summary?ticket=${ticketType}&quantity=${quantity}`}
+                href={`/events/${eventId}/booking-summary?${selectionQuery}`}
                 className="text-xs text-white/45 transition hover:text-[#D4AF6A]"
               >
                 ← Back to Booking Summary
@@ -634,12 +632,16 @@ export default function CheckoutForm({
             <div className="my-4 border-t border-white/10" />
 
             <div className="space-y-3 text-sm">
-              <div className="flex justify-between gap-4">
-                <span className="text-white/50">Ticket Type</span>
-                <span className="text-right">{liveTicket.name}</span>
-              </div>
+              {selectedItems.map((item) => (
+                <div key={item.id} className="flex justify-between gap-4">
+                  <span className="text-white/60">
+                    {item.quantity} × {item.name}
+                  </span>
+                  <span>{formatPrice(item.price * item.quantity)}</span>
+                </div>
+              ))}
 
-              <div className="flex justify-between gap-4">
+              <div className="flex justify-between gap-4 border-t border-white/10 pt-2.5">
                 <span className="text-white/50">Checkout Mode</span>
                 <span className="text-right text-[#D4AF6A]">
                   {isGuest ? "Guest Checkout" : "Member Account"}
@@ -647,8 +649,8 @@ export default function CheckoutForm({
               </div>
 
               <div className="flex justify-between">
-                <span className="text-white/50">Quantity</span>
-                <span>{quantity}</span>
+                <span className="text-white/50">Total Passes</span>
+                <span>{totalQuantity}</span>
               </div>
 
               <div className="flex justify-between">
