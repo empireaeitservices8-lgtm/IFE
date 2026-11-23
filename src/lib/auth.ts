@@ -1,4 +1,5 @@
 import { cookies } from "next/headers";
+import { NextRequest } from "next/server";
 import { SignJWT, jwtVerify } from "jose";
 import bcrypt from "bcryptjs";
 import { prisma } from "@/lib/prisma";
@@ -120,23 +121,43 @@ export async function verifyPasswordResetToken(
   }
 }
 
-export async function setSessionCookie(token: string): Promise<void> {
+export function isHttpsRequest(req?: NextRequest): boolean {
+  if (!req) {
+    return process.env.NODE_ENV === "production";
+  }
+  const forwardedProto = req.headers
+    .get("x-forwarded-proto")
+    ?.split(",")[0]
+    ?.trim()
+    .toLowerCase();
+  if (forwardedProto) {
+    return forwardedProto === "https";
+  }
+  return req.nextUrl.protocol === "https:";
+}
+
+export async function setSessionCookie(
+  token: string,
+  secure = process.env.NODE_ENV === "production"
+): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure,
     path: "/",
     maxAge: SESSION_MAX_AGE_SECONDS,
   });
 }
 
-export async function clearSessionCookie(): Promise<void> {
+export async function clearSessionCookie(
+  secure = process.env.NODE_ENV === "production"
+): Promise<void> {
   const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, "", {
     httpOnly: true,
     sameSite: "lax",
-    secure: process.env.NODE_ENV === "production",
+    secure,
     path: "/",
     maxAge: 0,
   });

@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { loginSchema } from "@/lib/validations/auth";
 import { loginUser } from "@/services/auth.service";
-import { setSessionCookie } from "@/lib/auth";
+import { isHttpsRequest, setSessionCookie } from "@/lib/auth";
 import { handleApiError, ok } from "@/lib/utils/api-response";
 import { enforceRateLimit, getClientIp } from "@/lib/utils/rate-limit";
 
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const input = loginSchema.parse(body);
 
     const { user, token } = await loginUser(input, ip);
-    await setSessionCookie(token);
+    await setSessionCookie(token, isHttpsRequest(req));
 
     return ok({ user }, "Signed in successfully.");
   } catch (error) {

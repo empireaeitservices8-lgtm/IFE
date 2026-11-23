@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { registerSchema } from "@/lib/validations/auth";
 import { registerUser } from "@/services/auth.service";
-import { setSessionCookie } from "@/lib/auth";
+import { isHttpsRequest, setSessionCookie } from "@/lib/auth";
 import { created, handleApiError } from "@/lib/utils/api-response";
 import { enforceRateLimit, getClientIp } from "@/lib/utils/rate-limit";
 
@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     const input = registerSchema.parse(body);
 
     const { user, token } = await registerUser(input);
-    await setSessionCookie(token);
+    await setSessionCookie(token, isHttpsRequest(req));
 
     return created({ user }, "Account created successfully.");
   } catch (error) {

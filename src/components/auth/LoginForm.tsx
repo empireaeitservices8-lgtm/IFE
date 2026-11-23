@@ -166,9 +166,10 @@ export default function LoginForm() {
 
               <button
                 type="submit"
-                className="flex h-14 w-full items-center justify-center gap-3 bg-[#D4AF6A] text-sm font-semibold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5]"
+                disabled={loading}
+                className="flex h-14 w-full items-center justify-center gap-3 bg-[#D4AF6A] text-sm font-semibold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Sign In
+                {loading ? "Signing In..." : "Sign In"}
                 <ArrowRight size={18} />
               </button>
 
