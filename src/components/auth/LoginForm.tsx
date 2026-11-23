@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
+  FiAlertCircle,
   FiArrowRight,
   FiEye,
   FiEyeOff,
@@ -11,31 +12,56 @@ import {
   FiMail,
 } from "react-icons/fi";
 
+const REMEMBERED_CUSTOMER_EMAIL_KEY = "ife_customer_remembered_email";
+
+function getSafeRedirectParam(): string | null {
+  if (typeof window === "undefined") return null;
+  const param = new URLSearchParams(window.location.search).get("redirect");
+  if (param && param.startsWith("/") && !param.startsWith("//")) {
+    return param;
+  }
+  return null;
+}
+
+function getPostLoginTarget(role?: string): string {
+  const explicitRedirect = getSafeRedirectParam();
+  if (explicitRedirect) return explicitRedirect;
+  if (role === "ADMIN" || role === "STAFF") {
+    return "/admin/dashboard";
+  }
+  return "/dashboard";
+}
+
 export default function LoginForm() {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(() => {
+    if (typeof window === "undefined") return "";
+    return window.localStorage.getItem(REMEMBERED_CUSTOMER_EMAIL_KEY) || "";
+  });
+  const [rememberMe, setRememberMe] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return Boolean(window.localStorage.getItem(REMEMBERED_CUSTOMER_EMAIL_KEY));
+  });
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const getRedirectTarget = () => {
-    if (typeof window === "undefined") return "/dashboard";
-    const param = new URLSearchParams(window.location.search).get("redirect");
-    if (param && param.startsWith("/") && !param.startsWith("//")) {
-      return param;
-    }
-    return "/dashboard";
-  };
+  const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
     let active = true;
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((json) => {
-        if (!active || !json.success || !json.data?.user) return;
-        window.location.assign(getRedirectTarget());
+        if (!active) return;
+        if (json.success && json.data?.user) {
+          window.location.assign(getPostLoginTarget(json.data.user.role));
+          return;
+        }
+        setCheckingSession(false);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (active) setCheckingSession(false);
+      });
     return () => {
       active = false;
     };
@@ -63,13 +89,33 @@ export default function LoginForm() {
         setMessage(json.message || "Invalid email or password.");
         return;
       }
-      window.location.assign(getRedirectTarget());
+
+      if (rememberMe) {
+        window.localStorage.setItem(REMEMBERED_CUSTOMER_EMAIL_KEY, trimmedEmail);
+      } else {
+        window.localStorage.removeItem(REMEMBERED_CUSTOMER_EMAIL_KEY);
+      }
+
+      window.location.assign(getPostLoginTarget(json.data?.user?.role));
     } catch {
       setMessage("Unable to connect to authentication server.");
     } finally {
       setLoading(false);
     }
   };
+
+  if (checkingSession) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#080808] px-4 text-white">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[#D4AF6A]/30 border-t-[#D4AF6A]" />
+          <p className="text-xs uppercase tracking-[0.28em] text-[#D4AF6A]">
+            Checking session...
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#080808] px-4 py-16 text-white sm:px-6">
@@ -93,7 +139,7 @@ export default function LoginForm() {
             <p className="mb-5 text-xs uppercase tracking-[0.3em] text-[#D4AF6A]">
               Your world of experiences
             </p>
-            <h1 className="font-serif text-5xl leading-tight">
+            <h1 className="font-[var(--font-playfair)] text-5xl leading-tight">
               Be part of
               <span className="block italic text-[#D4AF6A]">
                 extraordinary
@@ -118,7 +164,7 @@ export default function LoginForm() {
               <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#D4AF6A]">
                 Welcome Back
               </p>
-              <h2 className="font-serif text-4xl">Sign In</h2>
+              <h2 className="font-[var(--font-playfair)] text-4xl">Sign In</h2>
               <p className="mt-3 text-sm leading-6 text-gray-400">
                 Sign in to manage your event bookings and tickets.
               </p>
@@ -202,6 +248,16 @@ export default function LoginForm() {
                 </div>
               </div>
 
+              <label className="flex cursor-pointer items-center gap-2.5 text-xs text-gray-400 select-none hover:text-gray-200">
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="h-4 w-4 rounded border-white/20 bg-[#080808] accent-[#D4AF6A]"
+                />
+                Remember my email on this device
+              </label>
+
               <button
                 type="submit"
                 disabled={loading}
@@ -212,12 +268,13 @@ export default function LoginForm() {
               </button>
 
               {message && (
-                <p
+                <div
                   role="alert"
-                  className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm leading-6 text-red-300"
+                  className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm leading-6 text-red-300"
                 >
-                  {message}
-                </p>
+                  <FiAlertCircle size={18} className="mt-0.5 shrink-0 text-red-400" />
+                  <span>{message}</span>
+                </div>
               )}
             </form>
 
