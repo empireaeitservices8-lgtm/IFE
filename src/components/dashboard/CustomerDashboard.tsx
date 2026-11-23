@@ -155,27 +155,19 @@ export default function CustomerDashboard() {
 
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
 
-        {/* Demo Notice */}
-        <div className="mb-8 border border-amber-500/30 bg-amber-500/5 p-4">
-          <p className="text-sm leading-6 text-amber-300">
-            Demo dashboard: Account information and booking
-            statistics below are sample data. Live customer
-            records will be loaded after backend authentication
-            and database integration.
-          </p>
-        </div>
-
         {/* Statistics */}
         <section className="mb-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
               title: "Total Bookings",
-              value: "02",
+              value: String(bookings.length).padStart(2, "0"),
               icon: CalendarDays,
             },
             {
-              title: "Upcoming Events",
-              value: "02",
+              title: "Confirmed Events",
+              value: String(
+                bookings.filter((b) => b.status === "CONFIRMED").length
+              ).padStart(2, "0"),
               icon: Clock,
             },
             {
@@ -411,13 +403,17 @@ export default function CustomerDashboard() {
             </div>
 
             {/* Sign Out */}
-            <Link
-              href="/login"
-              className="flex items-center justify-center gap-2 border border-white/15 py-4 text-sm text-gray-400 transition hover:border-red-400/50 hover:text-red-400"
+            <button
+              type="button"
+              onClick={async () => {
+                await fetch("/api/auth/logout", { method: "POST" });
+                window.location.assign("/login");
+              }}
+              className="flex w-full items-center justify-center gap-2 border border-white/15 py-4 text-sm text-gray-400 transition hover:border-red-400/50 hover:text-red-400"
             >
               <LogOut size={17} />
               Sign Out
-            </Link>
+            </button>
           </aside>
         </div>
 

@@ -34,28 +34,35 @@ export default function BookingConfirmation({
   eventDate,
   venue,
 }: Props) {
-  const [attendees, setAttendees] = useState<Attendee[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
+  const [attendees] = useState<Attendee[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
-      const stored = sessionStorage.getItem(
-        `ife-attendees-${eventId}`
-      );
-
+      const stored = sessionStorage.getItem(`ife-attendees-${eventId}`);
       if (stored) {
         const parsed = JSON.parse(stored);
-
-        if (Array.isArray(parsed)) {
-          setAttendees(parsed);
-        }
+        if (Array.isArray(parsed)) return parsed as Attendee[];
       }
-    } catch (error) {
-      console.error("Unable to load attendee details:", error);
-    } finally {
-      setLoaded(true);
+    } catch {}
+    return [];
+  });
+  const loaded = true;
+  const [bookingCode] = useState<string>(() => {
+    if (typeof window === "undefined") {
+      return `IFE-${eventId.slice(0, 6).toUpperCase()}`;
     }
-  }, [eventId]);
+    const fromQuery = new URLSearchParams(window.location.search).get(
+      "bookingCode"
+    );
+    if (fromQuery) return fromQuery;
+    try {
+      const saved = sessionStorage.getItem(`ife-booking-${eventId}`);
+      if (saved) {
+        const parsed = JSON.parse(saved) as { bookingCode?: string };
+        if (parsed.bookingCode) return parsed.bookingCode;
+      }
+    } catch {}
+    return `IFE-${eventId.slice(0, 6).toUpperCase()}`;
+  });
 
   return (
     <main className="min-h-screen bg-[#080808] px-4 py-16 text-white sm:px-6">
@@ -108,15 +115,15 @@ export default function BookingConfirmation({
         {/* Booking Reference */}
         <section className="mb-8 rounded-xl border border-[#D4AF6A]/30 bg-[#111111] p-6 text-center sm:p-8">
           <p className="mb-2 text-xs uppercase tracking-[0.25em] text-gray-500">
-            Demo Reference
+            Booking Reference
           </p>
 
           <h2 className="font-serif text-2xl tracking-wider text-[#D4AF6A]">
-            IFE-DEMO-{eventId.padStart(3, "0")}
+            {bookingCode}
           </h2>
 
           <p className="mt-3 text-xs text-gray-500">
-            Not a valid ticket or payment reference
+            Present this reference at venue check-in
           </p>
         </section>
 

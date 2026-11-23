@@ -1,37 +1,69 @@
 
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { Eye, EyeOff, LockKeyhole, Mail, ArrowRight } from "lucide-react";
+import {
+  FiArrowRight,
+  FiEye,
+  FiEyeOff,
+  FiLock,
+  FiMail,
+} from "react-icons/fi";
 
 export default function LoginForm() {
-  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const getRedirectTarget = () => {
+    if (typeof window === "undefined") return "/dashboard";
+    const param = new URLSearchParams(window.location.search).get("redirect");
+    if (param && param.startsWith("/") && !param.startsWith("//")) {
+      return param;
+    }
+    return "/dashboard";
+  };
+
+  useEffect(() => {
+    let active = true;
+    fetch("/api/auth/me")
+      .then((res) => res.json())
+      .then((json) => {
+        if (!active || !json.success || !json.data?.user) return;
+        window.location.assign(getRedirectTarget());
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setMessage("");
+
+    const trimmedEmail = email.trim().toLowerCase();
+    if (!trimmedEmail || !password) {
+      setMessage("Please enter both your email address and password.");
+      return;
+    }
 
     try {
       setLoading(true);
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email: trimmedEmail, password }),
       });
       const json = await res.json();
       if (!res.ok || !json.success) {
         setMessage(json.message || "Invalid email or password.");
         return;
       }
-      router.push("/dashboard");
-      router.refresh();
+      window.location.assign(getRedirectTarget());
     } catch {
       setMessage("Unable to connect to authentication server.");
     } finally {
@@ -102,7 +134,7 @@ export default function LoginForm() {
                 </label>
 
                 <div className="flex items-center gap-3 border border-white/15 bg-[#080808] px-4 transition focus-within:border-[#D4AF6A]">
-                  <Mail size={18} className="text-[#D4AF6A]" />
+                  <FiMail size={18} className="text-[#D4AF6A]" />
                   <input
                     id="email"
                     type="email"
@@ -110,7 +142,10 @@ export default function LoginForm() {
                     autoComplete="email"
                     placeholder="Enter your email"
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => {
+                      setEmail(e.target.value);
+                      if (message) setMessage("");
+                    }}
                     className="h-14 w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-600"
                   />
                 </div>
@@ -134,7 +169,7 @@ export default function LoginForm() {
                 </div>
 
                 <div className="flex items-center gap-3 border border-white/15 bg-[#080808] px-4 transition focus-within:border-[#D4AF6A]">
-                  <LockKeyhole size={18} className="text-[#D4AF6A]" />
+                  <FiLock size={18} className="text-[#D4AF6A]" />
 
                   <input
                     id="password"
@@ -143,7 +178,10 @@ export default function LoginForm() {
                     autoComplete="current-password"
                     placeholder="Enter your password"
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      if (message) setMessage("");
+                    }}
                     className="h-14 w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-600"
                   />
 
@@ -156,9 +194,9 @@ export default function LoginForm() {
                     className="text-gray-500 transition hover:text-[#D4AF6A]"
                   >
                     {showPassword ? (
-                      <EyeOff size={19} />
+                      <FiEyeOff size={19} />
                     ) : (
-                      <Eye size={19} />
+                      <FiEye size={19} />
                     )}
                   </button>
                 </div>
@@ -170,13 +208,13 @@ export default function LoginForm() {
                 className="flex h-14 w-full items-center justify-center gap-3 bg-[#D4AF6A] text-sm font-semibold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? "Signing In..." : "Sign In"}
-                <ArrowRight size={18} />
+                <FiArrowRight size={18} />
               </button>
 
               {message && (
                 <p
-                  role="status"
-                  className="rounded-lg border border-amber-500/30 bg-amber-500/5 p-3 text-sm leading-6 text-amber-300"
+                  role="alert"
+                  className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm leading-6 text-red-300"
                 >
                   {message}
                 </p>

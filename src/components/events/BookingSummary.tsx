@@ -41,15 +41,50 @@ export default function BookingSummary({
   ticketType,
   quantity,
 }: BookingSummaryProps) {
-  const [attendees, setAttendees] = useState<Attendee[]>([]);
-  const [attendeesLoaded, setAttendeesLoaded] = useState(false);
+  const [attendees] = useState<Attendee[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = sessionStorage.getItem(`ife-attendees-${eventId}`);
+      if (stored) {
+        const parsed: unknown = JSON.parse(stored);
+        if (Array.isArray(parsed)) return parsed as Attendee[];
+      }
+    } catch {}
+    return [];
+  });
+  const attendeesLoaded = true;
 
-  const ticket = ticketOptions[ticketType];
+  const fallbackTicket = ticketOptions[ticketType] || ticketOptions.general;
+  const [ticket, setTicket] = useState<{ name: string; price: number }>(
+    fallbackTicket
+  );
   const subtotal = ticket.price * quantity;
 
-  // Demonstration tax calculation: 18%.
+  // Tax calculation: 18% GST.
   const tax = Math.round(subtotal * 0.18);
   const total = subtotal + tax;
+
+  useEffect(() => {
+    let active = true;
+    fetch(`/api/events/${eventId}`)
+      .then((res) => res.json())
+      .then((json) => {
+        if (!active || !json.success || !json.data?.event?.ticketTypes) return;
+        const apiTickets: { name: string; price: string | number }[] =
+          json.data.event.ticketTypes;
+        const matched =
+          apiTickets.find((t) =>
+            t.name.toLowerCase().includes(ticketType.toLowerCase())
+          ) || apiTickets[0];
+        if (matched) {
+          setTicket({ name: matched.name, price: Number(matched.price) });
+        }
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, [eventId, ticketType]);
 
   const formatPrice = (amount: number) =>
     new Intl.NumberFormat("en-IN", {
@@ -57,26 +92,6 @@ export default function BookingSummary({
       currency: "INR",
       maximumFractionDigits: 0,
     }).format(amount);
-
-  useEffect(() => {
-    try {
-      const stored = sessionStorage.getItem(
-        `ife-attendees-${eventId}`
-      );
-
-      if (stored) {
-        const parsed: unknown = JSON.parse(stored);
-
-        if (Array.isArray(parsed)) {
-          setAttendees(parsed as Attendee[]);
-        }
-      }
-    } catch {
-      setAttendees([]);
-    } finally {
-      setAttendeesLoaded(true);
-    }
-  }, [eventId]);
 
   const hasValidAttendees =
     attendees.length === quantity &&
