@@ -26,9 +26,10 @@ const ticketOptions: Record<
   string,
   { name: string; price: number }
 > = {
-  general: { name: "General Admission", price: 499 },
-  premium: { name: "Premium Access", price: 999 },
-  vip: { name: "VIP Experience", price: 1999 },
+  single: { name: "Single Entry", price: 1499 },
+  couple: { name: "Couple Entry", price: 2699 },
+  group5: { name: "Group of 5", price: 6999 },
+  vip: { name: "VIP Pass", price: 3499 },
 };
 
 export default function CheckoutForm({
@@ -38,7 +39,7 @@ export default function CheckoutForm({
   quantity,
 }: CheckoutFormProps) {
   const router = useRouter();
-  const fallbackTicket = ticketOptions[ticketType] || ticketOptions.general;
+  const fallbackTicket = ticketOptions[ticketType] || ticketOptions.single;
   const [liveTicket, setLiveTicket] = useState<{ name: string; price: number }>(
     fallbackTicket
   );
@@ -104,10 +105,12 @@ export default function CheckoutForm({
         if (!active || !json.success || !json.data?.event?.ticketTypes) return;
         const apiTickets: { name: string; price: string | number }[] =
           json.data.event.ticketTypes;
-        const matched =
-          apiTickets.find((t) =>
+        const targetName = (ticketOptions[ticketType]?.name || ticketType).toLowerCase();
+        const matched = apiTickets.find(
+          (t) =>
+            t.name.toLowerCase() === targetName ||
             t.name.toLowerCase().includes(ticketType.toLowerCase())
-          ) || apiTickets[0];
+        );
         if (matched) {
           setLiveTicket({ name: matched.name, price: Number(matched.price) });
         }

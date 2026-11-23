@@ -1,7 +1,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, ArrowUpRight, Sparkles } from "lucide-react";
+import { FiArrowRight, FiArrowUpRight } from "react-icons/fi";
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -91,7 +91,7 @@ export default function Home() {
                 className="mt-8 inline-flex items-center gap-3 border-b border-[#D4AF6A] pb-3 text-xs font-semibold uppercase tracking-[2px] text-[#D4AF6A] hover:text-[#F5E5B5]"
               >
                 Discover Our Story
-                <ArrowRight size={16} />
+                <FiArrowRight size={16} />
               </Link>
             </div>
 
@@ -133,7 +133,7 @@ export default function Home() {
                 className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[2px] text-[#D4AF6A] hover:text-[#F5E5B5]"
               >
                 View All Events
-                <ArrowUpRight size={17} />
+                <FiArrowUpRight size={17} />
               </Link>
             </div>
 
@@ -191,7 +191,7 @@ export default function Home() {
 
                     <div className="mt-7 flex items-center gap-3 text-xs uppercase tracking-[2px] text-[#D4AF6A]">
                       Explore More
-                      <ArrowUpRight size={16} />
+                      <FiArrowUpRight size={16} />
                     </div>
                   </div>
                 </Link>
@@ -202,7 +202,7 @@ export default function Home() {
         </section>
 
         {/* EXPERIENCE BANNER */}
-        <section className="relative overflow-hidden bg-[#080808] py-32">
+        <section className="relative overflow-hidden bg-[#080808] py-20">
           <div
             className="absolute inset-0 bg-cover bg-center opacity-30"
             style={{
@@ -214,9 +214,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-black/65" />
 
           <div className="container-main relative z-10 text-center">
-            <Sparkles className="mx-auto mb-7 text-[#D4AF6A]" size={30} />
-
-            <p className="mb-6 text-xs uppercase tracking-[5px] text-[#D4AF6A]">
+            <p className="mb-4 text-xs uppercase tracking-[5px] text-[#D4AF6A]">
               More Than Just Events
             </p>
 
@@ -224,23 +222,23 @@ export default function Home() {
               Experience The Extraordinary.
             </h2>
 
-            <p className="mx-auto mt-7 max-w-xl text-sm leading-7 text-white/60">
+            <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/60">
               Be part of unforgettable moments. Discover new experiences
               and explore the world of IFE.
             </p>
 
             <Link
               href="/events"
-              className="mt-10 inline-flex items-center gap-3 bg-[#D4AF6A] px-9 py-4 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
+              className="mt-8 inline-flex items-center gap-3 bg-[#D4AF6A] px-9 py-4 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
             >
               Explore Events
-              <ArrowRight size={17} />
+              <FiArrowRight size={17} />
             </Link>
           </div>
         </section>
 
         {/* NEWSLETTER */}
-        <section className="bg-[#111111] py-24">
+        <section className="bg-[#111111] py-16">
           <div className="container-main text-center">
             <SectionHeading
               eyebrow="Stay Connected"
@@ -249,7 +247,7 @@ export default function Home() {
               centered
             />
 
-            <form className="mx-auto mt-10 flex max-w-xl flex-col gap-3 sm:flex-row">
+            <form className="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
               <input
                 type="email"
                 placeholder="Enter your email address"

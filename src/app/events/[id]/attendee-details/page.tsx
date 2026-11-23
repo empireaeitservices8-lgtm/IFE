@@ -41,8 +41,8 @@ export default async function AttendeeDetailsPage({
     notFound();
   }
 
-  const ticketType = query.ticket || "premium";
-  const allowedTickets = ["general", "premium", "vip"];
+  const ticketType = query.ticket || "single";
+  const allowedTickets = ["single", "couple", "group5", "vip"];
 
   if (!allowedTickets.includes(ticketType)) {
     redirect(`/events/${id}/tickets`);

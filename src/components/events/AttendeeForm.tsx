@@ -19,9 +19,10 @@ type AttendeeFormProps = {
 };
 
 const ticketNames: Record<string, string> = {
-  general: "General Admission",
-  premium: "Premium Access",
-  vip: "VIP Experience",
+  single: "Single Entry",
+  couple: "Couple Entry",
+  group5: "Group of 5",
+  vip: "VIP Pass",
 };
 
 export default function AttendeeForm({
@@ -99,75 +100,64 @@ export default function AttendeeForm({
   const ticketName = ticketNames[ticketType] || "Selected Ticket";
 
   return (
-    <section className="min-h-screen bg-[#050505] px-5 py-16 text-white md:px-10">
-      <div className="mx-auto max-w-7xl">
+    <section className="min-h-[calc(100vh-5rem)] bg-[#050505] px-5 py-6 text-white md:px-10">
+      <div className="mx-auto max-w-6xl">
+        {/* Breadcrumb + Heading */}
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
+          <div>
+            <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-white/45">
+              <Link href="/events" className="hover:text-[#D4AF6A]">
+                Events
+              </Link>
+              <span>/</span>
+              <Link
+                href={`/events/${eventId}`}
+                className="hover:text-[#D4AF6A]"
+              >
+                {eventTitle}
+              </Link>
+              <span>/</span>
+              <span className="text-[#D4AF6A]">Attendee Details</span>
+            </div>
 
-        {/* Breadcrumb */}
-        <div className="mb-10 flex flex-wrap items-center gap-3 text-sm text-white/40">
-          <Link href="/events" className="hover:text-[#D4AF6A]">
-            Events
-          </Link>
-          <span>/</span>
-          <Link
-            href={`/events/${eventId}`}
-            className="hover:text-[#D4AF6A]"
-          >
-            Event Details
-          </Link>
-          <span>/</span>
-          <span className="text-[#D4AF6A]">
-            Attendee Details
+            <h1 className="font-[var(--font-playfair)] text-3xl md:text-4xl">
+              Attendee <span className="text-[#D4AF6A]">Details</span>
+            </h1>
+          </div>
+
+          <span className="text-[11px] uppercase tracking-[0.2em] text-white/40">
+            Step 02 / Attendees
           </span>
         </div>
 
-        {/* Heading */}
-        <div className="mb-12">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-[#D4AF6A]">
-            Almost There
-          </p>
-
-          <h1 className="font-serif text-4xl md:text-6xl">
-            Attendee <span className="text-[#D4AF6A]">Details</span>
-          </h1>
-
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-white/50 md:text-base">
-            Please provide the details of each attendee.
-            Make sure the information is accurate before continuing.
-          </p>
-        </div>
-
-        <div className="grid gap-10 lg:grid-cols-[1fr_360px]">
-
+        <div className="grid gap-6 lg:grid-cols-[1fr_330px]">
           {/* Attendee Form */}
-          <form onSubmit={handleSubmit} className="space-y-7">
-
+          <form onSubmit={handleSubmit} className="space-y-4">
             {attendees.map((attendee, index) => (
               <div
                 key={index}
-                className="border border-white/10 bg-[#111111] p-6 md:p-9"
+                className="border border-white/10 bg-[#111111] p-5 md:p-6"
               >
-                <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-5">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.25em] text-[#D4AF6A]">
+                <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#D4AF6A]">
                       Attendee {String(index + 1).padStart(2, "0")}
-                    </p>
-                    <h2 className="mt-2 font-serif text-2xl">
+                    </span>
+                    <span className="text-white/20">•</span>
+                    <h2 className="font-[var(--font-playfair)] text-lg">
                       Personal Information
                     </h2>
                   </div>
 
-                  <span className="text-xs text-white/30">
-                    {ticketName}
-                  </span>
+                  <span className="text-xs text-white/40">{ticketName}</span>
                 </div>
 
-                <div className="space-y-6">
-
+                <div className="grid gap-4 sm:grid-cols-2">
                   {/* Full Name */}
-                  <div>
+                  <div className="sm:col-span-2">
                     <label
                       htmlFor={`name-${index}`}
-                      className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                      className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                     >
                       Full Name *
                     </label>
@@ -183,7 +173,7 @@ export default function AttendeeForm({
                       autoComplete="name"
                       required
                       maxLength={100}
-                      className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                      className="w-full border border-white/10 bg-[#080808] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                     />
                   </div>
 
@@ -191,7 +181,7 @@ export default function AttendeeForm({
                   <div>
                     <label
                       htmlFor={`email-${index}`}
-                      className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                      className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                     >
                       Email Address *
                     </label>
@@ -207,7 +197,7 @@ export default function AttendeeForm({
                       autoComplete="email"
                       required
                       maxLength={254}
-                      className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                      className="w-full border border-white/10 bg-[#080808] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                     />
                   </div>
 
@@ -215,7 +205,7 @@ export default function AttendeeForm({
                   <div>
                     <label
                       htmlFor={`phone-${index}`}
-                      className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                      className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                     >
                       Mobile Number *
                     </label>
@@ -231,10 +221,9 @@ export default function AttendeeForm({
                       autoComplete="tel"
                       required
                       maxLength={15}
-                      className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                      className="w-full border border-white/10 bg-[#080808] px-4 py-3 text-sm text-white outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                     />
                   </div>
-
                 </div>
               </div>
             ))}
@@ -242,23 +231,23 @@ export default function AttendeeForm({
             {error && (
               <p
                 role="alert"
-                className="border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300"
+                className="border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-300"
               >
                 {error}
               </p>
             )}
 
-            <div className="flex flex-col justify-between gap-5 pt-3 sm:flex-row sm:items-center">
+            <div className="flex flex-col-reverse justify-between gap-3 pt-1 sm:flex-row sm:items-center">
               <Link
                 href={`/events/${eventId}/tickets`}
-                className="text-sm text-white/50 transition hover:text-[#D4AF6A]"
+                className="text-xs text-white/50 transition hover:text-[#D4AF6A]"
               >
                 ← Back to Ticket Selection
               </Link>
 
               <button
                 type="submit"
-                className="bg-[#D4AF6A] px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5]"
+                className="bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5]"
               >
                 Continue to Booking Summary →
               </button>
@@ -266,25 +255,25 @@ export default function AttendeeForm({
           </form>
 
           {/* Summary Sidebar */}
-          <aside className="h-fit border border-white/10 bg-[#111111] p-7 lg:sticky lg:top-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#D4AF6A]">
+          <aside className="h-fit border border-white/10 bg-[#111111] p-5 lg:sticky lg:top-24">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#D4AF6A]">
               Your Booking
             </p>
 
-            <h2 className="mt-5 font-serif text-2xl leading-snug">
+            <h2 className="mt-2 font-[var(--font-playfair)] text-xl leading-snug">
               {eventTitle}
             </h2>
 
-            <div className="my-7 border-t border-white/10" />
+            <div className="my-4 border-t border-white/10" />
 
-            <div className="space-y-5 text-sm">
+            <div className="space-y-3 text-sm">
               <div className="flex justify-between gap-4">
                 <span className="text-white/45">Ticket Type</span>
                 <span className="text-right">{ticketName}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-white/45">Number of Tickets</span>
+                <span className="text-white/45">Number of Passes</span>
                 <span>{quantity}</span>
               </div>
 
@@ -294,20 +283,17 @@ export default function AttendeeForm({
               </div>
             </div>
 
-            <div className="my-7 border-t border-white/10" />
+            <div className="my-4 border-t border-white/10" />
 
-            <div className="flex items-center gap-3">
-              <span className="text-[#D4AF6A]">✓</span>
-              <p className="text-xs text-white/45">
-                Attendee information is required for booking.
-              </p>
-            </div>
-
-            <div className="mt-5 flex items-center gap-3">
-              <span className="text-[#D4AF6A]">✓</span>
-              <p className="text-xs text-white/45">
-                Review your details before payment.
-              </p>
+            <div className="space-y-2 text-xs text-white/45">
+              <div className="flex items-center gap-2">
+                <span className="text-[#D4AF6A]">✓</span>
+                <p>Attendee info is used for pass generation.</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#D4AF6A]">✓</span>
+                <p>Review details before payment.</p>
+              </div>
             </div>
           </aside>
         </div>

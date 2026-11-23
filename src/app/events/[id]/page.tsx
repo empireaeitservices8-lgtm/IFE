@@ -1,177 +1,20 @@
-
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import {
+  FiArrowLeft,
+  FiArrowRight,
+  FiCalendar,
+  FiCheck,
+  FiClock,
+  FiMapPin,
+  FiTag,
+} from "react-icons/fi";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { getEventByIdOrSlug } from "@/services/event.service";
 
 export const dynamic = "force-dynamic";
-
-const events = [
-  {
-    id: "1",
-    title: "The IFE Fashion Showcase",
-    category: "Fashion",
-    date: "Coming Soon",
-    time: "To Be Announced",
-    location: "Location to be announced",
-    price: "Coming Soon",
-    image:
-      "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=85&w=1800",
-    description:
-      "An inspiring celebration of fashion, design and creative expression.",
-    fullDescription:
-      "The IFE Fashion Showcase is envisioned as a celebration of creativity, individuality and contemporary fashion. Bringing together designers, models, creative professionals and fashion enthusiasts, this experience aims to showcase unique perspectives and inspiring runway moments.",
-    highlights: [
-      "Fashion runway presentations",
-      "Designer and creative showcases",
-      "Fashion and style experiences",
-      "Networking opportunities",
-    ],
-    schedule: [
-      { time: "To Be Announced", title: "Guest Registration" },
-      { time: "To Be Announced", title: "Opening Ceremony" },
-      { time: "To Be Announced", title: "Fashion Showcase" },
-      { time: "To Be Announced", title: "Closing Ceremony" },
-    ],
-  },
-  {
-    id: "2",
-    title: "Live Beyond",
-    category: "Entertainment",
-    date: "Coming Soon",
-    time: "To Be Announced",
-    location: "Location to be announced",
-    price: "Coming Soon",
-    image:
-      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=85&w=1800",
-    description:
-      "A live entertainment experience bringing music and audiences together.",
-    fullDescription:
-      "Live Beyond is an entertainment experience designed to bring audiences together through music, performances and unforgettable moments. Discover a vibrant atmosphere where creativity and entertainment come alive.",
-    highlights: [
-      "Live music performances",
-      "Entertainment showcases",
-      "Audience experiences",
-      "Special stage presentations",
-    ],
-    schedule: [
-      { time: "To Be Announced", title: "Guest Registration" },
-      { time: "To Be Announced", title: "Opening Performance" },
-      { time: "To Be Announced", title: "Live Entertainment" },
-      { time: "To Be Announced", title: "Closing Performance" },
-    ],
-  },
-  {
-    id: "3",
-    title: "Excellence Awards",
-    category: "Awards",
-    date: "Coming Soon",
-    time: "To Be Announced",
-    location: "Location to be announced",
-    price: "Coming Soon",
-    image:
-      "https://images.unsplash.com/photo-1503095396549-807759245b35?q=85&w=1800",
-    description:
-      "A celebration recognising creativity, talent and outstanding achievement.",
-    fullDescription:
-      "The Excellence Awards is envisioned as a prestigious celebration of talent, creativity and achievement. The event aims to recognise individuals and contributions that inspire excellence across creative and entertainment communities.",
-    highlights: [
-      "Award presentations",
-      "Special guest appearances",
-      "Celebration of creative talent",
-      "Exclusive event experience",
-    ],
-    schedule: [
-      { time: "To Be Announced", title: "Guest Registration" },
-      { time: "To Be Announced", title: "Opening Ceremony" },
-      { time: "To Be Announced", title: "Award Presentations" },
-      { time: "To Be Announced", title: "Closing Ceremony" },
-    ],
-  },
-  {
-    id: "4",
-    title: "Runway Stories",
-    category: "Fashion",
-    date: "Coming Soon",
-    time: "To Be Announced",
-    location: "Location to be announced",
-    price: "Coming Soon",
-    image:
-      "https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=85&w=1800",
-    description:
-      "A creative runway experience celebrating style and individuality.",
-    fullDescription:
-      "Runway Stories celebrates the art of fashion through creative presentations, individual style and contemporary design. It is an opportunity to experience the creativity and expression behind the fashion industry.",
-    highlights: [
-      "Contemporary fashion presentations",
-      "Creative designer showcases",
-      "Runway experiences",
-      "Fashion community connections",
-    ],
-    schedule: [
-      { time: "To Be Announced", title: "Guest Registration" },
-      { time: "To Be Announced", title: "Opening Presentation" },
-      { time: "To Be Announced", title: "Runway Showcase" },
-      { time: "To Be Announced", title: "Closing Presentation" },
-    ],
-  },
-  {
-    id: "5",
-    title: "The Grand Celebration",
-    category: "Entertainment",
-    date: "Coming Soon",
-    time: "To Be Announced",
-    location: "Location to be announced",
-    price: "Coming Soon",
-    image:
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=85&w=1800",
-    description:
-      "An immersive celebration filled with entertainment and memorable moments.",
-    fullDescription:
-      "The Grand Celebration is designed as an immersive event experience bringing people together through entertainment, creativity and celebration. Discover an atmosphere created for connection and memorable moments.",
-    highlights: [
-      "Special entertainment performances",
-      "Immersive event atmosphere",
-      "Audience engagement",
-      "Memorable celebration experiences",
-    ],
-    schedule: [
-      { time: "To Be Announced", title: "Guest Registration" },
-      { time: "To Be Announced", title: "Welcome Ceremony" },
-      { time: "To Be Announced", title: "Main Celebration" },
-      { time: "To Be Announced", title: "Closing Ceremony" },
-    ],
-  },
-  {
-    id: "6",
-    title: "Creative Icons",
-    category: "Awards",
-    date: "Coming Soon",
-    time: "To Be Announced",
-    location: "Location to be announced",
-    price: "Coming Soon",
-    image:
-      "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=1800",
-    description:
-      "Honouring creative voices and contributions across the entertainment world.",
-    fullDescription:
-      "Creative Icons is envisioned as a platform celebrating inspiring creative voices and outstanding contributions. The experience brings together talent, creativity and recognition in an elegant event setting.",
-    highlights: [
-      "Creative recognition",
-      "Special presentations",
-      "Industry networking",
-      "Celebration of talent",
-    ],
-    schedule: [
-      { time: "To Be Announced", title: "Guest Registration" },
-      { time: "To Be Announced", title: "Welcome Ceremony" },
-      { time: "To Be Announced", title: "Recognition Presentations" },
-      { time: "To Be Announced", title: "Closing Ceremony" },
-    ],
-  },
-];
 
 type EventView = {
   id: string;
@@ -199,6 +42,13 @@ const fallbackImages: Record<string, string> = {
     "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=1800",
 };
 
+const quickPasses = [
+  { id: "single", name: "Single Entry", price: "₹1,499", tag: "1 Guest" },
+  { id: "couple", name: "Couple Entry", price: "₹2,699", tag: "2 Guests" },
+  { id: "group5", name: "Group of 5", price: "₹6,999", tag: "5 Guests" },
+  { id: "vip", name: "VIP Pass", price: "₹3,499", tag: "VIP Lounge" },
+];
+
 type PageProps = {
   params: Promise<{ id: string }>;
 };
@@ -206,8 +56,6 @@ type PageProps = {
 async function getEvent(id: string): Promise<EventView | undefined> {
   try {
     const dbEvent = await getEventByIdOrSlug(id, false);
-    const prices = dbEvent.ticketTypes.map((t) => Number(t.price));
-    const minPrice = prices.length > 0 ? Math.min(...prices) : null;
 
     return {
       id: dbEvent.id,
@@ -216,7 +64,7 @@ async function getEvent(id: string): Promise<EventView | undefined> {
         dbEvent.category.charAt(0) + dbEvent.category.slice(1).toLowerCase(),
       date: new Date(dbEvent.startAt).toLocaleDateString("en-IN", {
         day: "2-digit",
-        month: "long",
+        month: "short",
         year: "numeric",
       }),
       time: `${new Date(dbEvent.startAt).toLocaleTimeString("en-IN", {
@@ -229,10 +77,7 @@ async function getEvent(id: string): Promise<EventView | undefined> {
       location: dbEvent.venue
         ? `${dbEvent.venue.name}, ${dbEvent.venue.city}`
         : "Venue to be announced",
-      price:
-        minPrice !== null
-          ? `From ₹${minPrice.toLocaleString("en-IN")}`
-          : "Coming Soon",
+      price: "From ₹1,499",
       image:
         dbEvent.bannerUrl ||
         fallbackImages[dbEvent.category] ||
@@ -285,152 +130,126 @@ export default async function EventDetailsPage({ params }: PageProps) {
     <>
       <Header />
 
-      <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
-
-        {/* COMPACT EVENT HERO */}
+      <main className="min-h-screen bg-[#050505] text-white">
+        {/* SLIM EVENT HERO */}
         <section
-          className="relative flex min-h-[380px] items-end bg-cover bg-center"
+          className="relative border-b border-white/10 bg-cover bg-center pb-8 pt-24"
           style={{
-            backgroundImage: `linear-gradient(90deg, rgba(0,0,0,0.92), rgba(0,0,0,0.45)), linear-gradient(0deg, #050505, transparent 75%), url('${event.image}')`,
+            backgroundImage: `linear-gradient(90deg, rgba(5,5,5,0.95), rgba(5,5,5,0.7)), linear-gradient(0deg, #050505, transparent 80%), url('${event.image}')`,
           }}
         >
-          <div className="container-main relative z-10 pb-10 pt-28">
-            <Link
-              href="/events"
-              className="mb-5 inline-flex items-center gap-2 text-xs uppercase tracking-[2px] text-white/60 transition hover:text-[#D4AF6A]"
-            >
-              <span>←</span> Back to Events
-            </Link>
-
-            <div className="mb-4">
-              <span className="border border-[#D4AF6A]/60 px-4 py-1.5 text-[9px] font-bold uppercase tracking-[3px] text-[#D4AF6A]">
-                {event.category}
-              </span>
-            </div>
-
-            <h1 className="max-w-4xl font-[var(--font-playfair)] text-4xl leading-tight md:text-6xl">
-              {event.title}
-              <span className="text-[#D4AF6A]">.</span>
-            </h1>
-
-            <p className="mt-4 max-w-2xl text-sm leading-7 text-white/70 md:text-base">
-              {event.description}
-            </p>
-
-            <div className="mt-6 flex flex-wrap gap-3">
+          <div className="container-main relative z-10">
+            <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-white/55">
               <Link
-                href={`/events/${event.id}/tickets`}
-                className="bg-[#D4AF6A] px-7 py-3.5 text-[10px] font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
+                href="/events"
+                className="inline-flex items-center gap-1.5 transition hover:text-[#D4AF6A]"
               >
-                Book Tickets →
+                <FiArrowLeft size={13} />
+                All Events
               </Link>
+              <span>/</span>
+              <span className="text-[#D4AF6A]">{event.category}</span>
+            </div>
 
-              <a
-                href="#event-schedule"
-                className="border border-white/35 px-7 py-3.5 text-[10px] font-semibold uppercase tracking-[2px] text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
-              >
-                Event Schedule
-              </a>
+            <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+              <div className="max-w-3xl">
+                <h1 className="font-[var(--font-playfair)] text-3xl leading-tight md:text-5xl">
+                  {event.title}
+                  <span className="text-[#D4AF6A]">.</span>
+                </h1>
+
+                <p className="mt-3 text-sm leading-6 text-white/75 md:text-base">
+                  {event.description}
+                </p>
+
+                {/* Inline Key Info */}
+                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2.5 text-xs text-white/80">
+                  <span className="inline-flex items-center gap-2">
+                    <FiCalendar size={14} className="text-[#D4AF6A]" />
+                    {event.date}
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <FiClock size={14} className="text-[#D4AF6A]" />
+                    {event.time}
+                  </span>
+                  <span className="inline-flex items-center gap-2">
+                    <FiMapPin size={14} className="text-[#D4AF6A]" />
+                    {event.location}
+                  </span>
+                  <span className="inline-flex items-center gap-2 font-semibold text-[#D4AF6A]">
+                    <FiTag size={14} />
+                    {event.price}
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex shrink-0 flex-wrap gap-3">
+                <Link
+                  href={`/events/${event.id}/tickets`}
+                  className="inline-flex items-center gap-2 bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
+                >
+                  Book Tickets
+                  <FiArrowRight size={15} />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* EVENT INFORMATION BAR */}
-        <section className="border-y border-white/10 bg-[#101010]">
-          <div className="container-main grid grid-cols-2 gap-6 py-6 md:grid-cols-4">
-            {[
-              { label: "Event Date", value: event.date, icon: "◷" },
-              { label: "Event Time", value: event.time, icon: "◴" },
-              { label: "Venue", value: event.location, icon: "⌖" },
-              { label: "Ticket Price", value: event.price, icon: "◇" },
-            ].map((item) => (
-              <div key={item.label}>
-                <p className="text-[10px] uppercase tracking-[2px] text-white/45">
-                  <span className="mr-1.5 text-[#D4AF6A]">{item.icon}</span>
-                  {item.label}
+        {/* MAIN CONTENT + QUICK PASS SIDEBAR */}
+        <section className="px-6 py-10">
+          <div className="container-main grid items-start gap-8 lg:grid-cols-[1fr_360px]">
+            {/* LEFT COLUMN: DETAILS, HIGHLIGHTS & SCHEDULE */}
+            <div className="space-y-8">
+              <div className="border border-white/10 bg-[#0d0d0d] p-6">
+                <p className="text-[10px] font-semibold uppercase tracking-[3px] text-[#D4AF6A]">
+                  About This Event
                 </p>
-                <p className="mt-1.5 text-sm font-medium text-white/90">
-                  {item.value}
-                </p>
-              </div>
-            ))}
-          </div>
-        </section>
-
-        {/* MAIN EVENT CONTENT */}
-        <section
-          id="event-information"
-          className="px-6 py-12 md:py-14"
-        >
-          <div className="container-main grid items-start gap-10 lg:grid-cols-[1fr_340px]">
-
-            {/* LEFT CONTENT */}
-            <div>
-              <div className="mb-4 flex items-center gap-3">
-                <span className="h-px w-8 bg-[#D4AF6A]" />
-                <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
-                  About This Experience
+                <p className="mt-3 text-sm leading-7 text-white/75 md:text-base">
+                  {event.fullDescription}
                 </p>
               </div>
 
-              <h2 className="max-w-2xl font-[var(--font-playfair)] text-3xl leading-tight md:text-4xl">
-                Experience Something{" "}
-                <span className="italic text-[#D4AF6A]">
-                  Extraordinary.
-                </span>
-              </h2>
-
-              <p className="mt-5 text-sm leading-7 text-white/65 md:text-base">
-                {event.fullDescription}
-              </p>
-
-              {/* EVENT HIGHLIGHTS */}
-              <div className="mt-10">
-                <h3 className="font-[var(--font-playfair)] text-2xl">
-                  Event Highlights
-                </h3>
-
-                <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                  {event.highlights.map((highlight, index) => (
+              <div>
+                <h2 className="font-[var(--font-playfair)] text-2xl">
+                  What&apos;s Included
+                </h2>
+                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                  {event.highlights.map((highlight) => (
                     <div
                       key={highlight}
-                      className="flex items-center gap-3 border border-white/10 bg-[#111111] p-4"
+                      className="flex items-center gap-3 border border-white/10 bg-[#0d0d0d] p-4"
                     >
-                      <span className="font-[var(--font-playfair)] text-lg italic text-[#D4AF6A]">
-                        0{index + 1}
-                      </span>
-
-                      <p className="text-sm text-white/75">
-                        {highlight}
-                      </p>
+                      <FiCheck
+                        size={16}
+                        className="shrink-0 text-[#D4AF6A]"
+                      />
+                      <p className="text-sm text-white/80">{highlight}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
-              {/* SCHEDULE */}
-              <div id="event-schedule" className="mt-10">
-                <h3 className="font-[var(--font-playfair)] text-2xl">
+              <div>
+                <h2 className="font-[var(--font-playfair)] text-2xl">
                   Event Schedule
-                </h3>
-
-                <div className="mt-4">
+                </h2>
+                <div className="mt-4 divide-y divide-white/10 border border-white/10 bg-[#0d0d0d]">
                   {event.schedule.map((item, index) => (
                     <div
                       key={item.title}
-                      className="flex gap-5 border-b border-white/10 py-4"
+                      className="flex items-center gap-5 px-5 py-4"
                     >
                       <span className="font-[var(--font-playfair)] text-lg italic text-[#D4AF6A]">
                         0{index + 1}
                       </span>
-
                       <div>
-                        <p className="text-xs uppercase tracking-[2px] text-white/40">
+                        <p className="text-[11px] uppercase tracking-[2px] text-white/45">
                           {item.time}
                         </p>
-                        <h4 className="mt-1 text-base text-white">
+                        <p className="mt-0.5 text-sm font-medium text-white">
                           {item.title}
-                        </h4>
+                        </p>
                       </div>
                     </div>
                   ))}
@@ -438,65 +257,54 @@ export default async function EventDetailsPage({ params }: PageProps) {
               </div>
             </div>
 
-            {/* RIGHT SIDEBAR */}
+            {/* RIGHT COLUMN: QUICK PASSES & BOOKING */}
             <aside className="lg:sticky lg:top-24">
-              <div className="border border-white/10 bg-[#111111]">
-                <div
-                  className="h-[190px] bg-cover bg-center"
-                  style={{
-                    backgroundImage: `url('${event.image}')`,
-                  }}
-                />
+              <div className="border border-white/10 bg-[#101010] p-6">
+                <p className="text-[10px] font-semibold uppercase tracking-[3px] text-[#D4AF6A]">
+                  Quick Pass Selection
+                </p>
+                <h3 className="mt-2 font-[var(--font-playfair)] text-2xl">
+                  Choose Your Pass
+                </h3>
+                <p className="mt-1 text-xs text-white/50">
+                  Click a pass to start booking or customize quantity.
+                </p>
 
-                <div className="p-6">
-                  <p className="text-[9px] font-semibold uppercase tracking-[3px] text-[#D4AF6A]">
-                    Event Overview
-                  </p>
-
-                  <h3 className="mt-2 font-[var(--font-playfair)] text-xl">
-                    {event.title}
-                  </h3>
-
-                  <div className="mt-5 space-y-3 border-t border-white/10 pt-4 text-xs">
-                    <div className="flex justify-between gap-4">
-                      <span className="text-white/40">Category</span>
-                      <span className="text-white/80">{event.category}</span>
-                    </div>
-
-                    <div className="flex justify-between gap-4">
-                      <span className="text-white/40">Date</span>
-                      <span className="text-white/80">{event.date}</span>
-                    </div>
-
-                    <div className="flex justify-between gap-4">
-                      <span className="text-white/40">Venue</span>
-                      <span className="max-w-[170px] text-right text-white/80">
-                        {event.location}
+                <div className="mt-5 space-y-2.5">
+                  {quickPasses.map((pass) => (
+                    <Link
+                      key={pass.id}
+                      href={`/events/${event.id}/attendee-details?ticket=${pass.id}&quantity=1`}
+                      className="flex items-center justify-between border border-white/10 bg-[#080808] px-4 py-3 transition hover:border-[#D4AF6A]"
+                    >
+                      <div>
+                        <p className="text-sm font-medium text-white">
+                          {pass.name}
+                        </p>
+                        <p className="text-[11px] text-white/45">{pass.tag}</p>
+                      </div>
+                      <span className="text-sm font-semibold text-[#D4AF6A]">
+                        {pass.price}
                       </span>
-                    </div>
-
-                    <div className="flex justify-between gap-4">
-                      <span className="text-white/40">Price</span>
-                      <span className="font-semibold text-[#D4AF6A]">
-                        {event.price}
-                      </span>
-                    </div>
-                  </div>
-
-                  <Link
-                    href={`/events/${event.id}/tickets`}
-                    className="mt-6 flex w-full items-center justify-center bg-[#D4AF6A] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5]"
-                  >
-                    Select Tickets →
-                  </Link>
+                    </Link>
+                  ))}
                 </div>
+
+                <Link
+                  href={`/events/${event.id}/tickets`}
+                  className="mt-5 flex w-full items-center justify-center gap-2 bg-[#D4AF6A] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
+                >
+                  Select Tickets &amp; Quantity
+                  <FiArrowRight size={15} />
+                </Link>
               </div>
 
               <Link
                 href="/events"
-                className="mt-4 flex items-center justify-center gap-3 border border-white/15 py-3.5 text-[10px] font-semibold uppercase tracking-[2px] text-white/60 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                className="mt-3 flex items-center justify-center gap-2 border border-white/15 py-3 text-[11px] font-semibold uppercase tracking-[2px] text-white/60 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
               >
-                ← Browse More Events
+                <FiArrowLeft size={14} />
+                Browse More Events
               </Link>
             </aside>
           </div>

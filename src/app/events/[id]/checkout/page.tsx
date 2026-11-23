@@ -15,7 +15,7 @@ type PageProps = {
   }>;
 };
 
-const allowedTickets = ["general", "premium", "vip"];
+const allowedTickets = ["single", "couple", "group5", "vip"];
 
 export async function generateMetadata({
   params,
@@ -41,7 +41,7 @@ export default async function CheckoutPage({
     notFound();
   }
 
-  const ticketType = query.ticket || "premium";
+  const ticketType = query.ticket || "single";
   const quantity = Number(query.quantity || "1");
 
   if (

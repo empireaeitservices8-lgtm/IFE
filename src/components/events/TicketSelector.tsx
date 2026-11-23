@@ -1,11 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import type { ResolvedBookingTicket } from "@/lib/events/resolve-booking-event";
 
+type TicketOptionId = "single" | "couple" | "group5" | "vip";
+
 type TicketType = {
-  id: "general" | "premium" | "vip";
+  id: TicketOptionId;
   name: string;
   price: number;
   description: string;
@@ -13,30 +15,37 @@ type TicketType = {
   label?: string;
 };
 
-const defaultTicketTypes: TicketType[] = [
+const ticketTypes: TicketType[] = [
   {
-    id: "general",
-    name: "General Admission",
-    price: 499,
-    description: "Standard access to the event.",
-    benefits: ["Event entry", "General seating area"],
+    id: "single",
+    name: "Single Entry",
+    price: 1499,
+    description: "Individual pass for one guest.",
+    benefits: ["Entry for 1 guest", "General event access"],
   },
   {
-    id: "premium",
-    name: "Premium Access",
-    price: 999,
-    description: "An enhanced event experience.",
-    benefits: ["Event entry", "Premium seating area", "Priority entry"],
+    id: "couple",
+    name: "Couple Entry",
+    price: 2699,
+    description: "Admits two guests together with savings.",
+    benefits: ["Entry for 2 guests", "Priority check-in"],
     label: "POPULAR",
   },
   {
+    id: "group5",
+    name: "Group of 5",
+    price: 6999,
+    description: "Group pass for five guests attending together.",
+    benefits: ["Entry for 5 guests", "Group priority check-in", "Best group value"],
+  },
+  {
     id: "vip",
-    name: "VIP Experience",
-    price: 1999,
-    description: "Enjoy an exclusive VIP experience.",
+    name: "VIP Pass",
+    price: 3499,
+    description: "Exclusive VIP access and hospitality.",
     benefits: [
       "VIP event entry",
-      "Reserved VIP seating",
+      "Reserved VIP area",
       "Priority entry",
       "Exclusive lounge access",
     ],
@@ -53,36 +62,9 @@ type TicketSelectorProps = {
 export default function TicketSelector({
   eventId,
   eventTitle,
-  liveTicketTypes = [],
 }: TicketSelectorProps) {
-  const ticketTypes = useMemo(() => {
-    if (!liveTicketTypes || liveTicketTypes.length === 0) {
-      return defaultTicketTypes;
-    }
-
-    const sorted = [...liveTicketTypes].sort((a, b) => a.price - b.price);
-    const tierKeys: ("general" | "premium" | "vip")[] = [
-      "general",
-      "premium",
-      "vip",
-    ];
-
-    return defaultTicketTypes.map((fallback, index) => {
-      const live = sorted[index];
-      if (!live) return fallback;
-      return {
-        ...fallback,
-        id: tierKeys[index],
-        name: live.name || fallback.name,
-        price: live.price > 0 ? live.price : fallback.price,
-        description: live.description || fallback.description,
-      };
-    });
-  }, [liveTicketTypes]);
-
-  const [selectedTicket, setSelectedTicket] = useState<
-    "general" | "premium" | "vip"
-  >("premium");
+  const [selectedTicket, setSelectedTicket] =
+    useState<TicketOptionId>("single");
   const [quantity, setQuantity] = useState(1);
 
   const selected =
@@ -187,7 +169,7 @@ export default function TicketSelector({
                               {formatPrice(ticket.price)}
                             </p>
                             <p className="text-[11px] text-white/35">
-                              Per person
+                              Per pass
                             </p>
                           </div>
                         </div>
@@ -214,10 +196,10 @@ export default function TicketSelector({
             <div className="mt-4 flex flex-wrap items-center justify-between gap-4 rounded-sm border border-white/10 bg-[#111111] p-4 md:p-5">
               <div>
                 <h3 className="font-[var(--font-playfair)] text-lg">
-                  Number of Tickets
+                  Number of Passes
                 </h3>
                 <p className="text-xs text-white/40">
-                  Maximum 10 tickets per booking.
+                  Maximum 10 passes per booking.
                 </p>
               </div>
 
@@ -272,7 +254,7 @@ export default function TicketSelector({
               </div>
 
               <div className="flex justify-between">
-                <span className="text-white/45">Price per ticket</span>
+                <span className="text-white/45">Price per pass</span>
                 <span>{formatPrice(selected.price)}</span>
               </div>
 
