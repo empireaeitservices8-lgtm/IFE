@@ -137,10 +137,10 @@ export default function GalleryShowcase() {
     selectedIndex !== null ? filteredItems[selectedIndex] : null;
 
   return (
-    <section className="container-main py-20">
+    <section className="container-main py-10">
       {/* Filter Bar */}
-      <div className="mb-12 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-6">
-        <div className="flex flex-wrap gap-2.5">
+      <div className="mb-7 flex flex-wrap items-center justify-between gap-4 border-b border-white/10 pb-4">
+        <div className="flex flex-wrap gap-2">
           {categories.map((category) => {
             const active = activeCategory === category;
             return (
@@ -151,7 +151,7 @@ export default function GalleryShowcase() {
                   setActiveCategory(category);
                   setSelectedIndex(null);
                 }}
-                className={`px-5 py-2.5 text-[11px] font-semibold uppercase tracking-[2px] transition ${
+                className={`rounded-lg px-4 py-2 text-[10px] font-semibold uppercase tracking-[2px] transition ${
                   active
                     ? "bg-[#D4AF6A] text-black"
                     : "border border-white/15 bg-white/[0.03] text-white/70 hover:border-[#D4AF6A]/60 hover:text-white"
@@ -169,15 +169,15 @@ export default function GalleryShowcase() {
       </div>
 
       {/* Gallery Grid */}
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filteredItems.map((item, idx) => (
           <button
             key={item.id}
             type="button"
             onClick={() => setSelectedIndex(idx)}
-            className="group relative overflow-hidden border border-white/10 bg-[#111111] text-left transition duration-500 hover:border-[#D4AF6A]/60"
+            className="group relative overflow-hidden rounded-xl border border-white/10 bg-[#111111] text-left shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
           >
-            <div className="relative h-80 w-full overflow-hidden">
+            <div className="relative h-60 w-full overflow-hidden">
               <Image
                 src={item.image}
                 alt={item.title}
@@ -187,19 +187,19 @@ export default function GalleryShowcase() {
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
 
-              <span className="absolute top-4 left-4 border border-[#D4AF6A]/40 bg-black/60 px-3 py-1 text-[10px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] backdrop-blur-sm">
+              <span className="absolute left-3.5 top-3.5 rounded-full border border-[#D4AF6A]/50 bg-black/75 px-3 py-1 text-[9px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] backdrop-blur-md">
                 {item.category}
               </span>
 
-              <span className="absolute top-4 right-4 flex size-9 items-center justify-center border border-white/20 bg-black/50 text-white/80 opacity-0 transition group-hover:opacity-100">
-                <FiMaximize2 size={15} />
+              <span className="absolute right-3.5 top-3.5 flex size-8 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white/85 opacity-0 backdrop-blur-sm transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black group-hover:opacity-100">
+                <FiMaximize2 size={14} />
               </span>
 
-              <div className="absolute bottom-5 left-5 right-5">
-                <p className="text-[10px] uppercase tracking-[2.5px] text-white/55">
+              <div className="absolute bottom-4 left-4 right-4">
+                <p className="text-[10px] uppercase tracking-[2.2px] text-white/60">
                   {item.subtitle}
                 </p>
-                <h3 className="mt-1.5 font-[var(--font-playfair)] text-2xl text-white">
+                <h3 className="mt-1 font-[var(--font-playfair)] text-xl text-white transition group-hover:text-[#D4AF6A]">
                   {item.title}
                 </h3>
               </div>
