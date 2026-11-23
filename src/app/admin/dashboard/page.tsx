@@ -4,6 +4,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import AdminShell from "@/components/admin/AdminShell";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -348,75 +349,32 @@ export default function AdminDashboardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      <Sidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-        adminUser={adminUser}
-        onLogout={handleLogout}
-      />
-
-      {/* Main Content */}
-      <div className="min-h-screen lg:pl-[270px]">
-
-        {/* Topbar */}
-        <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between border-b border-white/10 bg-[#080808]/95 px-5 backdrop-blur-xl sm:px-8">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="text-[#D4AF6A] lg:hidden"
-              aria-label="Open navigation"
-            >
-              <Menu size={23} />
-            </button>
-
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
-                IFE Administration
-              </p>
-              <h1 className="mt-1 text-lg font-semibold text-white">
-                Dashboard
-              </h1>
-            </div>
+    <AdminShell
+      title="Dashboard"
+      breadcrumb="IFE Administration"
+      actions={
+        <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-2 border border-white/10 px-3 py-2 md:flex">
+            <Search size={15} className="text-gray-500" />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder="Search bookings..."
+              className="w-36 bg-transparent text-xs text-white outline-none placeholder:text-gray-600"
+            />
           </div>
 
-          <div className="flex items-center gap-3 sm:gap-5">
-            <div className="hidden items-center gap-2 border border-white/10 px-3 py-2 md:flex">
-              <Search size={15} className="text-gray-500" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search bookings..."
-                className="w-36 bg-transparent text-xs text-white outline-none placeholder:text-gray-600"
-              />
-            </div>
-
-            <button
-              type="button"
-              aria-label="Notifications"
-              className="relative text-gray-400 transition hover:text-[#D4AF6A]"
-            >
-              <Bell size={19} />
-              <span className="absolute -right-1 -top-1 size-2 rounded-full bg-[#D4AF6A]" />
-            </button>
-
-            <div className="hidden h-8 w-px bg-white/10 sm:block" />
-
-            <div className="flex items-center gap-2">
-              <div className="flex size-9 items-center justify-center rounded-full bg-[#D4AF6A]/15 text-xs font-bold text-[#D4AF6A]">
-                AD
-              </div>
-              <div className="hidden sm:block">
-                <p className="text-xs font-semibold">Admin</p>
-                <p className="text-[10px] text-gray-500">Administrator</p>
-              </div>
-              <ChevronDown size={14} className="hidden text-gray-500 sm:block" />
-            </div>
-          </div>
-        </header>
-
-        <main className="mx-auto max-w-[1500px] space-y-8 px-5 py-8 sm:px-8">
+          <Link
+            href="/admin/events/new"
+            className="inline-flex items-center justify-center gap-2 bg-[#D4AF6A] px-4 py-2.5 text-xs font-bold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5]"
+          >
+            <Plus size={15} />
+            <span className="hidden sm:inline">New Event</span>
+          </Link>
+        </div>
+      }
+    >
+      <div className="space-y-8">
 
           {/* Welcome */}
           <section className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
@@ -748,13 +706,7 @@ export default function AdminDashboardPage() {
               )}
             </div>
           </section>
-
-          {/* Footer */}
-          <footer className="border-t border-white/10 py-6 text-center text-[10px] tracking-wider text-gray-600">
-            © {new Date().getFullYear()} IFE ADMINISTRATION PORTAL. ALL RIGHTS RESERVED.
-          </footer>
-        </main>
       </div>
-    </div>
+    </AdminShell>
   );
 }

@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import AdminShell from "@/components/admin/AdminShell";
 import {
   Search,
   CreditCard,
@@ -223,64 +224,19 @@ export default function PaymentsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-white/10 bg-[#0d0d0d] lg:block">
-        <div className="border-b border-white/10 px-7 py-7">
-          <Link
-            href="/admin/dashboard"
-            className="text-2xl font-bold tracking-[0.2em] text-[#D4AF6A]"
-          >
-            IFE<span className="text-white">.</span>
-          </Link>
-          <p className="mt-1 text-[10px] tracking-[0.25em] text-gray-500">
-            ADMINISTRATION
-          </p>
-        </div>
-
-        <nav className="space-y-2 px-4 py-6 text-sm">
-          {[
-            ["Dashboard", "/admin/dashboard"],
-            ["Events", "/admin/events"],
-            ["Tickets", "/admin/tickets"],
-            ["Bookings", "/admin/bookings"],
-            ["Customers", "/admin/customers"],
-            ["Payments", "/admin/payments"],
-            ["Artists", "/admin/artists"],
-            ["Venues", "/admin/venues"],
-            ["Gallery", "/admin/gallery"],
-            ["Settings", "/admin/settings"],
-          ].map(([name, href]) => (
-            <Link
-              key={name}
-              href={href}
-              className={`block rounded-xl px-4 py-3 transition ${
-                name === "Payments"
-                  ? "bg-[#D4AF6A]/10 text-[#D4AF6A]"
-                  : "text-gray-400 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              {name}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      <main className="lg:ml-64">
-        <header className="flex h-20 items-center justify-between border-b border-white/10 px-5 md:px-10">
-          <div>
-            <p className="text-xs text-gray-500">Admin / Payments</p>
-            <h1 className="mt-1 text-lg font-semibold">Payments Management</h1>
-          </div>
-
-          <Link
-            href="/admin/bookings"
-            className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-gray-300 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
-          >
-            View Bookings
-          </Link>
-        </header>
-
-        <div className="space-y-8 px-5 py-8 md:px-10">
+    <AdminShell
+      title="Payments Management"
+      breadcrumb="Admin / Payments"
+      actions={
+        <Link
+          href="/admin/bookings"
+          className="rounded-xl border border-white/10 px-4 py-2.5 text-sm text-gray-300 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+        >
+          View Bookings
+        </Link>
+      }
+    >
+      <div className="space-y-8">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#D4AF6A]">
               Financial operations
@@ -597,16 +553,7 @@ export default function PaymentsPage() {
               </button>
             </div>
           </div>
-
-          <div className="rounded-xl border border-[#D4AF6A]/20 bg-[#D4AF6A]/5 p-4 text-sm leading-6 text-[#DCC38F]">
-            Demo mode: these are sample transactions. Refund actions only
-            change the local page state; they do not initiate real Razorpay
-            refunds. Real payment verification, webhook handling, settlement
-            reconciliation and refunds must be implemented securely on the
-            backend.
-          </div>
-        </div>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   );
 }

@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import {
   Search,
@@ -9,8 +8,8 @@ import {
   UserX,
   Mail,
   Phone,
-  LayoutDashboard,
 } from "lucide-react";
+import AdminShell from "@/components/admin/AdminShell";
 
 type CustomerRecord = {
   id: string;
@@ -110,24 +109,8 @@ export default function AdminCustomersPage() {
   const blockedCount = customers.filter((c) => c.status === "BLOCKED").length;
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      <header className="sticky top-0 z-20 border-b border-white/10 bg-[#080808]/95 backdrop-blur">
-        <div className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 md:px-10">
-          <div>
-            <p className="text-xs text-gray-500">Admin / Customers</p>
-            <h1 className="mt-1 text-lg font-semibold">Customers Management</h1>
-          </div>
-          <Link
-            href="/admin/dashboard"
-            className="flex items-center gap-2 rounded-lg border border-white/10 px-4 py-2 text-sm text-gray-300 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
-          >
-            <LayoutDashboard size={16} />
-            Dashboard
-          </Link>
-        </div>
-      </header>
-
-      <main className="mx-auto max-w-7xl space-y-7 px-5 py-8 md:px-10">
+    <AdminShell title="Customers Management" breadcrumb="Admin / Customers">
+      <div className="space-y-7">
         <div className="grid gap-5 sm:grid-cols-3">
           {[
             { label: "Total Customers", value: customers.length, icon: Users },
@@ -271,8 +254,8 @@ export default function AdminCustomersPage() {
             </div>
           )}
         </div>
-      </main>
-    </div>
+      </div>
+    </AdminShell>
   );
 }
 

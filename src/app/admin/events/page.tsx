@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import AdminShell from "@/components/admin/AdminShell";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -375,53 +376,22 @@ export default function AdminEventsPage() {
     }).format(amount);
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      <AdminSidebar
-        open={sidebarOpen}
-        onClose={() => setSidebarOpen(false)}
-      />
-
-      <div className="min-h-screen lg:pl-[260px]">
-        {/* Topbar */}
-        <header className="sticky top-0 z-30 flex h-[82px] items-center justify-between border-b border-white/10 bg-[#080808]/95 px-5 backdrop-blur-xl sm:px-8">
-          <div className="flex items-center gap-4">
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              aria-label="Open navigation"
-              className="text-[#D4AF6A] lg:hidden"
-            >
-              <Menu size={23} />
-            </button>
-
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500">
-                IFE Administration
-              </p>
-              <h1 className="mt-1 text-lg font-semibold">
-                Event Management
-              </h1>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden items-center gap-2 border border-white/10 px-3 py-2 sm:flex">
-              <Search size={15} className="text-gray-500" />
-              <input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search events..."
-                className="w-36 bg-transparent text-xs outline-none placeholder:text-gray-600"
-              />
-            </div>
-
-            <div className="flex size-9 items-center justify-center rounded-full bg-[#D4AF6A]/15 text-xs font-bold text-[#D4AF6A]">
-              AD
-            </div>
-          </div>
-        </header>
-
-        <main className="mx-auto max-w-[1500px] space-y-8 px-5 py-8 sm:px-8">
+    <AdminShell
+      title="Event Management"
+      breadcrumb="IFE Administration"
+      actions={
+        <div className="hidden items-center gap-2 border border-white/10 px-3 py-2 sm:flex">
+          <Search size={15} className="text-gray-500" />
+          <input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Search events..."
+            className="w-36 bg-transparent text-xs outline-none placeholder:text-gray-600"
+          />
+        </div>
+      }
+    >
+      <div className="space-y-8">
           {/* Heading */}
           <section className="flex flex-col justify-between gap-5 md:flex-row md:items-center">
             <div>
@@ -719,12 +689,7 @@ export default function AdminEventsPage() {
               </table>
             </div>
           </section>
-
-          <footer className="border-t border-white/10 py-6 text-center text-[10px] tracking-wider text-gray-600">
-            © {new Date().getFullYear()} IFE ADMINISTRATION PORTAL
-          </footer>
-        </main>
       </div>
-    </div>
+    </AdminShell>
   );
 }

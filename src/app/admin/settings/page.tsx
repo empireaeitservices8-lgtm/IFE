@@ -2,7 +2,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
+import AdminShell from "@/components/admin/AdminShell";
 import {
   Settings,
   User,
@@ -212,61 +212,17 @@ export default function AdminSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-white/10 bg-[#0d0d0d] lg:flex lg:flex-col">
-        <div className="border-b border-white/10 px-7 py-7">
-          <Link href="/admin/dashboard" className="text-2xl font-semibold tracking-[0.2em] text-[#D4AF6A]">
-            IFE
-          </Link>
-          <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-gray-500">Admin workspace</p>
+    <AdminShell
+      title="Settings"
+      breadcrumb="Admin / Configuration"
+      actions={
+        <div className="hidden items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-400 sm:flex">
+          <ShieldCheck size={15} className="text-[#D4AF6A]" />
+          Administrator settings
         </div>
-
-        <nav className="flex-1 space-y-1 px-4 py-6 text-sm">
-          {[
-            ["Dashboard", "/admin/dashboard"],
-            ["Events", "/admin/events"],
-            ["Tickets", "/admin/tickets"],
-            ["Bookings", "/admin/bookings"],
-            ["Customers", "/admin/customers"],
-            ["Payments", "/admin/payments"],
-            ["Artists", "/admin/artists"],
-            ["Venues", "/admin/venues"],
-            ["Gallery", "/admin/gallery"],
-            ["Settings", "/admin/settings"],
-          ].map(([label, href]) => (
-            <Link
-              key={href}
-              href={href}
-              className={`block rounded-lg px-4 py-3 transition ${
-                label === "Settings"
-                  ? "border border-[#D4AF6A]/20 bg-[#D4AF6A]/10 text-[#D4AF6A]"
-                  : "text-gray-400 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="border-t border-white/10 p-5">
-          <p className="text-xs text-gray-500">IFE Management Portal</p>
-          <p className="mt-1 text-xs text-[#D4AF6A]">Demo administrator</p>
-        </div>
-      </aside>
-
-      <main className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-[#080808]/95 px-5 py-4 backdrop-blur md:px-8">
-          <div>
-            <p className="text-xs text-gray-500">Admin / Configuration</p>
-            <h1 className="mt-1 text-xl font-semibold md:text-2xl">Settings</h1>
-          </div>
-          <div className="hidden items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-gray-400 sm:flex">
-            <ShieldCheck size={15} className="text-[#D4AF6A]" />
-            Administrator settings
-          </div>
-        </header>
-
-        <div className="space-y-7 p-5 md:p-8">
+      }
+    >
+      <div className="space-y-7">
           <div>
             <p className="text-sm text-gray-400">
               Configure your IFE platform, booking preferences and integrations.
@@ -642,7 +598,6 @@ export default function AdminSettingsPage() {
             ))}
           </div>
         </div>
-      </main>
-    </div>
+    </AdminShell>
   );
 }

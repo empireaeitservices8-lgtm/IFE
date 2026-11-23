@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import AdminShell from "@/components/admin/AdminShell";
 import {
   Search,
   Plus,
@@ -155,65 +156,20 @@ export default function GalleryManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 border-r border-white/10 bg-[#0d0d0d] lg:flex lg:flex-col">
-        <div className="border-b border-white/10 px-7 py-7">
-          <Link href="/admin/dashboard" className="text-2xl font-semibold tracking-[0.2em] text-[#D4AF6A]">
-            IFE
-          </Link>
-          <p className="mt-1 text-[10px] uppercase tracking-[0.3em] text-gray-500">Admin workspace</p>
-        </div>
-
-        <nav className="flex-1 space-y-1 px-4 py-6 text-sm">
-          {[
-            ["Dashboard", "/admin/dashboard"],
-            ["Events", "/admin/events"],
-            ["Tickets", "/admin/tickets"],
-            ["Bookings", "/admin/bookings"],
-            ["Customers", "/admin/customers"],
-            ["Payments", "/admin/payments"],
-            ["Artists", "/admin/artists"],
-            ["Venues", "/admin/venues"],
-            ["Gallery", "/admin/gallery"],
-            ["Settings", "/admin/settings"],
-          ].map(([label, href]) => (
-            <Link
-              key={href}
-              href={href}
-              className={`block rounded-lg px-4 py-3 transition ${
-                label === "Gallery"
-                  ? "border border-[#D4AF6A]/20 bg-[#D4AF6A]/10 text-[#D4AF6A]"
-                  : "text-gray-400 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        <div className="border-t border-white/10 p-5">
-          <p className="text-xs text-gray-500">IFE Management Portal</p>
-          <p className="mt-1 text-xs text-[#D4AF6A]">Demo administrator</p>
-        </div>
-      </aside>
-
-      <main className="lg:pl-64">
-        <header className="sticky top-0 z-20 flex items-center justify-between border-b border-white/10 bg-[#080808]/95 px-5 py-4 backdrop-blur md:px-8">
-          <div>
-            <p className="text-xs text-gray-500">Admin / Content</p>
-            <h1 className="mt-1 text-xl font-semibold md:text-2xl">Gallery Management</h1>
-          </div>
-
-          <Link
-            href="/admin/gallery/new"
-            className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#e5c27e]"
-          >
-            <Plus size={17} />
-            <span className="hidden sm:inline">Add Media</span>
-          </Link>
-        </header>
-
-        <div className="space-y-7 p-5 md:p-8">
+    <AdminShell
+      title="Gallery Management"
+      breadcrumb="Admin / Content"
+      actions={
+        <Link
+          href="/gallery"
+          className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#e5c27e]"
+        >
+          <Plus size={17} />
+          <span className="hidden sm:inline">View Public Gallery</span>
+        </Link>
+      }
+    >
+      <div className="space-y-7">
           <div>
             <p className="text-sm text-gray-400">
               Organize event photographs, videos and featured gallery content.
@@ -397,15 +353,7 @@ export default function GalleryManagementPage() {
             )}
           </section>
 
-          <div className="rounded-xl border border-[#D4AF6A]/20 bg-[#D4AF6A]/5 p-4">
-            <p className="text-sm font-medium text-[#D4AF6A]">Media upload integration pending</p>
-            <p className="mt-1 text-xs leading-5 text-gray-400">
-              The Add Media link is a placeholder. Actual image/video uploads will require storage configuration,
-              file validation, and backend integration.
-            </p>
-          </div>
         </div>
-      </main>
 
       {selected && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
@@ -459,6 +407,6 @@ export default function GalleryManagementPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminShell>
   );
 }

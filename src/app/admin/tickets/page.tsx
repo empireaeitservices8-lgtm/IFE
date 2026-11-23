@@ -3,6 +3,7 @@
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import AdminShell from "@/components/admin/AdminShell";
 import {
   Search,
   Ticket,
@@ -157,59 +158,20 @@ export default function TicketManagementPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-white/10 bg-[#0d0d0d] lg:block">
-        <div className="border-b border-white/10 px-7 py-7">
-          <Link href="/admin/dashboard" className="text-2xl font-bold tracking-[0.2em] text-[#D4AF6A]">
-            IFE<span className="text-white">.</span>
-          </Link>
-          <p className="mt-1 text-[10px] tracking-[0.25em] text-gray-500">ADMINISTRATION</p>
-        </div>
-
-        <nav className="space-y-2 px-4 py-6 text-sm">
-          {[
-            ["Dashboard", "/admin/dashboard"],
-            ["Events", "/admin/events"],
-            ["Tickets", "/admin/tickets"],
-            ["Bookings", "/admin/bookings"],
-            ["Customers", "/admin/customers"],
-            ["Payments", "/admin/payments"],
-            ["Artists", "/admin/artists"],
-            ["Venues", "/admin/venues"],
-            ["Gallery", "/admin/gallery"],
-            ["Settings", "/admin/settings"],
-          ].map(([name, href]) => (
-            <Link
-              key={name}
-              href={href}
-              className={`block rounded-xl px-4 py-3 transition ${
-                name === "Tickets"
-                  ? "bg-[#D4AF6A]/10 text-[#D4AF6A]"
-                  : "text-gray-400 hover:bg-white/5 hover:text-white"
-              }`}
-            >
-              {name}
-            </Link>
-          ))}
-        </nav>
-      </aside>
-
-      <main className="lg:ml-64">
-        <header className="flex h-20 items-center justify-between border-b border-white/10 px-5 md:px-10">
-          <div>
-            <p className="text-xs text-gray-500">Admin / Tickets</p>
-            <h1 className="mt-1 text-lg font-semibold">Ticket Management</h1>
-          </div>
-          <Link
-            href="/admin/events/new"
-            className="flex items-center gap-2 rounded-xl bg-[#D4AF6A] px-4 py-3 text-sm font-semibold text-black transition hover:bg-[#e5c783]"
-          >
-            <Plus size={17} />
-            Create Event
-          </Link>
-        </header>
-
-        <div className="space-y-8 px-5 py-8 md:px-10">
+    <AdminShell
+      title="Ticket Management"
+      breadcrumb="Admin / Tickets"
+      actions={
+        <Link
+          href="/admin/events/new"
+          className="flex items-center gap-2 rounded-xl bg-[#D4AF6A] px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-[#e5c783]"
+        >
+          <Plus size={17} />
+          Create Event
+        </Link>
+      }
+    >
+      <div className="space-y-8">
           <div>
             <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#D4AF6A]">
               Ticket operations
@@ -381,11 +343,7 @@ export default function TicketManagementPage() {
             </div>
           </section>
 
-          <div className="rounded-xl border border-[#D4AF6A]/20 bg-[#D4AF6A]/5 p-4 text-sm text-[#DCC38F]">
-            Demo data only. Ticket status changes are temporary and reset on refresh. Live inventory, booking deductions, refunds, and payment reconciliation require backend integration.
-          </div>
         </div>
-      </main>
-    </div>
+    </AdminShell>
   );
 }

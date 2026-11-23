@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import AdminShell from "@/components/admin/AdminShell";
 import {
   LayoutDashboard,
   CalendarDays,
@@ -155,88 +156,21 @@ export default function ArtistsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#080808] text-white">
-      {sidebarOpen && (
-        <button
-          aria-label="Close sidebar"
-          onClick={() => setSidebarOpen(false)}
-          className="fixed inset-0 z-40 bg-black/70 lg:hidden"
-        />
-      )}
-
-      <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-64 flex-col border-r border-white/10 bg-[#0d0d0d] transition-transform lg:translate-x-0 ${
-          sidebarOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <div className="flex h-20 items-center border-b border-white/10 px-7">
-          <span className="font-serif text-3xl tracking-[0.2em] text-[#D4AF6A]">
-            IFE
-          </span>
-          <span className="ml-3 text-[10px] tracking-[0.2em] text-gray-400">
-            ADMIN PANEL
-          </span>
-        </div>
-
-        <nav className="flex-1 space-y-1 overflow-y-auto px-4 py-6">
-          <p className="mb-4 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-gray-500">
-            Management
-          </p>
-          {sidebarItems.map((item) => {
-            const Icon = item.icon;
-            const active = item.label === "Artists";
-            return (
-              <Link
-                key={item.label}
-                href={item.href}
-                onClick={() => setSidebarOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-3 py-3 text-sm transition ${
-                  active
-                    ? "bg-[#D4AF6A]/10 text-[#D4AF6A]"
-                    : "text-gray-400 hover:bg-white/5 hover:text-white"
-                }`}
-              >
-                <Icon size={18} />
-                {item.label}
-              </Link>
-            );
-          })}
-        </nav>
-
-        <div className="border-t border-white/10 p-5">
-          <p className="text-xs text-gray-500">IFE Management System</p>
-          <p className="mt-1 text-xs text-[#D4AF6A]">Admin Workspace</p>
-        </div>
-      </aside>
-
-      <main className="min-h-screen lg:ml-64">
-        <header className="sticky top-0 z-30 flex h-20 items-center justify-between border-b border-white/10 bg-[#080808]/95 px-5 backdrop-blur-md md:px-8">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={() => setSidebarOpen(true)}
-              className="text-gray-300 lg:hidden"
-              aria-label="Open menu"
-            >
-              <Menu size={22} />
-            </button>
-            <div>
-              <h1 className="text-lg font-semibold">Artists Management</h1>
-              <p className="hidden text-xs text-gray-500 sm:block">
-                Manage performers, models and creative professionals
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/admin/artists/new"
-            className="flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-4 py-2.5 text-xs font-semibold text-black transition hover:bg-[#e5c783]"
-          >
-            <Plus size={16} />
-            <span className="hidden sm:inline">Add Artist</span>
-            <span className="sm:hidden">Add</span>
-          </Link>
-        </header>
-
-        <div className="space-y-7 p-5 md:p-8">
+    <AdminShell
+      title="Artists Management"
+      breadcrumb="Admin / Content"
+      actions={
+        <Link
+          href="/admin/events/new"
+          className="flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-4 py-2.5 text-xs font-semibold text-black transition hover:bg-[#e5c783]"
+        >
+          <Plus size={16} />
+          <span className="hidden sm:inline">Assign to Event</span>
+          <span className="sm:hidden">Add</span>
+        </Link>
+      }
+    >
+      <div className="space-y-7">
           <div>
             <p className="text-xs uppercase tracking-[0.25em] text-[#D4AF6A]">
               Talent Directory
@@ -434,7 +368,6 @@ export default function ArtistsPage() {
             </p>
           </div>
         </div>
-      </main>
 
       {selectedArtist && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 p-4">
@@ -507,6 +440,6 @@ export default function ArtistsPage() {
           </div>
         </div>
       )}
-    </div>
+    </AdminShell>
   );
 }
