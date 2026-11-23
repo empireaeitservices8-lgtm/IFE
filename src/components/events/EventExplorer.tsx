@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { FiArrowUpRight, FiCalendar, FiMapPin } from "react-icons/fi";
 
 type ExplorerEvent = {
   id: string;
@@ -48,63 +49,66 @@ const categories = [
 
 function EventCard({ event }: { event: ExplorerEvent }) {
   return (
-    <article className="group overflow-hidden border border-white/10 bg-[#111111] transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60">
+    <article className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-[#111111] shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60 hover:shadow-[#D4AF6A]/5">
       <Link
         href={`/events/${event.id}`}
         aria-label={`View ${event.title}`}
-        className="relative block h-[220px] overflow-hidden"
+        className="relative block h-[165px] shrink-0 overflow-hidden"
       >
         <div
           className="absolute inset-0 bg-cover bg-center transition duration-700 group-hover:scale-105"
           style={{ backgroundImage: `url('${event.image}')` }}
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-black/30 to-black/20" />
 
-        <span className="absolute left-4 top-4 bg-[#D4AF6A] px-3 py-1.5 text-[9px] font-bold uppercase tracking-[2px] text-black">
+        <span className="absolute left-3 top-3 rounded-full border border-[#D4AF6A]/50 bg-black/75 px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] backdrop-blur-md">
           {event.category}
         </span>
 
-        <span className="absolute bottom-4 right-4 flex h-9 w-9 items-center justify-center rounded-full border border-white/50 text-lg text-white transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black">
-          ↗
+        <span className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-black/50 text-white backdrop-blur-sm transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black">
+          <FiArrowUpRight size={15} />
         </span>
       </Link>
 
-      <div className="p-5">
-        <h3 className="font-[var(--font-playfair)] text-xl text-white transition group-hover:text-[#D4AF6A]">
-          {event.title}
-        </h3>
+      <div className="flex flex-1 flex-col justify-between p-4">
+        <div>
+          <h3 className="font-[var(--font-playfair)] text-lg leading-snug text-white transition group-hover:text-[#D4AF6A]">
+            <Link href={`/events/${event.id}`}>{event.title}</Link>
+          </h3>
 
-        <p className="mt-2 line-clamp-2 min-h-[40px] text-xs leading-5 text-white/55">
-          {event.description}
-        </p>
+          <p className="mt-1.5 line-clamp-2 min-h-[34px] text-[11px] leading-4 text-white/60">
+            {event.description}
+          </p>
 
-        <div className="mt-4 space-y-1.5 text-xs text-white/55">
-          <p>
-            <span className="mr-2 text-[#D4AF6A]">◷</span>
-            {event.date}
-          </p>
-          <p className="truncate">
-            <span className="mr-2 text-[#D4AF6A]">⌖</span>
-            {event.location}
-          </p>
+          <div className="mt-3 space-y-1.5 text-[11px] text-white/65">
+            <p className="flex items-center gap-2">
+              <FiCalendar size={13} className="shrink-0 text-[#D4AF6A]" />
+              <span>{event.date}</span>
+            </p>
+            <p className="flex items-center gap-2 truncate">
+              <FiMapPin size={13} className="shrink-0 text-[#D4AF6A]" />
+              <span className="truncate">{event.location}</span>
+            </p>
+          </div>
         </div>
 
-        <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-4">
+        <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-white/10 pt-3">
           <div>
             <p className="text-[9px] uppercase tracking-[2px] text-white/40">
-              Tickets
+              Passes
             </p>
-            <p className="mt-0.5 text-sm font-semibold text-[#D4AF6A]">
+            <p className="mt-0.5 text-xs font-semibold text-[#D4AF6A]">
               {event.price}
             </p>
           </div>
 
           <Link
             href={`/events/${event.id}`}
-            className="bg-[#D4AF6A]/10 px-3.5 py-2 text-[10px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
+            className="inline-flex items-center gap-1 rounded-md bg-[#D4AF6A] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[1.5px] text-black transition hover:bg-[#F5E5B5]"
           >
             View Details
+            <FiArrowUpRight size={12} />
           </Link>
         </div>
       </div>
@@ -127,8 +131,6 @@ export default function EventExplorer() {
         if (!active || !json.success) return;
         const mapped: ExplorerEvent[] = (json.data.items || []).map(
           (ev: ApiEventItem) => {
-            const prices = (ev.ticketTypes || []).map((t) => Number(t.price));
-            const minPrice = prices.length > 0 ? Math.min(...prices) : null;
             return {
               id: ev.id,
               image:
@@ -146,10 +148,7 @@ export default function EventExplorer() {
               location: ev.venue
                 ? `${ev.venue.name}, ${ev.venue.city}`
                 : "Venue TBA",
-              price:
-                minPrice !== null
-                  ? `From ₹${minPrice.toLocaleString("en-IN")}`
-                  : "Coming Soon",
+              price: "From ₹1,499",
               description: ev.shortDescription || ev.description.slice(0, 120),
             };
           }
@@ -248,16 +247,16 @@ export default function EventExplorer() {
 
         {/* EVENT CARDS */}
         {loading ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map((item) => (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {[1, 2, 3, 4].map((item) => (
               <div
                 key={item}
-                className="h-[400px] animate-pulse border border-white/10 bg-[#111111]"
+                className="h-[320px] animate-pulse rounded-xl border border-white/10 bg-[#111111]"
               />
             ))}
           </div>
         ) : filteredEvents.length > 0 ? (
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {filteredEvents.map((event) => (
               <EventCard key={event.id} event={event} />
             ))}

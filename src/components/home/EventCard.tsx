@@ -1,7 +1,6 @@
-
 import Image from "next/image";
 import Link from "next/link";
-import { MapPin, CalendarDays, ArrowUpRight } from "lucide-react";
+import { FiArrowUpRight, FiCalendar, FiMapPin } from "react-icons/fi";
 
 type EventCardProps = {
   image: string;
@@ -21,60 +20,65 @@ export default function EventCard({
   price,
 }: EventCardProps) {
   return (
-    <article className="group overflow-hidden border border-white/10 bg-[#111111] transition hover:border-[#D4AF6A]/50">
-
-      <Link href="/events" className="relative block h-[280px] overflow-hidden">
+    <article className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-[#111111] shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60">
+      <Link
+        href="/events"
+        className="relative block h-[175px] shrink-0 overflow-hidden"
+      >
         <Image
           src={image}
           alt={title}
           fill
-          className="object-cover transition duration-700 group-hover:scale-110"
+          className="object-cover transition duration-700 group-hover:scale-105"
           sizes="(max-width: 768px) 100vw, 33vw"
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-black/25 to-black/15" />
 
-        <span className="absolute left-5 top-5 bg-[#D4AF6A] px-4 py-2 text-[9px] font-bold uppercase tracking-[2px] text-black">
+        <span className="absolute left-3 top-3 rounded-full border border-[#D4AF6A]/50 bg-black/75 px-3 py-0.5 text-[9px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] backdrop-blur-md">
           {category}
         </span>
 
-        <span className="absolute bottom-5 right-5 flex h-10 w-10 items-center justify-center rounded-full border border-white/50 text-white transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black">
-          <ArrowUpRight size={19} />
+        <span className="absolute bottom-3 right-3 flex h-8 w-8 items-center justify-center rounded-full border border-white/30 bg-black/50 text-white backdrop-blur-sm transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black">
+          <FiArrowUpRight size={15} />
         </span>
       </Link>
 
-      <div className="p-6">
-        <h3 className="font-[var(--font-playfair)] text-2xl text-white transition group-hover:text-[#D4AF6A]">
-          {title}
-        </h3>
+      <div className="flex flex-1 flex-col justify-between p-4">
+        <div>
+          <h3 className="font-[var(--font-playfair)] text-xl leading-snug text-white transition group-hover:text-[#D4AF6A]">
+            <Link href="/events">{title}</Link>
+          </h3>
 
-        <div className="mt-5 space-y-3 text-xs text-white/50">
-          <div className="flex items-center gap-3">
-            <CalendarDays size={15} className="text-[#D4AF6A]" />
-            {date}
-          </div>
+          <div className="mt-3 space-y-1.5 text-xs text-white/65">
+            <div className="flex items-center gap-2">
+              <FiCalendar size={13} className="shrink-0 text-[#D4AF6A]" />
+              <span>{date}</span>
+            </div>
 
-          <div className="flex items-center gap-3">
-            <MapPin size={15} className="text-[#D4AF6A]" />
-            {location}
+            <div className="flex items-center gap-2">
+              <FiMapPin size={13} className="shrink-0 text-[#D4AF6A]" />
+              <span className="truncate">{location}</span>
+            </div>
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-5">
+        <div className="mt-4 flex items-center justify-between gap-2 border-t border-white/10 pt-3">
           <div>
             <p className="text-[9px] uppercase tracking-[2px] text-white/40">
               Starting from
             </p>
-            <p className="mt-1 text-lg font-semibold text-[#D4AF6A]">
+            <p className="mt-0.5 text-sm font-semibold text-[#D4AF6A]">
               {price}
             </p>
           </div>
 
           <Link
             href="/events"
-            className="text-[10px] font-semibold uppercase tracking-[2px] text-white transition hover:text-[#D4AF6A]"
+            className="inline-flex items-center gap-1 rounded-md bg-[#D4AF6A] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[1.5px] text-black transition hover:bg-[#F5E5B5]"
           >
             View Event
+            <FiArrowUpRight size={12} />
           </Link>
         </div>
       </div>

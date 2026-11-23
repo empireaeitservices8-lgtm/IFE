@@ -107,7 +107,7 @@ export default function ContactPage() {
       <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
         {/* Hero */}
         <section
-          className="relative flex min-h-[500px] items-end overflow-hidden border-b border-white/10 bg-cover bg-center"
+          className="relative flex min-h-[300px] items-end overflow-hidden border-b border-white/10 bg-cover bg-center"
           style={{
             backgroundImage:
               "linear-gradient(90deg, rgba(5,5,5,0.95) 0%, rgba(5,5,5,0.78) 55%, rgba(5,5,5,0.45) 100%), linear-gradient(0deg, #050505 0%, transparent 65%), url('https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=85&w=2000')",
@@ -115,22 +115,20 @@ export default function ContactPage() {
         >
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(212,175,106,0.16),transparent_60%)]" />
 
-          <div className="container-main relative z-10 pb-16 pt-40">
-            <div className="mb-7 flex items-center gap-4">
-              <span className="h-px w-12 bg-[#D4AF6A]" />
+          <div className="container-main relative z-10 pb-8 pt-28">
+            <div className="mb-4 flex items-center gap-4">
+              <span className="h-px w-10 bg-[#D4AF6A]" />
               <p className="text-[11px] font-bold uppercase tracking-[0.35em] text-[#D4AF6A]">
                 Concierge &amp; Enquiries
               </p>
             </div>
 
-            <h1 className="max-w-3xl font-[var(--font-playfair)] text-5xl leading-[1.1] sm:text-7xl">
-              Let&apos;s Start a
-              <span className="block italic text-[#D4AF6A]">
-                Conversation.
-              </span>
+            <h1 className="max-w-3xl font-[var(--font-playfair)] text-4xl leading-[1.1] sm:text-5xl">
+              Let&apos;s Start a{" "}
+              <span className="italic text-[#D4AF6A]">Conversation.</span>
             </h1>
 
-            <p className="mt-7 max-w-xl text-sm leading-8 text-white/65 md:text-base">
+            <p className="mt-4 max-w-xl text-sm leading-6 text-white/65">
               Whether you are planning a VIP attendance, exploring a brand
               partnership, or requesting press credentials, our team is here to
               help create something extraordinary.
@@ -139,8 +137,8 @@ export default function ContactPage() {
         </section>
 
         {/* Department / Enquiry Channels */}
-        <section className="border-b border-white/10 bg-[#080808] py-16">
-          <div className="container-main grid gap-6 md:grid-cols-3">
+        <section className="border-b border-white/10 bg-[#080808] py-10">
+          <div className="container-main grid gap-5 md:grid-cols-3">
             {enquiryChannels.map((channel) => {
               const Icon = channel.icon;
               const isSelected = form.subject === channel.subject;
@@ -150,34 +148,53 @@ export default function ContactPage() {
                   key={channel.title}
                   type="button"
                   onClick={() => handleSelectChannel(channel.subject)}
-                  className={`group flex flex-col justify-between border p-7 text-left transition duration-300 ${
+                  className={`group flex flex-col justify-between rounded-xl border p-5 text-left transition duration-300 hover:-translate-y-0.5 ${
                     isSelected
-                      ? "border-[#D4AF6A] bg-[#D4AF6A]/[0.06]"
-                      : "border-white/10 bg-[#0E0E0E] hover:border-[#D4AF6A]/50"
+                      ? "border-[#D4AF6A] bg-[#D4AF6A]/[0.08] shadow-lg shadow-[#D4AF6A]/5"
+                      : "border-white/10 bg-[#101010] hover:border-[#D4AF6A]/50"
                   }`}
                 >
                   <div>
-                    <div className="flex items-center justify-between">
-                      <div className="flex size-11 items-center justify-center border border-[#D4AF6A]/40 bg-black/50 text-[#D4AF6A]">
-                        <Icon size={19} />
+                    <div className="flex items-center justify-between gap-3">
+                      <div
+                        className={`flex size-10 items-center justify-center rounded-lg border transition ${
+                          isSelected
+                            ? "border-[#D4AF6A] bg-[#D4AF6A] text-black"
+                            : "border-[#D4AF6A]/40 bg-black/60 text-[#D4AF6A] group-hover:border-[#D4AF6A]"
+                        }`}
+                      >
+                        <Icon size={18} />
                       </div>
-                      <FiArrowRight
-                        size={16}
-                        className="text-white/30 transition-transform group-hover:translate-x-1 group-hover:text-[#D4AF6A]"
-                      />
+
+                      {isSelected ? (
+                        <span className="rounded-full border border-[#D4AF6A]/40 bg-[#D4AF6A]/15 px-2.5 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#D4AF6A]">
+                          Selected
+                        </span>
+                      ) : (
+                        <FiArrowRight
+                          size={15}
+                          className="text-white/30 transition-transform group-hover:translate-x-1 group-hover:text-[#D4AF6A]"
+                        />
+                      )}
                     </div>
 
-                    <h2 className="mt-6 font-[var(--font-playfair)] text-2xl text-white">
+                    <h2 className="mt-4 font-[var(--font-playfair)] text-xl text-white transition group-hover:text-[#D4AF6A]">
                       {channel.title}
                     </h2>
-                    <p className="mt-3 text-sm leading-7 text-white/55">
+                    <p className="mt-2 text-xs leading-5 text-white/60">
                       {channel.description}
                     </p>
                   </div>
 
-                  <span className="mt-6 inline-block text-[10px] font-semibold uppercase tracking-[2.5px] text-[#D4AF6A]">
-                    Select {channel.subject}
-                  </span>
+                  <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+                    <span className="text-[10px] font-semibold uppercase tracking-[2px] text-[#D4AF6A]">
+                      {isSelected ? "Active Channel" : `Select ${channel.subject}`}
+                    </span>
+                    <FiArrowRight
+                      size={13}
+                      className="text-[#D4AF6A] transition-transform group-hover:translate-x-1"
+                    />
+                  </div>
                 </button>
               );
             })}
@@ -187,80 +204,80 @@ export default function ContactPage() {
         {/* Contact Content */}
         <section
           ref={formSectionRef}
-          className="container-main grid gap-14 py-24 lg:grid-cols-[0.82fr_1.18fr]"
+          className="container-main grid items-start gap-8 py-10 lg:grid-cols-[0.82fr_1.18fr]"
         >
           {/* Contact Information */}
           <div className="flex flex-col justify-between">
             <div>
-              <div className="mb-4 flex items-center gap-3">
-                <span className="h-px w-9 bg-[#D4AF6A]" />
+              <div className="mb-3 flex items-center gap-3">
+                <span className="h-px w-8 bg-[#D4AF6A]" />
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF6A]">
                   Get In Touch
                 </p>
               </div>
 
-              <h2 className="font-[var(--font-playfair)] text-4xl leading-tight">
+              <h2 className="font-[var(--font-playfair)] text-3xl leading-tight">
                 Connect With{" "}
                 <span className="italic text-[#D4AF6A]">IFE.</span>
               </h2>
 
-              <p className="mt-6 max-w-md text-sm leading-8 text-white/55">
+              <p className="mt-3 max-w-md text-xs leading-6 text-white/60 sm:text-sm">
                 Our dedicated team assists guests, designers, sponsors, and
                 media partners across international events.
               </p>
 
-              <div className="mt-10 space-y-5">
-                <div className="flex items-start gap-5 border border-white/10 bg-[#0B0B0B] p-5 transition hover:border-[#D4AF6A]/40">
-                  <div className="flex size-11 shrink-0 items-center justify-center border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
-                    <FiMail size={18} />
+              <div className="mt-5 space-y-3">
+                <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#0B0B0B] p-3.5 transition hover:border-[#D4AF6A]/40">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
+                    <FiMail size={16} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[2.5px] text-white/45">
+                    <p className="text-[9px] font-semibold uppercase tracking-[2px] text-white/45">
                       Email
                     </p>
-                    <p className="mt-1.5 text-sm text-white">
+                    <p className="text-sm text-white">
                       concierge@ife-events.com
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-5 border border-white/10 bg-[#0B0B0B] p-5 transition hover:border-[#D4AF6A]/40">
-                  <div className="flex size-11 shrink-0 items-center justify-center border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
-                    <FiPhone size={18} />
+                <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#0B0B0B] p-3.5 transition hover:border-[#D4AF6A]/40">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
+                    <FiPhone size={16} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[2.5px] text-white/45">
+                    <p className="text-[9px] font-semibold uppercase tracking-[2px] text-white/45">
                       Phone
                     </p>
-                    <p className="mt-1.5 text-sm text-white">
+                    <p className="text-sm text-white">
                       +44 (0) 20 7946 0000
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-5 border border-white/10 bg-[#0B0B0B] p-5 transition hover:border-[#D4AF6A]/40">
-                  <div className="flex size-11 shrink-0 items-center justify-center border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
-                    <FiMapPin size={18} />
+                <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#0B0B0B] p-3.5 transition hover:border-[#D4AF6A]/40">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
+                    <FiMapPin size={16} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[2.5px] text-white/45">
+                    <p className="text-[9px] font-semibold uppercase tracking-[2px] text-white/45">
                       Headquarters
                     </p>
-                    <p className="mt-1.5 text-sm text-white">
+                    <p className="text-sm text-white">
                       International Fashion &amp; Entertainment House
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-start gap-5 border border-white/10 bg-[#0B0B0B] p-5 transition hover:border-[#D4AF6A]/40">
-                  <div className="flex size-11 shrink-0 items-center justify-center border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
-                    <FiClock size={18} />
+                <div className="flex items-center gap-4 rounded-xl border border-white/10 bg-[#0B0B0B] p-3.5 transition hover:border-[#D4AF6A]/40">
+                  <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-[#D4AF6A]/40 bg-black text-[#D4AF6A]">
+                    <FiClock size={16} />
                   </div>
                   <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[2.5px] text-white/45">
+                    <p className="text-[9px] font-semibold uppercase tracking-[2px] text-white/45">
                       Business Hours
                     </p>
-                    <p className="mt-1.5 text-sm text-white">
+                    <p className="text-sm text-white">
                       Monday – Friday, 09:00 – 18:00
                     </p>
                   </div>
@@ -269,68 +286,68 @@ export default function ContactPage() {
             </div>
 
             {/* Social Follow */}
-            <div className="mt-10 border-t border-white/10 pt-8">
+            <div className="mt-6 flex items-center justify-between border-t border-white/10 pt-4">
               <p className="text-[10px] font-semibold uppercase tracking-[3px] text-white/45">
                 Follow IFE
               </p>
-              <div className="mt-4 flex gap-3">
+              <div className="flex gap-2.5">
                 <a
                   href="#"
                   aria-label="Instagram"
-                  className="flex size-10 items-center justify-center border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                  className="flex size-9 items-center justify-center rounded-lg border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
                 >
-                  <FaInstagram size={16} />
+                  <FaInstagram size={15} />
                 </a>
                 <a
                   href="#"
                   aria-label="Facebook"
-                  className="flex size-10 items-center justify-center border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                  className="flex size-9 items-center justify-center rounded-lg border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
                 >
-                  <FaFacebookF size={15} />
+                  <FaFacebookF size={14} />
                 </a>
                 <a
                   href="#"
                   aria-label="YouTube"
-                  className="flex size-10 items-center justify-center border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                  className="flex size-9 items-center justify-center rounded-lg border border-white/15 bg-white/[0.02] text-white/70 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
                 >
-                  <FaYoutube size={17} />
+                  <FaYoutube size={16} />
                 </a>
               </div>
             </div>
           </div>
 
           {/* Contact Form */}
-          <div className="border border-white/10 bg-[#0D0D0D] p-6 sm:p-10">
+          <div className="rounded-xl border border-white/10 bg-[#0D0D0D] p-5 sm:p-7">
             <div className="flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="font-[var(--font-playfair)] text-3xl">
+                <h3 className="font-[var(--font-playfair)] text-2xl">
                   Send Us a Message
                 </h3>
-                <p className="mt-2 text-sm text-white/50">
+                <p className="mt-1 text-xs text-white/50">
                   Fill in the details below and our team will respond promptly.
                 </p>
               </div>
-              <span className="border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[2px] text-[#D4AF6A]">
+              <span className="rounded-full border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[2px] text-[#D4AF6A]">
                 {form.subject}
               </span>
             </div>
 
             {submitted ? (
-              <div className="mt-10 border border-[#D4AF6A]/35 bg-[#D4AF6A]/[0.05] p-8 text-center">
-                <div className="mx-auto flex size-14 items-center justify-center rounded-full border border-[#D4AF6A] text-[#D4AF6A]">
-                  <FiCheck size={24} />
+              <div className="mt-6 rounded-xl border border-[#D4AF6A]/35 bg-[#D4AF6A]/[0.05] p-6 text-center">
+                <div className="mx-auto flex size-12 items-center justify-center rounded-full border border-[#D4AF6A] text-[#D4AF6A]">
+                  <FiCheck size={20} />
                 </div>
 
-                <h4 className="mt-5 font-[var(--font-playfair)] text-2xl">
+                <h4 className="mt-4 font-[var(--font-playfair)] text-2xl">
                   Enquiry Received
                 </h4>
 
-                <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-white/60">
+                <p className="mx-auto mt-2 max-w-md text-xs leading-6 text-white/65 sm:text-sm">
                   Thank you, <span className="text-white">{form.name}</span>.
                   Your{" "}
                   <span className="text-[#D4AF6A]">{form.subject}</span>{" "}
-                  message has been validated in this preview. Connect your
-                  backend endpoint when ready to deliver live emails.
+                  message has been received. Our concierge team will follow up
+                  shortly.
                 </p>
 
                 <button
@@ -345,17 +362,17 @@ export default function ContactPage() {
                       message: "",
                     });
                   }}
-                  className="mt-7 inline-flex items-center gap-2 border border-[#D4AF6A] px-6 py-3 text-xs font-bold uppercase tracking-[2px] text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
+                  className="mt-5 inline-flex items-center gap-2 border border-[#D4AF6A] px-5 py-2.5 text-xs font-bold uppercase tracking-[2px] text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
                 >
-                  <FiSend size={14} />
+                  <FiSend size={13} />
                   Send Another Message
                 </button>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="mt-9 space-y-6">
+              <form onSubmit={handleSubmit} className="mt-5 space-y-4">
                 {/* Subject Pills */}
                 <div>
-                  <label className="mb-3 block text-xs text-white/60">
+                  <label className="mb-2 block text-xs text-white/60">
                     Enquiry Topic
                   </label>
                   <div className="flex flex-wrap gap-2">
@@ -366,7 +383,7 @@ export default function ContactPage() {
                           key={subject}
                           type="button"
                           onClick={() => setForm({ ...form, subject })}
-                          className={`px-4 py-2 text-[11px] font-medium uppercase tracking-[1.5px] transition ${
+                          className={`rounded-md px-3.5 py-1.5 text-[10px] font-medium uppercase tracking-[1.5px] transition ${
                             active
                               ? "bg-[#D4AF6A] font-semibold text-black"
                               : "border border-white/15 bg-black text-white/65 hover:border-[#D4AF6A]/50 hover:text-white"
@@ -379,11 +396,11 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="grid gap-6 sm:grid-cols-2">
+                <div className="grid gap-4 sm:grid-cols-3">
                   <div>
                     <label
                       htmlFor="contact-name"
-                      className="mb-2 block text-xs text-white/60"
+                      className="mb-1.5 block text-xs text-white/60"
                     >
                       Full Name *
                     </label>
@@ -395,14 +412,14 @@ export default function ContactPage() {
                         setForm({ ...form, name: e.target.value })
                       }
                       placeholder="Enter your name"
-                      className="w-full border border-white/10 bg-black px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
+                      className="w-full rounded-lg border border-white/10 bg-black px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
                     />
                   </div>
 
                   <div>
                     <label
                       htmlFor="contact-email"
-                      className="mb-2 block text-xs text-white/60"
+                      className="mb-1.5 block text-xs text-white/60"
                     >
                       Email Address *
                     </label>
@@ -415,32 +432,32 @@ export default function ContactPage() {
                         setForm({ ...form, email: e.target.value })
                       }
                       placeholder="Enter your email"
-                      className="w-full border border-white/10 bg-black px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
+                      className="w-full rounded-lg border border-white/10 bg-black px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
+                    />
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="contact-phone"
+                      className="mb-1.5 block text-xs text-white/60"
+                    >
+                      Phone (Optional)
+                    </label>
+                    <input
+                      id="contact-phone"
+                      type="tel"
+                      value={form.phone}
+                      onChange={(e) =>
+                        setForm({ ...form, phone: e.target.value })
+                      }
+                      placeholder="Phone number"
+                      className="w-full rounded-lg border border-white/10 bg-black px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label
-                    htmlFor="contact-phone"
-                    className="mb-2 block text-xs text-white/60"
-                  >
-                    Phone Number (Optional)
-                  </label>
-                  <input
-                    id="contact-phone"
-                    type="tel"
-                    value={form.phone}
-                    onChange={(e) =>
-                      setForm({ ...form, phone: e.target.value })
-                    }
-                    placeholder="Enter phone number"
-                    className="w-full border border-white/10 bg-black px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
-                  />
-                </div>
-
-                <div>
-                  <div className="mb-2 flex items-center justify-between">
+                  <div className="mb-1.5 flex items-center justify-between">
                     <label
                       htmlFor="contact-message"
                       className="text-xs text-white/60"
@@ -455,22 +472,22 @@ export default function ContactPage() {
                     id="contact-message"
                     required
                     maxLength={1000}
-                    rows={5}
+                    rows={3}
                     value={form.message}
                     onChange={(e) =>
                       setForm({ ...form, message: e.target.value })
                     }
                     placeholder="Tell us about your event, partnership idea, or enquiry..."
-                    className="w-full resize-none border border-white/10 bg-black px-4 py-4 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
+                    className="w-full resize-none rounded-lg border border-white/10 bg-black px-3.5 py-2.5 text-sm text-white outline-none transition placeholder:text-white/30 focus:border-[#D4AF6A]"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="flex w-full items-center justify-center gap-3 bg-[#D4AF6A] px-7 py-4 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
+                  className="flex w-full items-center justify-center gap-3 rounded-lg bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
                 >
                   Submit Enquiry
-                  <FiArrowRight size={17} />
+                  <FiArrowRight size={16} />
                 </button>
               </form>
             )}
@@ -478,11 +495,11 @@ export default function ContactPage() {
         </section>
 
         {/* FAQ Section */}
-        <section className="border-t border-white/10 bg-[#080808] py-20">
-          <div className="container-main grid gap-12 lg:grid-cols-[0.8fr_1.2fr]">
+        <section className="border-t border-white/10 bg-[#080808] py-12">
+          <div className="container-main grid items-start gap-8 lg:grid-cols-[0.78fr_1.22fr]">
             <div>
-              <div className="mb-4 flex items-center gap-3">
-                <span className="h-px w-9 bg-[#D4AF6A]" />
+              <div className="mb-3 flex items-center gap-3">
+                <span className="h-px w-8 bg-[#D4AF6A]" />
                 <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-[#D4AF6A]">
                   Frequently Asked
                 </p>
@@ -491,58 +508,68 @@ export default function ContactPage() {
                 Quick Answers{" "}
                 <span className="italic text-[#D4AF6A]">Before You Write.</span>
               </h2>
-              <p className="mt-4 max-w-sm text-sm leading-7 text-white/55">
+              <p className="mt-3 max-w-sm text-xs leading-6 text-white/60 sm:text-sm">
                 Find immediate details on VIP reservations, brand partnerships,
                 and press accreditation.
               </p>
+
+              <Link
+                href="/events"
+                className="mt-5 inline-flex items-center gap-2 rounded-lg border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-5 py-2.5 text-xs font-bold uppercase tracking-[2px] text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
+              >
+                Explore Events
+                <FiArrowRight size={14} />
+              </Link>
             </div>
 
-            <div className="divide-y divide-white/10 border-y border-white/10">
+            <div className="space-y-3">
               {faqs.map((faq, idx) => {
                 const isOpen = openFaq === idx;
                 return (
-                  <div key={faq.question} className="py-5">
+                  <div
+                    key={faq.question}
+                    className={`rounded-xl border transition duration-200 ${
+                      isOpen
+                        ? "border-[#D4AF6A]/60 bg-[#D4AF6A]/[0.05]"
+                        : "border-white/10 bg-[#101010] hover:border-white/25"
+                    }`}
+                  >
                     <button
                       type="button"
                       onClick={() => setOpenFaq(isOpen ? null : idx)}
                       aria-expanded={isOpen}
-                      className="flex w-full items-center justify-between gap-4 text-left"
+                      className="flex w-full items-center justify-between gap-4 px-5 py-4 text-left"
                     >
-                      <span className="font-[var(--font-playfair)] text-lg text-white sm:text-xl">
-                        {faq.question}
-                      </span>
-                      <span className="flex size-8 shrink-0 items-center justify-center border border-white/15 text-[#D4AF6A]">
-                        {isOpen ? <FiMinus size={15} /> : <FiPlus size={15} />}
+                      <div className="flex items-center gap-3.5">
+                        <span className="font-[var(--font-playfair)] text-sm italic text-[#D4AF6A]">
+                          0{idx + 1}
+                        </span>
+                        <span className="font-[var(--font-playfair)] text-base text-white sm:text-lg">
+                          {faq.question}
+                        </span>
+                      </div>
+                      <span
+                        className={`flex size-8 shrink-0 items-center justify-center rounded-lg border transition ${
+                          isOpen
+                            ? "border-[#D4AF6A] bg-[#D4AF6A] text-black"
+                            : "border-white/15 bg-black/40 text-[#D4AF6A]"
+                        }`}
+                      >
+                        {isOpen ? <FiMinus size={14} /> : <FiPlus size={14} />}
                       </span>
                     </button>
 
                     {isOpen && (
-                      <p className="mt-4 pr-10 text-sm leading-7 text-white/60">
-                        {faq.answer}
-                      </p>
+                      <div className="border-t border-white/10 px-5 pb-4 pt-3">
+                        <p className="pl-7 text-xs leading-6 text-white/65 sm:text-sm">
+                          {faq.answer}
+                        </p>
+                      </div>
                     )}
                   </div>
                 );
               })}
             </div>
-          </div>
-        </section>
-
-        {/* Bottom CTA */}
-        <section className="border-t border-white/10 bg-[#0B0B0B] py-16 text-center">
-          <div className="container-main">
-            <h2 className="font-[var(--font-playfair)] text-3xl sm:text-4xl">
-              Explore the World of{" "}
-              <span className="italic text-[#D4AF6A]">IFE.</span>
-            </h2>
-
-            <Link
-              href="/events"
-              className="mt-7 inline-flex items-center gap-3 text-xs font-bold uppercase tracking-widest text-[#D4AF6A] transition hover:text-white"
-            >
-              Discover Events
-              <FiArrowRight size={16} />
-            </Link>
           </div>
         </section>
       </main>

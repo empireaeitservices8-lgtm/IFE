@@ -95,7 +95,7 @@ export default function Home() {
               </Link>
             </div>
 
-            <div className="relative h-[420px] overflow-hidden">
+            <div className="relative h-[340px] overflow-hidden rounded-xl">
               <Image
                 src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=85&w=1200"
                 alt="Fashion runway experience"
@@ -121,7 +121,7 @@ export default function Home() {
         <section className="section-padding bg-[#050505]">
           <div className="container-main">
 
-            <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
+            <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
               <SectionHeading
                 eyebrow="Discover What's Next"
                 title="Featured Events"
@@ -150,7 +150,7 @@ export default function Home() {
         <section className="section-padding bg-[#101010]">
           <div className="container-main">
 
-            <div className="mb-14 text-center">
+            <div className="mb-8 text-center">
               <SectionHeading
                 eyebrow="Explore IFE"
                 title="Discover Our Experiences"
@@ -164,7 +164,7 @@ export default function Home() {
                 <Link
                   href={category.href}
                   key={category.number}
-                  className="group relative h-[440px] overflow-hidden"
+                  className="group relative h-[300px] overflow-hidden rounded-xl border border-white/10 transition hover:border-[#D4AF6A]/60"
                 >
                   <Image
                     src={category.image}
@@ -176,20 +176,20 @@ export default function Home() {
 
                   <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/5" />
 
-                  <div className="absolute inset-x-0 bottom-0 p-8">
-                    <p className="mb-5 text-xs tracking-[3px] text-[#D4AF6A]">
+                  <div className="absolute inset-x-0 bottom-0 p-5">
+                    <p className="mb-2 text-xs tracking-[3px] text-[#D4AF6A]">
                       {category.number}
                     </p>
 
-                    <h3 className="font-[var(--font-playfair)] text-3xl text-white">
+                    <h3 className="font-[var(--font-playfair)] text-2xl text-white">
                       {category.title}
                     </h3>
 
-                    <p className="mt-4 text-sm leading-6 text-white/60">
+                    <p className="mt-2 text-xs leading-5 text-white/60">
                       {category.description}
                     </p>
 
-                    <div className="mt-7 flex items-center gap-3 text-xs uppercase tracking-[2px] text-[#D4AF6A]">
+                    <div className="mt-4 flex items-center gap-2 text-xs uppercase tracking-[2px] text-[#D4AF6A]">
                       Explore More
                       <FiArrowUpRight size={16} />
                     </div>
@@ -202,7 +202,7 @@ export default function Home() {
         </section>
 
         {/* EXPERIENCE BANNER */}
-        <section className="relative overflow-hidden bg-[#080808] py-20">
+        <section className="relative overflow-hidden bg-[#080808] py-14">
           <div
             className="absolute inset-0 bg-cover bg-center opacity-30"
             style={{
@@ -238,7 +238,7 @@ export default function Home() {
         </section>
 
         {/* NEWSLETTER */}
-        <section className="bg-[#111111] py-16">
+        <section className="bg-[#111111] py-12">
           <div className="container-main text-center">
             <SectionHeading
               eyebrow="Stay Connected"
