@@ -230,6 +230,13 @@ export default function CheckoutForm({
       }
 
       const orderData = orderJson.data;
+      if (orderData.mode === "sandbox") {
+        router.push(
+          `/events/${eventId}/payment-success?bookingCode=${encodeURIComponent(bookingCode)}&paymentId=${encodeURIComponent(orderData.paymentId || "")}&orderId=${encodeURIComponent(orderData.orderId || "")}`
+        );
+        return;
+      }
+
       const RazorpayCtor = (
         window as unknown as {
           Razorpay?: new (opts: Record<string, unknown>) => { open: () => void };
@@ -306,69 +313,60 @@ export default function CheckoutForm({
   };
 
   return (
-    <section className="min-h-screen bg-[#050505] px-5 py-16 text-white md:px-10">
-      <div className="mx-auto max-w-7xl">
+    <section className="min-h-[calc(100vh-5rem)] bg-[#050505] px-5 py-6 text-white md:px-10">
+      <div className="mx-auto max-w-6xl">
+        {/* Breadcrumb + Heading */}
+        <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-white/10 pb-4">
+          <div>
+            <div className="mb-2 flex flex-wrap items-center gap-2 text-xs text-white/45">
+              <Link href="/events" className="hover:text-[#D4AF6A]">
+                Events
+              </Link>
+              <span>/</span>
+              <Link
+                href={`/events/${eventId}/booking-summary?ticket=${ticketType}&quantity=${quantity}`}
+                className="hover:text-[#D4AF6A]"
+              >
+                Booking Summary
+              </Link>
+              <span>/</span>
+              <span className="text-[#D4AF6A]">Checkout</span>
+            </div>
 
-        {/* Breadcrumb */}
-        <div className="mb-10 flex flex-wrap items-center gap-3 text-sm text-white/40">
-          <Link href="/events" className="hover:text-[#D4AF6A]">
-            Events
-          </Link>
-          <span>/</span>
-          <Link
-            href={`/events/${eventId}/booking-summary?ticket=${ticketType}&quantity=${quantity}`}
-            className="hover:text-[#D4AF6A]"
-          >
-            Booking Summary
-          </Link>
-          <span>/</span>
-          <span className="text-[#D4AF6A]">Checkout</span>
+            <h1 className="font-[var(--font-playfair)] text-3xl md:text-4xl">
+              Secure <span className="text-[#D4AF6A]">Checkout</span>
+            </h1>
+          </div>
+
+          <span className="text-[11px] uppercase tracking-[0.2em] text-white/40">
+            Step 04 / Payment
+          </span>
         </div>
 
-        {/* Heading */}
-        <div className="mb-12">
-          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.35em] text-[#D4AF6A]">
-            Complete Your Booking
-          </p>
-
-          <h1 className="font-serif text-4xl md:text-6xl">
-            Secure <span className="text-[#D4AF6A]">Checkout</span>
-          </h1>
-
-          <p className="mt-5 max-w-2xl text-sm leading-7 text-white/50 md:text-base">
-            Enter your billing information and review your
-            payment preference before completing your booking.
-          </p>
-        </div>
-
-        <div className="grid gap-10 lg:grid-cols-[1fr_380px]">
-
+        <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
           {/* Checkout Form */}
-          <form onSubmit={handleSubmit} className="space-y-8">
-
+          <form
+            id="checkout-form"
+            onSubmit={handleSubmit}
+            className="space-y-4"
+          >
             {/* Billing Details */}
-            <div className="border border-white/10 bg-[#111111] p-7 md:p-9">
-              <div className="mb-8 flex items-center justify-between border-b border-white/10 pb-5">
-                <div>
-                  <p className="text-xs uppercase tracking-[0.25em] text-[#D4AF6A]">
-                    Step 01
-                  </p>
-                  <h2 className="mt-2 font-serif text-2xl">
-                    Billing Information
-                  </h2>
-                </div>
-                <span className="text-xs text-white/30">
-                  Required
+            <div className="border border-white/10 bg-[#111111] p-5 md:p-6">
+              <div className="mb-4 flex items-center justify-between border-b border-white/10 pb-3">
+                <h2 className="font-[var(--font-playfair)] text-xl">
+                  Billing Information
+                </h2>
+                <span className="text-[11px] uppercase tracking-wider text-[#D4AF6A]">
+                  {isGuest ? "Guest Checkout" : "Member Account"}
                 </span>
               </div>
 
-              <div className="grid gap-6 sm:grid-cols-2">
-
+              <div className="grid gap-4 sm:grid-cols-3">
                 {/* Full Name */}
-                <div className="sm:col-span-2">
+                <div>
                   <label
                     htmlFor="billing-name"
-                    className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                   >
                     Full Name *
                   </label>
@@ -383,7 +381,7 @@ export default function CheckoutForm({
                       updateField("fullName", e.target.value)
                     }
                     placeholder="Enter your full name"
-                    className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                    className="w-full border border-white/10 bg-[#080808] px-3.5 py-2.5 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                   />
                 </div>
 
@@ -391,7 +389,7 @@ export default function CheckoutForm({
                 <div>
                   <label
                     htmlFor="billing-email"
-                    className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                   >
                     Email Address *
                   </label>
@@ -406,7 +404,7 @@ export default function CheckoutForm({
                       updateField("email", e.target.value)
                     }
                     placeholder="you@example.com"
-                    className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                    className="w-full border border-white/10 bg-[#080808] px-3.5 py-2.5 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                   />
                 </div>
 
@@ -414,7 +412,7 @@ export default function CheckoutForm({
                 <div>
                   <label
                     htmlFor="billing-phone"
-                    className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                   >
                     Mobile Number *
                   </label>
@@ -429,30 +427,30 @@ export default function CheckoutForm({
                       updateField("phone", e.target.value)
                     }
                     placeholder="+91 98765 43210"
-                    className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                    className="w-full border border-white/10 bg-[#080808] px-3.5 py-2.5 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                   />
                 </div>
 
                 {/* Address */}
-                <div className="sm:col-span-2">
+                <div className="sm:col-span-3">
                   <label
                     htmlFor="billing-address"
-                    className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                   >
-                    Address *
+                    Street Address *
                   </label>
-                  <textarea
+                  <input
                     id="billing-address"
+                    type="text"
                     required
                     maxLength={300}
-                    rows={3}
                     autoComplete="street-address"
                     value={billing.address}
                     onChange={(e) =>
                       updateField("address", e.target.value)
                     }
                     placeholder="Enter your billing address"
-                    className="w-full resize-none border border-white/10 bg-[#080808] px-5 py-4 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                    className="w-full border border-white/10 bg-[#080808] px-3.5 py-2.5 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                   />
                 </div>
 
@@ -460,7 +458,7 @@ export default function CheckoutForm({
                 <div>
                   <label
                     htmlFor="billing-city"
-                    className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                   >
                     City *
                   </label>
@@ -475,7 +473,7 @@ export default function CheckoutForm({
                       updateField("city", e.target.value)
                     }
                     placeholder="Enter city"
-                    className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                    className="w-full border border-white/10 bg-[#080808] px-3.5 py-2.5 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                   />
                 </div>
 
@@ -483,7 +481,7 @@ export default function CheckoutForm({
                 <div>
                   <label
                     htmlFor="billing-state"
-                    className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                   >
                     State *
                   </label>
@@ -498,7 +496,7 @@ export default function CheckoutForm({
                       updateField("state", e.target.value)
                     }
                     placeholder="Enter state"
-                    className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                    className="w-full border border-white/10 bg-[#080808] px-3.5 py-2.5 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                   />
                 </div>
 
@@ -506,7 +504,7 @@ export default function CheckoutForm({
                 <div>
                   <label
                     htmlFor="billing-pincode"
-                    className="mb-3 block text-xs font-semibold uppercase tracking-wider text-white/60"
+                    className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-white/60"
                   >
                     PIN Code *
                   </label>
@@ -522,79 +520,66 @@ export default function CheckoutForm({
                     onChange={(e) =>
                       updateField("pincode", e.target.value.replace(/\D/g, ""))
                     }
-                    placeholder="6-digit PIN code"
-                    className="w-full border border-white/10 bg-[#080808] px-5 py-4 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
+                    placeholder="6-digit PIN"
+                    className="w-full border border-white/10 bg-[#080808] px-3.5 py-2.5 text-sm outline-none transition placeholder:text-white/25 focus:border-[#D4AF6A]"
                   />
                 </div>
               </div>
             </div>
 
-            {/* Payment Method */}
-            <div className="border border-white/10 bg-[#111111] p-7 md:p-9">
-              <div className="mb-8 border-b border-white/10 pb-5">
-                <p className="text-xs uppercase tracking-[0.25em] text-[#D4AF6A]">
-                  Step 02
-                </p>
-                <h2 className="mt-2 font-serif text-2xl">
+            {/* Payment Method & Terms */}
+            <div className="border border-white/10 bg-[#111111] p-5 md:p-6">
+              <div className="mb-3 flex items-center justify-between">
+                <h2 className="font-[var(--font-playfair)] text-lg">
                   Payment Method
                 </h2>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF6A]">
+                  Encrypted &amp; Secure
+                </span>
               </div>
 
-              <label className="flex cursor-pointer items-start gap-4 border border-[#D4AF6A] bg-[#D4AF6A]/[0.05] p-5">
+              <label className="flex cursor-pointer items-center gap-3 border border-[#D4AF6A]/60 bg-[#D4AF6A]/[0.05] p-3.5">
                 <input
                   type="radio"
                   name="payment"
                   value="razorpay"
                   checked={paymentMethod === "razorpay"}
                   onChange={(e) => setPaymentMethod(e.target.value)}
-                  className="mt-1 accent-[#D4AF6A]"
+                  className="accent-[#D4AF6A]"
                 />
 
-                <div className="flex-1">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <h3 className="font-semibold">
+                <div className="flex flex-1 flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <p className="text-sm font-semibold text-white">
                       Razorpay Secure Payment
-                    </h3>
-                    <span className="text-[10px] font-bold uppercase tracking-widest text-[#D4AF6A]">
-                      Preferred
-                    </span>
+                    </p>
+                    <p className="text-xs text-white/50">
+                      UPI, Credit/Debit Cards, Net Banking &amp; Wallets
+                    </p>
                   </div>
-
-                  <p className="mt-2 text-sm leading-6 text-white/45">
-                    Pay using UPI, debit card, credit card,
-                    net banking, or other supported methods
-                    through Razorpay.
-                  </p>
+                  <span className="border border-[#D4AF6A]/40 px-2 py-0.5 text-[9px] font-bold uppercase tracking-widest text-[#D4AF6A]">
+                    Preferred
+                  </span>
                 </div>
               </label>
 
-              <p className="mt-5 text-xs leading-6 text-white/35">
-                You will be redirected to the payment gateway
-                when the payment integration is enabled.
-                This demonstration does not collect card or UPI details.
-              </p>
-            </div>
-
-            {/* Terms */}
-            <div className="border border-white/10 bg-[#111111] p-6">
-              <label className="flex cursor-pointer items-start gap-3">
+              <label className="mt-4 flex cursor-pointer items-center gap-3 text-xs text-white/60">
                 <input
                   type="checkbox"
                   checked={acceptedTerms}
                   onChange={(e) =>
                     setAcceptedTerms(e.target.checked)
                   }
-                  className="mt-1 accent-[#D4AF6A]"
+                  className="h-4 w-4 accent-[#D4AF6A]"
                 />
-
-                <span className="text-sm leading-7 text-white/55">
+                <span>
                   I agree to the{" "}
                   <Link
                     href="/terms"
                     target="_blank"
                     className="text-[#D4AF6A] underline"
                   >
-                    Terms & Conditions
+                    Terms &amp; Conditions
                   </Link>{" "}
                   and{" "}
                   <Link
@@ -612,16 +597,16 @@ export default function CheckoutForm({
             {message && (
               <div
                 role="status"
-                className="border border-[#D4AF6A]/30 bg-[#D4AF6A]/10 p-5 text-sm leading-7 text-[#F5E5B5]"
+                className="border border-[#D4AF6A]/30 bg-[#D4AF6A]/10 p-3.5 text-xs leading-6 text-[#F5E5B5]"
               >
                 {message}
               </div>
             )}
 
-            <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-center">
+            <div className="flex flex-col-reverse justify-between gap-3 pt-1 sm:flex-row sm:items-center">
               <Link
                 href={`/events/${eventId}/booking-summary?ticket=${ticketType}&quantity=${quantity}`}
-                className="text-sm text-white/45 transition hover:text-[#D4AF6A]"
+                className="text-xs text-white/45 transition hover:text-[#D4AF6A]"
               >
                 ← Back to Booking Summary
               </Link>
@@ -629,74 +614,75 @@ export default function CheckoutForm({
               <button
                 type="submit"
                 disabled={processing}
-                className="bg-[#D4AF6A] px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
+                className="bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {processing ? "Processing..." : "Proceed to Payment →"}
+                {processing ? "Processing..." : `Pay ${formatPrice(total)} →`}
               </button>
             </div>
           </form>
 
           {/* Order Summary */}
-          <aside className="h-fit border border-white/10 bg-[#111111] p-7 lg:sticky lg:top-10">
-            <p className="text-xs font-semibold uppercase tracking-[0.25em] text-[#D4AF6A]">
+          <aside className="h-fit border border-white/10 bg-[#111111] p-6 lg:sticky lg:top-24">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-[#D4AF6A]">
               Your Order
             </p>
 
-            <h2 className="mt-5 font-serif text-2xl leading-snug">
+            <h2 className="mt-2 font-[var(--font-playfair)] text-xl leading-snug">
               {eventTitle}
             </h2>
 
-            <div className="my-7 border-t border-white/10" />
+            <div className="my-4 border-t border-white/10" />
 
-            <div className="space-y-5 text-sm">
+            <div className="space-y-3 text-sm">
               <div className="flex justify-between gap-4">
-                <span className="text-white/45">Ticket Type</span>
+                <span className="text-white/50">Ticket Type</span>
                 <span className="text-right">{liveTicket.name}</span>
               </div>
 
               <div className="flex justify-between gap-4">
-                <span className="text-white/45">Checkout Mode</span>
+                <span className="text-white/50">Checkout Mode</span>
                 <span className="text-right text-[#D4AF6A]">
                   {isGuest ? "Guest Checkout" : "Member Account"}
                 </span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-white/45">Quantity</span>
+                <span className="text-white/50">Quantity</span>
                 <span>{quantity}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-white/45">Subtotal</span>
+                <span className="text-white/50">Subtotal</span>
                 <span>{formatPrice(subtotal)}</span>
               </div>
 
               <div className="flex justify-between">
-                <span className="text-white/45">Estimated Tax (18%)</span>
+                <span className="text-white/50">GST (18%)</span>
                 <span>{formatPrice(tax)}</span>
               </div>
             </div>
 
-            <div className="my-7 border-t border-white/10" />
+            <div className="my-4 border-t border-white/10" />
 
             <div className="flex items-center justify-between gap-3">
-              <span className="text-sm text-white/50">
-                Total Amount
-              </span>
+              <span className="text-sm text-white/60">Total Payable</span>
               <span className="text-2xl font-semibold text-[#D4AF6A]">
                 {formatPrice(total)}
               </span>
             </div>
 
-            <div className="mt-8 border border-white/10 p-5">
-              <p className="text-xs font-semibold uppercase tracking-widest text-[#D4AF6A]">
-                Secure Checkout
-              </p>
-              <p className="mt-3 text-xs leading-6 text-white/40">
-                Payment processing will be handled by the
-                integrated payment gateway once configured.
-              </p>
-            </div>
+            <button
+              type="submit"
+              form="checkout-form"
+              disabled={processing}
+              className="mt-5 w-full bg-[#D4AF6A] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {processing ? "Processing..." : `Pay ${formatPrice(total)} →`}
+            </button>
+
+            <p className="mt-3 text-center text-[11px] text-white/40">
+              Instant digital pass with QR code issued upon payment.
+            </p>
           </aside>
         </div>
       </div>

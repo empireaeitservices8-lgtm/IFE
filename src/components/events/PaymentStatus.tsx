@@ -1,5 +1,5 @@
-
 import Link from "next/link";
+import { FiArrowRight, FiCheck, FiX } from "react-icons/fi";
 
 type PaymentStatusProps = {
   status: "success" | "failed";
@@ -19,54 +19,25 @@ export default function PaymentStatus({
   const isSuccess = status === "success";
 
   return (
-    <section className="min-h-[85vh] bg-[#050505] px-5 py-20 text-white md:px-10">
-      <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-
+    <section className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-[#050505] px-5 py-8 text-white md:px-10">
+      <div className="mx-auto flex w-full max-w-2xl flex-col items-center text-center">
         {/* Status Icon */}
         <div
-          className={`mb-8 flex h-24 w-24 items-center justify-center rounded-full border ${
+          className={`mb-4 flex h-14 w-14 items-center justify-center rounded-full border ${
             isSuccess
-              ? "border-[#D4AF6A] bg-[#D4AF6A]/10"
-              : "border-red-500/40 bg-red-500/10"
+              ? "border-[#D4AF6A] bg-[#D4AF6A]/10 text-[#D4AF6A]"
+              : "border-red-500/40 bg-red-500/10 text-red-400"
           }`}
         >
-          {isSuccess ? (
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="h-12 w-12 text-[#D4AF6A]"
-              stroke="currentColor"
-              strokeWidth="1.7"
-            >
-              <path
-                d="M5 12.5L10 17L20 7"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          ) : (
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              className="h-12 w-12 text-red-400"
-              stroke="currentColor"
-              strokeWidth="1.7"
-            >
-              <path
-                d="M7 7L17 17M17 7L7 17"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          )}
+          {isSuccess ? <FiCheck size={26} /> : <FiX size={26} />}
         </div>
 
         {/* Status Heading */}
-        <p className="mb-4 text-xs font-semibold uppercase tracking-[0.4em] text-[#D4AF6A]">
+        <p className="mb-2 text-[11px] font-semibold uppercase tracking-[0.35em] text-[#D4AF6A]">
           {isSuccess ? "Payment Completed" : "Payment Unsuccessful"}
         </p>
 
-        <h1 className="font-serif text-4xl leading-tight md:text-6xl">
+        <h1 className="font-[var(--font-playfair)] text-3xl leading-tight md:text-4xl">
           {isSuccess ? (
             <>
               Thank You for <span className="text-[#D4AF6A]">Booking!</span>
@@ -78,78 +49,97 @@ export default function PaymentStatus({
           )}
         </h1>
 
-        <p className="mt-6 max-w-xl text-sm leading-8 text-white/50 md:text-base">
+        <p className="mt-3 max-w-lg text-xs leading-6 text-white/60 md:text-sm">
           {isSuccess
-            ? "Your payment status has been marked as successful in this demonstration. Your booking will be confirmed after server-side payment verification."
-            : "We couldn't complete your payment in this demonstration. You can return to checkout and try again once payment processing is enabled."}
+            ? "Your payment has been received and your booking is confirmed. View your confirmation or digital pass below."
+            : "We couldn't complete your payment. Please return to checkout and try again."}
         </p>
 
         {/* Event Details */}
-        <div className="mt-12 w-full border border-white/10 bg-[#111111] p-7 text-left md:p-9">
-          <p className="text-xs uppercase tracking-[0.3em] text-[#D4AF6A]">
-            Event Information
-          </p>
-
-          <h2 className="mt-4 font-serif text-2xl md:text-3xl">
-            {eventTitle}
-          </h2>
-
-          <div className="my-7 border-t border-white/10" />
-
-          {orderId && (
-            <div className="flex flex-col justify-between gap-2 border-b border-white/10 py-4 sm:flex-row">
-              <span className="text-sm text-white/40">Order ID</span>
-              <span className="break-all text-sm">{orderId}</span>
+        <div className="mt-6 w-full border border-white/10 bg-[#111111] p-5 text-left md:p-6">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.25em] text-[#D4AF6A]">
+                Event Information
+              </p>
+              <h2 className="mt-1 font-[var(--font-playfair)] text-xl md:text-2xl">
+                {eventTitle}
+              </h2>
             </div>
-          )}
 
-          {paymentId && (
-            <div className="flex flex-col justify-between gap-2 border-b border-white/10 py-4 sm:flex-row">
-              <span className="text-sm text-white/40">Payment ID</span>
-              <span className="break-all text-sm">{paymentId}</span>
-            </div>
-          )}
-
-          <div className="flex flex-col justify-between gap-2 py-4 sm:flex-row">
-            <span className="text-sm text-white/40">Payment Status</span>
             <span
-              className={`text-sm font-semibold ${
-                isSuccess ? "text-[#D4AF6A]" : "text-red-400"
+              className={`border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-widest ${
+                isSuccess
+                  ? "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"
+                  : "border-red-500/30 bg-red-500/10 text-red-300"
               }`}
             >
-              {isSuccess ? "Successful (Demo)" : "Failed (Demo)"}
+              {isSuccess ? "Confirmed" : "Failed"}
             </span>
+          </div>
+
+          <div className="mt-2 divide-y divide-white/10 text-xs md:text-sm">
+            {orderId && (
+              <div className="flex flex-col justify-between gap-1 py-2.5 sm:flex-row">
+                <span className="text-white/45">Order ID</span>
+                <span className="break-all font-mono text-white/85">
+                  {orderId}
+                </span>
+              </div>
+            )}
+
+            {paymentId && (
+              <div className="flex flex-col justify-between gap-1 py-2.5 sm:flex-row">
+                <span className="text-white/45">Payment ID</span>
+                <span className="break-all font-mono text-white/85">
+                  {paymentId}
+                </span>
+              </div>
+            )}
+
+            <div className="flex flex-col justify-between gap-1 py-2.5 sm:flex-row">
+              <span className="text-white/45">Payment Status</span>
+              <span
+                className={`font-semibold ${
+                  isSuccess ? "text-[#D4AF6A]" : "text-red-400"
+                }`}
+              >
+                {isSuccess ? "Paid & Verified" : "Unsuccessful"}
+              </span>
+            </div>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="mt-10 flex w-full flex-col gap-4 sm:flex-row sm:justify-center">
+        <div className="mt-6 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
           {isSuccess ? (
             <Link
               href={`/events/${eventId}/booking-confirmation`}
-              className="bg-[#D4AF6A] px-9 py-4 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5]"
+              className="inline-flex items-center justify-center gap-2 bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
             >
-              View Booking Confirmation →
+              View Booking Confirmation
+              <FiArrowRight size={15} />
             </Link>
           ) : (
             <Link
               href={`/events/${eventId}/checkout`}
-              className="bg-[#D4AF6A] px-9 py-4 text-xs font-bold uppercase tracking-[0.2em] text-black transition hover:bg-[#F5E5B5]"
+              className="inline-flex items-center justify-center gap-2 bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
             >
-              Return to Checkout →
+              Return to Checkout
+              <FiArrowRight size={15} />
             </Link>
           )}
 
           <Link
             href="/events"
-            className="border border-white/20 px-9 py-4 text-xs font-bold uppercase tracking-[0.2em] text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+            className="inline-flex items-center justify-center border border-white/20 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
           >
             Explore Events
           </Link>
         </div>
 
         {/* Support */}
-        <p className="mt-12 text-sm text-white/35">
+        <p className="mt-5 text-xs text-white/40">
           Need assistance?{" "}
           <Link
             href="/contact"
