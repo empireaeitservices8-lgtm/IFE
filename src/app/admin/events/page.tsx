@@ -34,6 +34,7 @@ type EventStatus = "Published" | "Draft" | "Completed" | "Cancelled";
 type EventItem = {
   id: string;
   title: string;
+  bannerUrl: string | null;
   category: string;
   date: string;
   venue: string;
@@ -46,6 +47,7 @@ type EventItem = {
 type ApiEvent = {
   id: string;
   title: string;
+  bannerUrl?: string | null;
   category: string;
   startAt: string;
   status: string;
@@ -241,6 +243,7 @@ export default function AdminEventsPage() {
       return {
         id: ev.id,
         title: ev.title,
+        bannerUrl: ev.bannerUrl || null,
         category: mapCategoryLabel(ev.category),
         date: new Date(ev.startAt).toLocaleDateString("en-IN", {
           day: "2-digit",
@@ -554,12 +557,27 @@ export default function AdminEventsPage() {
                       className="border-b border-white/[0.06] transition hover:bg-white/[0.02]"
                     >
                       <td className="px-7 py-5">
-                        <p className="text-xs font-semibold text-white">
-                          {event.title}
-                        </p>
-                        <p className="mt-1 text-[10px] text-gray-600">
-                          ID: {event.id.slice(0, 10)}
-                        </p>
+                        <div className="flex items-center gap-3">
+                          {event.bannerUrl ? (
+                            <img
+                              src={event.bannerUrl}
+                              alt={event.title}
+                              className="size-11 shrink-0 rounded-md border border-white/10 object-cover"
+                            />
+                          ) : (
+                            <div className="flex size-11 shrink-0 items-center justify-center rounded-md border border-white/10 bg-white/5 text-xs text-[#D4AF6A]">
+                              <CalendarDays size={16} />
+                            </div>
+                          )}
+                          <div>
+                            <p className="text-xs font-semibold text-white">
+                              {event.title}
+                            </p>
+                            <p className="mt-1 text-[10px] text-gray-600">
+                              ID: {event.id.slice(0, 10)}
+                            </p>
+                          </div>
+                        </div>
                       </td>
 
                       <td className="px-5 py-5">

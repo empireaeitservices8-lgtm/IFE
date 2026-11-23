@@ -35,6 +35,7 @@ export default function NewEventPage() {
   const router = useRouter();
   const [venues, setVenues] = useState<VenueOption[]>([]);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadingBanner, setUploadingBanner] = useState(false);
 
   const [form, setForm] = useState({
     title: "",
@@ -71,6 +72,33 @@ export default function NewEventPage() {
 
   function updateField(name: string, value: string) {
     setForm((current) => ({ ...current, [name]: value }));
+  }
+
+  async function handleBannerUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setMessage("");
+    try {
+      setUploadingBanner(true);
+      const fd = new FormData();
+      fd.append("file", file);
+      fd.append("folder", "ife-events/events");
+      const res = await fetch("/api/upload", { method: "POST", body: fd });
+      const json = await res.json();
+      if (!res.ok || !json.success || !json.data?.url) {
+        setMessageType("error");
+        setMessage(json.message || "Failed to upload banner image.");
+        return;
+      }
+      updateField("bannerUrl", json.data.url);
+      setMessageType("success");
+      setMessage("Banner image uploaded to Cloudinary.");
+    } catch {
+      setMessageType("error");
+      setMessage("Network error while uploading banner image.");
+    } finally {
+      setUploadingBanner(false);
+    }
   }
 
   async function handleSubmit(status: "Draft" | "Published") {
@@ -305,29 +333,50 @@ export default function NewEventPage() {
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-[#101010] p-5 md:p-7">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-xl bg-[#D4AF6A]/10 p-3 text-[#D4AF6A]">
-                <ImagePlus size={20} />
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-[#D4AF6A]/10 p-3 text-[#D4AF6A]">
+                  <ImagePlus size={20} />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Event Banner</h3>
+                  <p className="text-xs text-gray-500">
+                    Upload an image to Cloudinary or paste an image URL
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold">Event Banner</h3>
-                <p className="text-xs text-gray-500">Provide an image URL for the event banner</p>
-              </div>
+
+              <label className="cursor-pointer rounded-xl border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-4 py-2.5 text-xs font-semibold text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black">
+                {uploadingBanner ? "Uploading..." : "Upload to Cloudinary"}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/avif"
+                  disabled={uploadingBanner}
+                  onChange={handleBannerUpload}
+                  className="hidden"
+                />
+              </label>
             </div>
 
             <label className={labelClass}>
               Banner Image URL
               <input
                 className={inputClass}
-                placeholder="https://example.com/event-banner.jpg"
+                placeholder="https://res.cloudinary.com/diy4ratd/..."
                 value={form.bannerUrl}
                 onChange={(e) => updateField("bannerUrl", e.target.value)}
               />
             </label>
 
-            <p className="mt-2 text-xs text-gray-600">
-              This is a URL field only. File upload and image storage are not connected yet.
-            </p>
+            {form.bannerUrl && (
+              <div className="mt-4 overflow-hidden rounded-xl border border-white/10">
+                <img
+                  src={form.bannerUrl}
+                  alt="Event banner preview"
+                  className="h-48 w-full object-cover"
+                />
+              </div>
+            )}
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-[#101010] p-5 md:p-7">

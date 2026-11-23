@@ -36,6 +36,7 @@ type Artist = {
   email: string;
   phone: string;
   location: string;
+  imageUrl: string | null;
   events: string[];
   rating: number;
   status: "Active" | "Inactive";
@@ -49,6 +50,7 @@ type ApiArtist = {
   email: string | null;
   phone: string | null;
   location: string | null;
+  imageUrl: string | null;
   isActive: boolean;
   _count?: { events: number };
 };
@@ -82,6 +84,7 @@ export default function ArtistsPage() {
       email: a.email || "—",
       phone: a.phone || "—",
       location: a.location || "India",
+      imageUrl: a.imageUrl || null,
       events: Array.from(
         { length: a._count?.events ?? 0 },
         (_, i) => `Event ${i + 1}`
@@ -282,9 +285,17 @@ export default function ArtistsPage() {
                     <tr key={artist.id} className="hover:bg-white/[0.02]">
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D4AF6A]/30 bg-[#D4AF6A]/10 text-xs font-semibold text-[#D4AF6A]">
-                            {artist.initials}
-                          </div>
+                          {artist.imageUrl ? (
+                            <img
+                              src={artist.imageUrl}
+                              alt={artist.name}
+                              className="h-10 w-10 rounded-full border border-[#D4AF6A]/40 object-cover"
+                            />
+                          ) : (
+                            <div className="flex h-10 w-10 items-center justify-center rounded-full border border-[#D4AF6A]/30 bg-[#D4AF6A]/10 text-xs font-semibold text-[#D4AF6A]">
+                              {artist.initials}
+                            </div>
+                          )}
                           <div>
                             <p className="font-medium text-white">{artist.name}</p>
                             <p className="mt-1 text-xs text-gray-500">{artist.email}</p>

@@ -28,6 +28,7 @@ type MediaItem = {
   event: string;
   category: string;
   type: "Image" | "Video";
+  url: string;
   date: string;
   status: "Published" | "Draft";
   featured: boolean;
@@ -41,6 +42,7 @@ type ApiGalleryItem = {
   description: string | null;
   type: "IMAGE" | "VIDEO";
   category: string;
+  url: string;
   status: string;
   isFeatured: boolean;
   createdAt: string;
@@ -64,6 +66,7 @@ export default function GalleryManagementPage() {
       event: m.event?.title || "IFE Showcase",
       category: m.category.charAt(0) + m.category.slice(1).toLowerCase(),
       type: m.type === "VIDEO" ? "Video" : "Image",
+      url: m.url,
       date: new Date(m.createdAt).toLocaleDateString("en-IN", {
         day: "2-digit",
         month: "short",
@@ -272,8 +275,14 @@ export default function GalleryManagementPage() {
                     key={item.id}
                     className="overflow-hidden rounded-xl border border-white/10 bg-[#0b0b0b] transition hover:border-[#D4AF6A]/40"
                   >
-                    <div className={`relative flex aspect-[16/10] items-center justify-center bg-gradient-to-br ${item.gradient}`}>
-                      {item.type === "Image" ? (
+                    <div className={`relative flex aspect-[16/10] items-center justify-center overflow-hidden bg-gradient-to-br ${item.gradient}`}>
+                      {item.type === "Image" && item.url ? (
+                        <img
+                          src={item.url}
+                          alt={item.title}
+                          className="h-full w-full object-cover transition duration-500 hover:scale-105"
+                        />
+                      ) : item.type === "Image" ? (
                         <ImageIcon size={42} strokeWidth={1} className="text-white/35" />
                       ) : (
                         <div className="flex h-14 w-14 items-center justify-center rounded-full border border-[#D4AF6A]/50 bg-black/30 text-[#D4AF6A]">
