@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { QRCodeSVG } from "qrcode.react";
 import {
   CalendarDays,
@@ -33,28 +33,22 @@ export default function DigitalTicket({
   eventDate,
   venue,
 }: Props) {
-  const [attendees, setAttendees] = useState<Attendee[]>([]);
-  const [loaded, setLoaded] = useState(false);
-
-  useEffect(() => {
+  const [attendees] = useState<Attendee[]>(() => {
+    if (typeof window === "undefined") return [];
     try {
-      const stored = sessionStorage.getItem(
-        `ife-attendees-${eventId}`
-      );
-
+      const stored = sessionStorage.getItem(`ife-attendees-${eventId}`);
       if (stored) {
-        const parsed = JSON.parse(stored);
-
+        const parsed: unknown = JSON.parse(stored);
         if (Array.isArray(parsed)) {
-          setAttendees(parsed);
+          return parsed as Attendee[];
         }
       }
     } catch (error) {
       console.error("Unable to load attendee details:", error);
-    } finally {
-      setLoaded(true);
     }
-  }, [eventId]);
+    return [];
+  });
+  const loaded = true;
 
   const handlePrint = () => {
     window.print();

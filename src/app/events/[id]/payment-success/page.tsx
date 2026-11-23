@@ -1,10 +1,11 @@
-
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import PaymentStatus from "@/components/events/PaymentStatus";
+import { resolveBookingEvent } from "@/lib/events/resolve-booking-event";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -14,23 +15,15 @@ type PageProps = {
   }>;
 };
 
-const events: Record<string, string> = {
-  "1": "The IFE Fashion Showcase",
-  "2": "Live Beyond",
-  "3": "Excellence Awards",
-  "4": "Runway Stories",
-  "5": "The Grand Celebration",
-  "6": "Creative Icons",
-};
-
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
+  const event = await resolveBookingEvent(id);
 
   return {
-    title: events[id]
-      ? `Payment Success | ${events[id]} | IFE`
+    title: event
+      ? `Payment Success | ${event.title} | IFE`
       : "Payment Success | IFE",
     description: "IFE payment status page.",
   };
@@ -42,27 +35,24 @@ export default async function PaymentSuccessPage({
 }: PageProps) {
   const { id } = await params;
   const query = await searchParams;
+  const event = await resolveBookingEvent(id);
 
-  const eventTitle = events[id];
-
-  if (!eventTitle) {
+  if (!event) {
     notFound();
   }
 
   return (
     <>
       <Header />
-
       <main className="pt-20">
         <PaymentStatus
           status="success"
           eventId={id}
-          eventTitle={eventTitle}
+          eventTitle={event.title}
           paymentId={query.paymentId}
           orderId={query.orderId}
         />
       </main>
-
       <Footer />
     </>
   );

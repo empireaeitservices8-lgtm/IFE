@@ -2,7 +2,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   CheckCircle2,
   CalendarDays,
@@ -10,7 +10,6 @@ import {
   Ticket,
   Users,
   ArrowRight,
-  Download,
   ShieldCheck,
 } from "lucide-react";
 

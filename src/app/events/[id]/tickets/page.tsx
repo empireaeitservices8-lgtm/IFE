@@ -1,59 +1,48 @@
-
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import TicketSelector from "@/components/events/TicketSelector";
+import { resolveBookingEvent } from "@/lib/events/resolve-booking-event";
+
+export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ id: string }>;
-};
-
-const events: Record<string, string> = {
-  "1": "The IFE Fashion Showcase",
-  "2": "Live Beyond",
-  "3": "Excellence Awards",
-  "4": "Runway Stories",
-  "5": "The Grand Celebration",
-  "6": "Creative Icons",
 };
 
 export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { id } = await params;
-  const eventTitle = events[id];
+  const event = await resolveBookingEvent(id);
 
   return {
-    title: eventTitle
-      ? `Select Tickets | ${eventTitle} | IFE`
+    title: event
+      ? `Select Tickets | ${event.title} | IFE`
       : "Select Tickets | IFE",
     description: "Choose your tickets for an exclusive IFE event.",
   };
 }
 
-export default async function SelectTicketsPage({
-  params,
-}: PageProps) {
+export default async function SelectTicketsPage({ params }: PageProps) {
   const { id } = await params;
-  const eventTitle = events[id];
+  const event = await resolveBookingEvent(id);
 
-  if (!eventTitle) {
+  if (!event) {
     notFound();
   }
 
   return (
     <>
       <Header />
-
       <main className="pt-20">
         <TicketSelector
           eventId={id}
-          eventTitle={eventTitle}
+          eventTitle={event.title}
+          liveTicketTypes={event.ticketTypes}
         />
       </main>
-
       <Footer />
     </>
   );
