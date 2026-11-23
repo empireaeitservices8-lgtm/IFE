@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   FiArrowLeft,
   FiArrowRight,
@@ -15,6 +16,7 @@ import {
 const REMEMBERED_EMAIL_KEY = "ife_admin_remembered_email";
 
 export default function AdminLoginPage() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState(() => {
     if (typeof window === "undefined") return "";
@@ -35,23 +37,28 @@ export default function AdminLoginPage() {
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
   useEffect(() => {
     let active = true;
     fetch("/api/auth/me")
       .then((res) => res.json())
       .then((json) => {
-        if (!active || !json.success || !json.data?.user) return;
-        const role = json.data.user.role;
-        if (role === "ADMIN" || role === "STAFF") {
-          window.location.assign("/admin/dashboard");
+        if (!active) return;
+        const role = json.data?.user?.role;
+        if (json.success && (role === "ADMIN" || role === "STAFF")) {
+          router.replace("/admin/dashboard");
+          return;
         }
+        setCheckingSession(false);
       })
-      .catch(() => {});
+      .catch(() => {
+        if (active) setCheckingSession(false);
+      });
     return () => {
       active = false;
     };
-  }, []);
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -92,7 +99,8 @@ export default function AdminLoginPage() {
         }
       } catch {}
 
-      window.location.assign("/admin/dashboard");
+      router.replace("/admin/dashboard");
+      router.refresh();
     } catch {
       setError("Unable to reach the authentication server. Please try again.");
     } finally {
@@ -102,6 +110,19 @@ export default function AdminLoginPage() {
 
   const autofillFix =
     "[&:-webkit-autofill]:shadow-[inset_0_0_0_1000px_#080808] [&:-webkit-autofill]:[-webkit-text-fill-color:#ffffff] [&:-webkit-autofill]:caret-white";
+
+  if (checkingSession) {
+    return (
+      <main className="flex min-h-screen items-center justify-center bg-[#050505] px-5 text-white">
+        <div className="flex flex-col items-center gap-4 text-center">
+          <div className="h-9 w-9 animate-spin rounded-full border-2 border-[#D4AF6A]/30 border-t-[#D4AF6A]" />
+          <p className="text-xs uppercase tracking-[0.28em] text-[#D4AF6A]">
+            Checking admin session...
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#050505] px-5 py-12 text-white">
