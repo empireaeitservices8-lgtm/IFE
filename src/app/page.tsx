@@ -7,6 +7,7 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import EventCard from "@/components/home/EventCard";
+import HomeEventPopup from "@/components/home/HomeEventPopup";
 import SectionHeading from "@/components/ui/SectionHeading";
 
 const events = [
@@ -70,6 +71,7 @@ export default function Home() {
   return (
     <>
       <Header />
+      <HomeEventPopup />
 
       <main>
         {/* HERO */}
