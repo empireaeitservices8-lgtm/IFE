@@ -25,7 +25,8 @@ type TicketRow = {
 
 function toDateInput(iso: string) {
   const d = new Date(iso);
-  return Number.isNaN(d.getTime()) ? "" : d.toISOString().slice(0, 10);
+  if (Number.isNaN(d.getTime())) return "";
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
 }
 
 function toTimeInput(iso: string) {
@@ -198,8 +199,11 @@ export default function EditEventPage() {
 
       const json = await res.json();
       if (!res.ok || !json.success) {
+        const firstFieldError = json.errors
+          ? Object.values(json.errors as Record<string, string[]>).flat()[0]
+          : undefined;
         setMessageType("error");
-        setMessage(json.message || "Failed to update event.");
+        setMessage(firstFieldError || json.message || "Failed to update event.");
         return;
       }
 

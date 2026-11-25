@@ -358,7 +358,7 @@ export async function createEvent(
     });
 
     return created;
-  });
+  }, { timeout: 15000, maxWait: 10000 });
 
   await recordAuditLog({
     actorId,
@@ -444,43 +444,47 @@ export async function updateEvent(
     }
 
     if (input.ticketTypes !== undefined) {
-      for (const t of input.ticketTypes) {
-        if (t.id) {
-          await tx.ticketType.update({
-            where: { id: t.id },
-            data: {
-              name: t.name,
-              description: t.description ?? null,
-              price: new Prisma.Decimal(t.price),
-              totalQuantity: t.totalQuantity,
-              ...(t.status ? { status: t.status } : {}),
-            },
-          });
-        } else {
-          await tx.ticketType.upsert({
-            where: {
-              eventId_name: {
-                eventId: id,
-                name: t.name,
-              },
-            },
-            update: {
-              description: t.description ?? null,
-              price: new Prisma.Decimal(t.price),
-              totalQuantity: t.totalQuantity,
-              ...(t.status ? { status: t.status } : {}),
-            },
-            create: {
-              eventId: id,
-              name: t.name,
-              description: t.description ?? null,
-              price: new Prisma.Decimal(t.price),
-              totalQuantity: t.totalQuantity,
-              status: t.status ?? TicketStatus.ACTIVE,
-            },
-          });
-        }
-      }
+      await Promise.all(
+        input.ticketTypes.map((t) =>
+          t.id
+            ? tx.ticketType.update({
+                where: { id: t.id, eventId: id },
+                data: {
+                  name: t.name,
+                  ...(t.description !== undefined
+                    ? { description: t.description }
+                    : {}),
+                  price: new Prisma.Decimal(t.price),
+                  totalQuantity: t.totalQuantity,
+                  ...(t.status ? { status: t.status } : {}),
+                },
+              })
+            : tx.ticketType.upsert({
+                where: {
+                  eventId_name: {
+                    eventId: id,
+                    name: t.name,
+                  },
+                },
+                update: {
+                  ...(t.description !== undefined
+                    ? { description: t.description }
+                    : {}),
+                  price: new Prisma.Decimal(t.price),
+                  totalQuantity: t.totalQuantity,
+                  ...(t.status ? { status: t.status } : {}),
+                },
+                create: {
+                  eventId: id,
+                  name: t.name,
+                  description: t.description ?? null,
+                  price: new Prisma.Decimal(t.price),
+                  totalQuantity: t.totalQuantity,
+                  status: t.status ?? TicketStatus.ACTIVE,
+                },
+              })
+        )
+      );
     }
 
     return tx.event.update({
@@ -516,7 +520,7 @@ export async function updateEvent(
         ticketTypes: true,
       },
     });
-  });
+  }, { timeout: 15000, maxWait: 10000 });
 
   await recordAuditLog({
     actorId,
