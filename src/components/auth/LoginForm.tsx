@@ -118,35 +118,35 @@ export default function LoginForm() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080808] px-4 py-16 text-white sm:px-6">
-      <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-[#111111] lg:grid-cols-2">
+    <main className="flex min-h-screen items-center justify-center bg-[#080808] px-4 py-5 text-white sm:px-6">
+      <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-[#111111] lg:grid-cols-[0.9fr_1.1fr]">
 
         {/* Left Editorial Panel */}
-        <div className="relative hidden min-h-[650px] flex-col justify-between overflow-hidden bg-[linear-gradient(145deg,#252016,#080808_70%)] p-12 lg:flex">
-          <div className="absolute -right-28 -top-20 h-96 w-96 rounded-full border border-[#D4AF6A]/20" />
-          <div className="absolute -right-16 -top-8 h-72 w-72 rounded-full border border-[#D4AF6A]/20" />
+        <div className="relative hidden flex-col justify-between overflow-hidden bg-[linear-gradient(145deg,#252016,#080808_70%)] p-9 lg:flex">
+          <div className="pointer-events-none absolute -right-28 -top-20 h-96 w-96 rounded-full border border-[#D4AF6A]/20" />
+          <div className="pointer-events-none absolute -right-16 -top-8 h-72 w-72 rounded-full border border-[#D4AF6A]/20" />
 
           <div className="relative z-10">
             <p className="text-sm font-semibold tracking-[0.4em] text-[#D4AF6A]">
               IFE
             </p>
-            <p className="mt-2 text-xs uppercase tracking-[0.25em] text-gray-400">
+            <p className="mt-1.5 text-xs uppercase tracking-[0.25em] text-gray-400">
               International Fashion Entertainment
             </p>
           </div>
 
-          <div className="relative z-10 max-w-md">
-            <p className="mb-5 text-xs uppercase tracking-[0.3em] text-[#D4AF6A]">
+          <div className="relative z-10 my-8 max-w-md">
+            <p className="mb-3 text-xs uppercase tracking-[0.3em] text-[#D4AF6A]">
               Your world of experiences
             </p>
-            <h1 className="font-[var(--font-playfair)] text-5xl leading-tight">
+            <h1 className="font-[var(--font-playfair)] text-4xl leading-tight">
               Be part of
               <span className="block italic text-[#D4AF6A]">
                 extraordinary
               </span>
               moments.
             </h1>
-            <p className="mt-6 max-w-sm text-sm leading-7 text-gray-400">
+            <p className="mt-4 max-w-sm text-sm leading-6 text-gray-400">
               Discover exclusive fashion shows, entertainment
               experiences and unforgettable events with IFE.
             </p>
@@ -158,29 +158,29 @@ export default function LoginForm() {
         </div>
 
         {/* Login Form */}
-        <div className="flex items-center justify-center px-6 py-12 sm:px-12 lg:px-16">
+        <div className="flex items-center justify-center px-6 py-7 sm:px-10">
           <div className="w-full max-w-md">
-            <div className="mb-10">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#D4AF6A]">
+            <div className="mb-5">
+              <p className="mb-1.5 text-xs font-semibold uppercase tracking-[0.3em] text-[#D4AF6A]">
                 Welcome Back
               </p>
-              <h2 className="font-[var(--font-playfair)] text-4xl">Sign In</h2>
-              <p className="mt-3 text-sm leading-6 text-gray-400">
+              <h2 className="font-[var(--font-playfair)] text-3xl">Sign In</h2>
+              <p className="mt-1.5 text-sm text-gray-400">
                 Sign in to manage your event bookings and tickets.
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-4">
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-2 block text-sm text-gray-300"
+                  className="mb-1.5 block text-xs font-medium text-gray-300"
                 >
                   Email Address
                 </label>
 
-                <div className="flex items-center gap-3 border border-white/15 bg-[#080808] px-4 transition focus-within:border-[#D4AF6A]">
-                  <FiMail size={18} className="text-[#D4AF6A]" />
+                <div className="flex items-center gap-3 rounded-lg border border-white/15 bg-[#080808] px-3.5 transition focus-within:border-[#D4AF6A]">
+                  <FiMail size={16} className="shrink-0 text-[#D4AF6A]" />
                   <input
                     id="email"
                     type="email"
@@ -192,16 +192,16 @@ export default function LoginForm() {
                       setEmail(e.target.value);
                       if (message) setMessage("");
                     }}
-                    className="h-14 w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-600"
+                    className="h-11 w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-600"
                   />
                 </div>
               </div>
 
               <div>
-                <div className="mb-2 flex items-center justify-between">
+                <div className="mb-1.5 flex items-center justify-between">
                   <label
                     htmlFor="password"
-                    className="text-sm text-gray-300"
+                    className="text-xs font-medium text-gray-300"
                   >
                     Password
                   </label>
@@ -214,8 +214,8 @@ export default function LoginForm() {
                   </Link>
                 </div>
 
-                <div className="flex items-center gap-3 border border-white/15 bg-[#080808] px-4 transition focus-within:border-[#D4AF6A]">
-                  <FiLock size={18} className="text-[#D4AF6A]" />
+                <div className="flex items-center gap-3 rounded-lg border border-white/15 bg-[#080808] px-3.5 transition focus-within:border-[#D4AF6A]">
+                  <FiLock size={16} className="shrink-0 text-[#D4AF6A]" />
 
                   <input
                     id="password"
@@ -228,7 +228,7 @@ export default function LoginForm() {
                       setPassword(e.target.value);
                       if (message) setMessage("");
                     }}
-                    className="h-14 w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-600"
+                    className="h-11 w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-600"
                   />
 
                   <button
@@ -240,9 +240,9 @@ export default function LoginForm() {
                     className="text-gray-500 transition hover:text-[#D4AF6A]"
                   >
                     {showPassword ? (
-                      <FiEyeOff size={19} />
+                      <FiEyeOff size={17} />
                     ) : (
-                      <FiEye size={19} />
+                      <FiEye size={17} />
                     )}
                   </button>
                 </div>
@@ -261,26 +261,26 @@ export default function LoginForm() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex h-14 w-full items-center justify-center gap-3 bg-[#D4AF6A] text-sm font-semibold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
+                className="flex h-12 w-full items-center justify-center gap-3 rounded-lg bg-[#D4AF6A] text-sm font-semibold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {loading ? "Signing In..." : "Sign In"}
-                <FiArrowRight size={18} />
+                <FiArrowRight size={17} />
               </button>
 
               {message && (
                 <div
                   role="alert"
-                  className="flex items-start gap-3 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm leading-6 text-red-300"
+                  className="flex items-start gap-2.5 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-xs leading-5 text-red-300"
                 >
-                  <FiAlertCircle size={18} className="mt-0.5 shrink-0 text-red-400" />
+                  <FiAlertCircle size={16} className="mt-0.5 shrink-0 text-red-400" />
                   <span>{message}</span>
                 </div>
               )}
             </form>
 
-            <div className="my-8 flex items-center gap-4">
+            <div className="my-5 flex items-center gap-4">
               <div className="h-px flex-1 bg-white/10" />
-              <span className="text-xs uppercase tracking-wider text-gray-600">
+              <span className="text-[11px] uppercase tracking-wider text-gray-600">
                 New to IFE?
               </span>
               <div className="h-px flex-1 bg-white/10" />
@@ -288,34 +288,29 @@ export default function LoginForm() {
 
             <Link
               href="/register"
-              className="flex h-14 w-full items-center justify-center border border-[#D4AF6A]/50 text-sm font-semibold text-[#D4AF6A] transition hover:bg-[#D4AF6A]/10"
+              className="flex h-11 w-full items-center justify-center rounded-lg border border-[#D4AF6A]/50 text-sm font-semibold text-[#D4AF6A] transition hover:bg-[#D4AF6A]/10"
             >
               Create an Account
             </Link>
 
-            <p className="mt-8 text-center text-xs leading-6 text-gray-500">
-              By continuing, you agree to our{" "}
-              <Link
-                href="/terms"
-                className="text-gray-300 hover:text-[#D4AF6A]"
-              >
-                Terms & Conditions
-              </Link>{" "}
-              and{" "}
-              <Link
-                href="/privacy-policy"
-                className="text-gray-300 hover:text-[#D4AF6A]"
-              >
-                Privacy Policy
-              </Link>.
-            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-2 text-xs text-gray-500">
+              <span>
+                <Link href="/terms" className="text-gray-400 hover:text-[#D4AF6A]">
+                  Terms
+                </Link>{" "}
+                &amp;{" "}
+                <Link
+                  href="/privacy-policy"
+                  className="text-gray-400 hover:text-[#D4AF6A]"
+                >
+                  Privacy
+                </Link>
+              </span>
 
-            <Link
-              href="/"
-              className="mt-8 block text-center text-sm text-gray-500 transition hover:text-[#D4AF6A]"
-            >
-              Back to Homepage
-            </Link>
+              <Link href="/" className="transition hover:text-[#D4AF6A]">
+                Back to Homepage
+              </Link>
+            </div>
           </div>
         </div>
       </div>

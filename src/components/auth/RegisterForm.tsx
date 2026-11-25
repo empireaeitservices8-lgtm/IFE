@@ -1,19 +1,18 @@
-
 "use client";
 
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
-  User,
-  Mail,
-  Phone,
-  LockKeyhole,
-  Eye,
-  EyeOff,
-  ArrowRight,
-  CheckCircle2,
-} from "lucide-react";
+  FiArrowRight,
+  FiCheckCircle,
+  FiEye,
+  FiEyeOff,
+  FiLock,
+  FiMail,
+  FiPhone,
+  FiUser,
+} from "react-icons/fi";
 
 export default function RegisterForm() {
   const router = useRouter();
@@ -33,9 +32,7 @@ export default function RegisterForm() {
   const [message, setMessage] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
 
     setForm((previous) => ({
@@ -111,35 +108,34 @@ export default function RegisterForm() {
   };
 
   const inputClass =
-    "h-14 w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-600";
+    "h-11 w-full bg-transparent text-sm text-white outline-none placeholder:text-gray-600";
 
   const fieldClass =
-    "flex items-center gap-3 border border-white/15 bg-[#080808] px-4 transition focus-within:border-[#D4AF6A]";
+    "flex items-center gap-2.5 rounded-lg border border-white/15 bg-[#080808] px-3.5 transition focus-within:border-[#D4AF6A]";
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-[#080808] px-4 py-14 text-white sm:px-6">
-      <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-[#111111] lg:grid-cols-2">
-
+    <main className="flex min-h-screen items-center justify-center bg-[#080808] px-4 py-5 text-white sm:px-6">
+      <div className="grid w-full max-w-6xl overflow-hidden rounded-2xl border border-white/10 bg-[#111111] lg:grid-cols-[0.9fr_1.1fr]">
         {/* Left Panel */}
-        <div className="relative hidden min-h-[800px] flex-col justify-between overflow-hidden bg-[linear-gradient(145deg,#252016,#080808_70%)] p-12 lg:flex">
-          <div className="absolute -right-28 -top-20 h-96 w-96 rounded-full border border-[#D4AF6A]/20" />
-          <div className="absolute -right-16 -top-8 h-72 w-72 rounded-full border border-[#D4AF6A]/20" />
+        <div className="relative hidden flex-col justify-between overflow-hidden bg-[linear-gradient(145deg,#252016,#080808_70%)] p-9 lg:flex">
+          <div className="absolute -right-28 -top-20 h-80 w-80 rounded-full border border-[#D4AF6A]/20" />
+          <div className="absolute -right-16 -top-8 h-60 w-60 rounded-full border border-[#D4AF6A]/20" />
 
           <div className="relative z-10">
             <p className="text-sm font-semibold tracking-[0.4em] text-[#D4AF6A]">
               IFE
             </p>
-            <p className="mt-2 text-xs uppercase tracking-[0.25em] text-gray-400">
+            <p className="mt-1.5 text-[11px] uppercase tracking-[0.25em] text-gray-400">
               International Fashion Entertainment
             </p>
           </div>
 
           <div className="relative z-10 max-w-md">
-            <p className="mb-5 text-xs uppercase tracking-[0.3em] text-[#D4AF6A]">
+            <p className="mb-3 text-[11px] uppercase tracking-[0.3em] text-[#D4AF6A]">
               Join the IFE community
             </p>
 
-            <h1 className="font-serif text-5xl leading-tight">
+            <h1 className="font-[var(--font-playfair)] text-4xl leading-tight">
               Your next
               <span className="block italic text-[#D4AF6A]">
                 extraordinary
@@ -147,24 +143,21 @@ export default function RegisterForm() {
               experience starts here.
             </h1>
 
-            <p className="mt-6 max-w-sm text-sm leading-7 text-gray-400">
-              Create your account and discover fashion,
-              entertainment and exclusive events.
+            <p className="mt-4 max-w-sm text-xs leading-6 text-gray-400 sm:text-sm">
+              Create your account and discover fashion, entertainment and
+              exclusive events.
             </p>
 
-            <div className="mt-10 space-y-5">
+            <div className="mt-6 space-y-3">
               {[
                 "Discover exclusive events",
                 "Manage your bookings",
                 "Access your digital tickets",
                 "Stay updated with IFE",
               ].map((item) => (
-                <div key={item} className="flex items-center gap-3">
-                  <CheckCircle2
-                    size={18}
-                    className="text-[#D4AF6A]"
-                  />
-                  <span className="text-sm text-gray-300">
+                <div key={item} className="flex items-center gap-2.5">
+                  <FiCheckCircle size={16} className="shrink-0 text-[#D4AF6A]" />
+                  <span className="text-xs text-gray-300 sm:text-sm">
                     {item}
                   </span>
                 </div>
@@ -172,52 +165,76 @@ export default function RegisterForm() {
             </div>
           </div>
 
-          <p className="relative z-10 text-xs tracking-wider text-gray-500">
+          <p className="relative z-10 text-[11px] tracking-wider text-gray-500">
             EXPERIENCE MORE. EXPECT EXTRAORDINARY.
           </p>
         </div>
 
         {/* Registration Form */}
-        <div className="flex items-center justify-center px-6 py-12 sm:px-12 lg:px-16">
-          <div className="w-full max-w-md">
-            <div className="mb-8">
-              <p className="mb-3 text-xs font-semibold uppercase tracking-[0.3em] text-[#D4AF6A]">
+        <div className="flex items-center justify-center px-6 py-7 sm:px-10">
+          <div className="w-full max-w-lg">
+            <div className="mb-5">
+              <p className="mb-1.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-[#D4AF6A]">
                 Create Your Account
               </p>
 
-              <h2 className="font-serif text-4xl">
-                Register
-              </h2>
+              <h2 className="font-[var(--font-playfair)] text-3xl">Register</h2>
 
-              <p className="mt-3 text-sm leading-6 text-gray-400">
+              <p className="mt-1.5 text-xs leading-5 text-gray-400 sm:text-sm">
                 Enter your details to join the IFE community.
               </p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-3.5">
+              <div className="grid gap-3.5 sm:grid-cols-2">
+                {/* Full Name */}
+                <div>
+                  <label
+                    htmlFor="fullName"
+                    className="mb-1.5 block text-xs text-gray-300"
+                  >
+                    Full Name
+                  </label>
 
-              {/* Full Name */}
-              <div>
-                <label
-                  htmlFor="fullName"
-                  className="mb-2 block text-sm text-gray-300"
-                >
-                  Full Name
-                </label>
+                  <div className={fieldClass}>
+                    <FiUser size={16} className="shrink-0 text-[#D4AF6A]" />
+                    <input
+                      id="fullName"
+                      name="fullName"
+                      type="text"
+                      required
+                      autoComplete="name"
+                      placeholder="Enter your full name"
+                      value={form.fullName}
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+                  </div>
+                </div>
 
-                <div className={fieldClass}>
-                  <User size={18} className="text-[#D4AF6A]" />
-                  <input
-                    id="fullName"
-                    name="fullName"
-                    type="text"
-                    required
-                    autoComplete="name"
-                    placeholder="Enter your full name"
-                    value={form.fullName}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
+                {/* Phone */}
+                <div>
+                  <label
+                    htmlFor="phone"
+                    className="mb-1.5 block text-xs text-gray-300"
+                  >
+                    Mobile Number
+                  </label>
+
+                  <div className={fieldClass}>
+                    <FiPhone size={16} className="shrink-0 text-[#D4AF6A]" />
+                    <input
+                      id="phone"
+                      name="phone"
+                      type="tel"
+                      required
+                      autoComplete="tel"
+                      placeholder="Enter mobile number"
+                      value={form.phone}
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -225,13 +242,13 @@ export default function RegisterForm() {
               <div>
                 <label
                   htmlFor="email"
-                  className="mb-2 block text-sm text-gray-300"
+                  className="mb-1.5 block text-xs text-gray-300"
                 >
                   Email Address
                 </label>
 
                 <div className={fieldClass}>
-                  <Mail size={18} className="text-[#D4AF6A]" />
+                  <FiMail size={16} className="shrink-0 text-[#D4AF6A]" />
                   <input
                     id="email"
                     name="email"
@@ -246,132 +263,103 @@ export default function RegisterForm() {
                 </div>
               </div>
 
-              {/* Phone */}
-              <div>
-                <label
-                  htmlFor="phone"
-                  className="mb-2 block text-sm text-gray-300"
-                >
-                  Mobile Number
-                </label>
-
-                <div className={fieldClass}>
-                  <Phone size={18} className="text-[#D4AF6A]" />
-                  <input
-                    id="phone"
-                    name="phone"
-                    type="tel"
-                    required
-                    autoComplete="tel"
-                    placeholder="Enter your mobile number"
-                    value={form.phone}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
-                </div>
-              </div>
-
-              {/* Password */}
-              <div>
-                <label
-                  htmlFor="password"
-                  className="mb-2 block text-sm text-gray-300"
-                >
-                  Password
-                </label>
-
-                <div className={fieldClass}>
-                  <LockKeyhole
-                    size={18}
-                    className="text-[#D4AF6A]"
-                  />
-
-                  <input
-                    id="password"
-                    name="password"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    minLength={8}
-                    autoComplete="new-password"
-                    placeholder="Minimum 8 characters"
-                    value={form.password}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    aria-label={
-                      showPassword ? "Hide password" : "Show password"
-                    }
-                    className="text-gray-500 hover:text-[#D4AF6A]"
+              <div className="grid gap-3.5 sm:grid-cols-2">
+                {/* Password */}
+                <div>
+                  <label
+                    htmlFor="password"
+                    className="mb-1.5 block text-xs text-gray-300"
                   >
-                    {showPassword ? (
-                      <EyeOff size={19} />
-                    ) : (
-                      <Eye size={19} />
-                    )}
-                  </button>
+                    Password
+                  </label>
+
+                  <div className={fieldClass}>
+                    <FiLock size={16} className="shrink-0 text-[#D4AF6A]" />
+
+                    <input
+                      id="password"
+                      name="password"
+                      type={showPassword ? "text" : "password"}
+                      required
+                      minLength={8}
+                      autoComplete="new-password"
+                      placeholder="Min 8 chars"
+                      value={form.password}
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      aria-label={
+                        showPassword ? "Hide password" : "Show password"
+                      }
+                      className="shrink-0 text-gray-500 hover:text-[#D4AF6A]"
+                    >
+                      {showPassword ? (
+                        <FiEyeOff size={17} />
+                      ) : (
+                        <FiEye size={17} />
+                      )}
+                    </button>
+                  </div>
                 </div>
-              </div>
 
-              {/* Confirm Password */}
-              <div>
-                <label
-                  htmlFor="confirmPassword"
-                  className="mb-2 block text-sm text-gray-300"
-                >
-                  Confirm Password
-                </label>
-
-                <div className={fieldClass}>
-                  <LockKeyhole
-                    size={18}
-                    className="text-[#D4AF6A]"
-                  />
-
-                  <input
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    required
-                    autoComplete="new-password"
-                    placeholder="Re-enter your password"
-                    value={form.confirmPassword}
-                    onChange={handleChange}
-                    className={inputClass}
-                  />
-
-                  <button
-                    type="button"
-                    onClick={() =>
-                      setShowConfirmPassword(!showConfirmPassword)
-                    }
-                    aria-label={
-                      showConfirmPassword
-                        ? "Hide confirm password"
-                        : "Show confirm password"
-                    }
-                    className="text-gray-500 hover:text-[#D4AF6A]"
+                {/* Confirm Password */}
+                <div>
+                  <label
+                    htmlFor="confirmPassword"
+                    className="mb-1.5 block text-xs text-gray-300"
                   >
-                    {showConfirmPassword ? (
-                      <EyeOff size={19} />
-                    ) : (
-                      <Eye size={19} />
-                    )}
-                  </button>
+                    Confirm Password
+                  </label>
+
+                  <div className={fieldClass}>
+                    <FiLock size={16} className="shrink-0 text-[#D4AF6A]" />
+
+                    <input
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      type={showConfirmPassword ? "text" : "password"}
+                      required
+                      autoComplete="new-password"
+                      placeholder="Re-enter password"
+                      value={form.confirmPassword}
+                      onChange={handleChange}
+                      className={inputClass}
+                    />
+
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setShowConfirmPassword(!showConfirmPassword)
+                      }
+                      aria-label={
+                        showConfirmPassword
+                          ? "Hide confirm password"
+                          : "Show confirm password"
+                      }
+                      className="shrink-0 text-gray-500 hover:text-[#D4AF6A]"
+                    >
+                      {showConfirmPassword ? (
+                        <FiEyeOff size={17} />
+                      ) : (
+                        <FiEye size={17} />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
 
               {/* Terms */}
-              <label className="flex cursor-pointer items-start gap-3 text-sm leading-6 text-gray-400">
+              <label className="flex cursor-pointer items-center gap-2.5 pt-1 text-xs text-gray-400">
                 <input
                   type="checkbox"
                   name="agree"
                   checked={form.agree}
                   onChange={handleChange}
-                  className="mt-1 h-4 w-4 accent-[#D4AF6A]"
+                  className="h-4 w-4 accent-[#D4AF6A]"
                 />
 
                 <span>
@@ -380,7 +368,7 @@ export default function RegisterForm() {
                     href="/terms"
                     className="text-[#D4AF6A] hover:text-[#F5E5B5]"
                   >
-                    Terms & Conditions
+                    Terms &amp; Conditions
                   </Link>{" "}
                   and{" "}
                   <Link
@@ -388,23 +376,25 @@ export default function RegisterForm() {
                     className="text-[#D4AF6A] hover:text-[#F5E5B5]"
                   >
                     Privacy Policy
-                  </Link>.
+                  </Link>
+                  .
                 </span>
               </label>
 
               {/* Submit */}
               <button
                 type="submit"
-                className="flex h-14 w-full items-center justify-center gap-3 bg-[#D4AF6A] text-sm font-semibold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5]"
+                disabled={loading}
+                className="flex h-12 w-full items-center justify-center gap-2.5 rounded-lg bg-[#D4AF6A] text-xs font-bold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                Create Account
-                <ArrowRight size={18} />
+                {loading ? "Creating Account..." : "Create Account"}
+                <FiArrowRight size={16} />
               </button>
 
               {message && (
                 <p
                   role="status"
-                  className={`rounded-lg border p-3 text-sm leading-6 ${
+                  className={`rounded-lg border p-2.5 text-xs leading-5 ${
                     success
                       ? "border-green-500/30 bg-green-500/5 text-green-300"
                       : "border-red-500/30 bg-red-500/5 text-red-300"
@@ -415,22 +405,21 @@ export default function RegisterForm() {
               )}
             </form>
 
-            <p className="mt-8 text-center text-sm text-gray-400">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="font-semibold text-[#D4AF6A] hover:text-[#F5E5B5]"
-              >
-                Sign In
-              </Link>
-            </p>
+            <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 text-xs">
+              <p className="text-gray-400">
+                Already have an account?{" "}
+                <Link
+                  href="/login"
+                  className="font-semibold text-[#D4AF6A] hover:text-[#F5E5B5]"
+                >
+                  Sign In
+                </Link>
+              </p>
 
-            <Link
-              href="/"
-              className="mt-6 block text-center text-sm text-gray-500 hover:text-[#D4AF6A]"
-            >
-              Back to Homepage
-            </Link>
+              <Link href="/" className="text-gray-500 hover:text-[#D4AF6A]">
+                Back to Homepage
+              </Link>
+            </div>
           </div>
         </div>
       </div>
