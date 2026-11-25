@@ -234,7 +234,7 @@ export async function createBooking(
     }
 
     return createdBooking;
-  });
+  }, { timeout: 15000, maxWait: 10000 });
 
   return booking;
 }

@@ -397,6 +397,7 @@ export default function NewEventPage() {
                   type="date"
                   className={inputClass}
                   value={form.startDate}
+                  onClick={(e) => e.currentTarget.showPicker?.()}
                   onChange={(e) => updateField("startDate", e.target.value)}
                 />
               </label>
@@ -406,6 +407,7 @@ export default function NewEventPage() {
                   type="time"
                   className={inputClass}
                   value={form.startTime}
+                  onClick={(e) => e.currentTarget.showPicker?.()}
                   onChange={(e) => updateField("startTime", e.target.value)}
                 />
               </label>
@@ -415,6 +417,7 @@ export default function NewEventPage() {
                   type="date"
                   className={inputClass}
                   value={form.endDate}
+                  onClick={(e) => e.currentTarget.showPicker?.()}
                   onChange={(e) => updateField("endDate", e.target.value)}
                 />
               </label>
@@ -424,6 +427,7 @@ export default function NewEventPage() {
                   type="time"
                   className={inputClass}
                   value={form.endTime}
+                  onClick={(e) => e.currentTarget.showPicker?.()}
                   onChange={(e) => updateField("endTime", e.target.value)}
                 />
               </label>

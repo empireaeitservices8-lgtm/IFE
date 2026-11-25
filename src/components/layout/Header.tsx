@@ -277,7 +277,7 @@ export default function Header() {
           >
             <div className="container-main flex h-[calc(100dvh-6rem)] flex-col justify-between overflow-y-auto py-8">
               <nav aria-label="Mobile navigation" className="space-y-1">
-                {navLinks.map((link, index) => {
+                {navLinks.map((link) => {
                   const active = isActiveLink(link.href);
                   return (
                     <Link
@@ -291,14 +291,9 @@ export default function Header() {
                           : "text-white/80 hover:text-white"
                       }`}
                     >
-                      <div className="flex items-baseline gap-4">
-                        <span className="text-[10px] font-semibold tracking-[2px] text-[#D4AF6A]/70">
-                          {String(index + 1).padStart(2, "0")}
-                        </span>
-                        <span className="font-[var(--font-playfair)] text-2xl tracking-tight">
-                          {link.name}
-                        </span>
-                      </div>
+                      <span className="font-[var(--font-playfair)] text-2xl tracking-tight">
+                        {link.name}
+                      </span>
                       <FiArrowUpRight
                         size={18}
                         className={active ? "text-[#D4AF6A]" : "text-white/35"}

@@ -64,8 +64,9 @@ export async function createRazorpayOrder(bookingId: string) {
   }
 
   if (!keyId || !keySecret) {
-    const sandboxOrderId = `sandbox_order_${booking.bookingCode}`;
-    const sandboxPaymentId = `sandbox_pay_${Date.now()}`;
+    const suffix = `${Date.now()}_${Math.random().toString(36).slice(2, 6).toUpperCase()}`;
+    const sandboxOrderId = `sandbox_order_${booking.bookingCode}_${suffix}`;
+    const sandboxPaymentId = `sandbox_pay_${suffix}`;
 
     await prisma.$transaction(async (tx) => {
       await tx.payment.create({
@@ -104,7 +105,7 @@ export async function createRazorpayOrder(bookingId: string) {
           },
         });
       }
-    });
+    }, { timeout: 15000, maxWait: 10000 });
 
     return {
       mode: "sandbox" as const,
@@ -145,15 +146,24 @@ export async function createRazorpayOrder(bookingId: string) {
   }
 
   const razorpay = getRazorpayClient();
-  const order = await razorpay.orders.create({
-    amount: amountPaise,
-    currency: booking.currency,
-    receipt: booking.bookingCode,
-    notes: {
-      bookingId: booking.id,
-      bookingCode: booking.bookingCode,
-    },
-  });
+  let order: { id: string };
+  try {
+    order = await razorpay.orders.create({
+      amount: amountPaise,
+      currency: booking.currency,
+      receipt: booking.bookingCode,
+      notes: {
+        bookingId: booking.id,
+        bookingCode: booking.bookingCode,
+      },
+    });
+  } catch (err) {
+    console.error("Razorpay order creation failed:", err);
+    throw new AppError(
+      "Unable to initialize payment gateway. Please try again.",
+      502
+    );
+  }
 
   await prisma.payment.create({
     data: {
