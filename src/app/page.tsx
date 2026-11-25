@@ -1,4 +1,3 @@
-
 import Link from "next/link";
 import Image from "next/image";
 import { FiArrowRight, FiArrowUpRight } from "react-icons/fi";
@@ -7,38 +6,58 @@ import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
 import EventCard from "@/components/home/EventCard";
-import HomeEventPopup from "@/components/home/HomeEventPopup";
+import HomeEventPopup, {
+  type PopupEvent,
+} from "@/components/home/HomeEventPopup";
+import NewsletterBox from "@/components/home/NewsletterBox";
 import SectionHeading from "@/components/ui/SectionHeading";
+import { listEvents } from "@/services/event.service";
 
-const events = [
+export const dynamic = "force-dynamic";
+
+const fallbackEvents = [
   {
+    href: "/events",
     image:
       "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=85&w=1000",
     category: "Fashion",
     title: "The Grand Fashion Night",
     date: "Coming Soon",
     location: "International Venue",
-    price: "Coming Soon",
+    price: "From ₹1,499",
   },
   {
+    href: "/events",
     image:
       "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=85&w=1000",
     category: "Entertainment",
     title: "The Ultimate Live Experience",
     date: "Coming Soon",
     location: "International Venue",
-    price: "Coming Soon",
+    price: "From ₹1,499",
   },
   {
+    href: "/events",
     image:
       "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=85&w=1000",
-    category: "Special Event",
+    category: "Awards",
     title: "The Celebration Experience",
     date: "Coming Soon",
     location: "International Venue",
-    price: "Coming Soon",
+    price: "From ₹1,499",
   },
 ];
+
+const fallbackImages: Record<string, string> = {
+  FASHION:
+    "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=85&w=1200",
+  ENTERTAINMENT:
+    "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=85&w=1200",
+  AWARDS:
+    "https://images.unsplash.com/photo-1503095396549-807759245b35?q=85&w=1200",
+  CONCERT:
+    "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=1200",
+};
 
 const categories = [
   {
@@ -67,20 +86,71 @@ const categories = [
   },
 ];
 
-export default function Home() {
+export default async function Home() {
+  let featuredEvents = fallbackEvents;
+  let popupEvent: PopupEvent | null = null;
+
+  try {
+    const result = await listEvents({ limit: 3, includeUnpublished: false });
+    if (result.items.length > 0) {
+      const first = result.items[0];
+      popupEvent = {
+        id: first.id,
+        title: first.title,
+        category:
+          first.category.charAt(0) + first.category.slice(1).toLowerCase(),
+        description:
+          first.shortDescription || first.description.slice(0, 130),
+        image:
+          first.bannerUrl ||
+          fallbackImages[first.category] ||
+          fallbackImages.FASHION,
+        date: new Date(first.startAt).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        venue: first.venue
+          ? `${first.venue.name}, ${first.venue.city}`
+          : "Venue to be announced",
+      };
+
+      featuredEvents = result.items.map((ev) => ({
+        href: `/events/${ev.id}`,
+        image:
+          ev.bannerUrl ||
+          fallbackImages[ev.category] ||
+          fallbackImages.FASHION,
+        category:
+          ev.category.charAt(0) + ev.category.slice(1).toLowerCase(),
+        title: ev.title,
+        date: new Date(ev.startAt).toLocaleDateString("en-IN", {
+          day: "2-digit",
+          month: "short",
+          year: "numeric",
+        }),
+        location: ev.venue
+          ? `${ev.venue.name}, ${ev.venue.city}`
+          : "Venue TBA",
+        price: "From ₹1,499",
+      }));
+    }
+  } catch {
+    featuredEvents = fallbackEvents;
+  }
+
   return (
     <>
       <Header />
-      <HomeEventPopup />
+      <HomeEventPopup initialEvent={popupEvent} />
 
       <main>
         {/* HERO */}
         <Hero />
 
         {/* INTRO */}
-        <section className="section-padding bg-[#080808]">
-          <div className="container-main grid items-center gap-14 lg:grid-cols-2">
-
+        <section className="section-padding border-t border-white/10 bg-[#080808]">
+          <div className="container-main grid items-center gap-10 lg:grid-cols-2">
             <div>
               <SectionHeading
                 eyebrow="Welcome to IFE"
@@ -90,14 +160,41 @@ export default function Home() {
 
               <Link
                 href="/about"
-                className="mt-8 inline-flex items-center gap-3 border-b border-[#D4AF6A] pb-3 text-xs font-semibold uppercase tracking-[2px] text-[#D4AF6A] hover:text-[#F5E5B5]"
+                className="mt-6 inline-flex items-center gap-2.5 rounded-lg border border-[#D4AF6A]/50 bg-[#D4AF6A]/10 px-6 py-3 text-xs font-semibold uppercase tracking-[2px] text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
               >
                 Discover Our Story
-                <FiArrowRight size={16} />
+                <FiArrowRight size={15} />
               </Link>
+
+              <div className="mt-7 grid grid-cols-3 gap-3 border-t border-white/10 pt-6">
+                <div className="rounded-lg border border-white/10 bg-[#101010] p-3">
+                  <p className="font-[var(--font-playfair)] text-lg text-[#D4AF6A]">
+                    Runway
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-white/55">
+                    Global Couture
+                  </p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-[#101010] p-3">
+                  <p className="font-[var(--font-playfair)] text-lg text-[#D4AF6A]">
+                    Live Stage
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-white/55">
+                    Curated Artists
+                  </p>
+                </div>
+                <div className="rounded-lg border border-white/10 bg-[#101010] p-3">
+                  <p className="font-[var(--font-playfair)] text-lg text-[#D4AF6A]">
+                    QR Pass
+                  </p>
+                  <p className="mt-0.5 text-[11px] text-white/55">
+                    Instant Entry
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="relative h-[340px] overflow-hidden rounded-xl">
+            <div className="relative h-[340px] overflow-hidden rounded-xl border border-white/10">
               <Image
                 src="https://images.unsplash.com/photo-1509631179647-0177331693ae?q=85&w=1200"
                 alt="Fashion runway experience"
@@ -105,24 +202,22 @@ export default function Home() {
                 className="object-cover"
                 sizes="(max-width: 1024px) 100vw, 50vw"
               />
-              <div className="absolute inset-0 border border-[#D4AF6A]/30" />
-              <div className="absolute bottom-6 left-6 bg-black/80 px-6 py-5 backdrop-blur">
+              <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-black/15" />
+              <div className="absolute bottom-5 left-5 rounded-lg border border-white/10 bg-black/80 px-5 py-4 backdrop-blur-md">
                 <p className="font-[var(--font-playfair)] text-2xl italic text-[#D4AF6A]">
                   Beyond Ordinary
                 </p>
-                <p className="mt-2 text-[9px] uppercase tracking-[3px] text-white/60">
+                <p className="mt-1 text-[9px] uppercase tracking-[3px] text-white/60">
                   The IFE Experience
                 </p>
               </div>
             </div>
-
           </div>
         </section>
 
         {/* EVENTS */}
-        <section className="section-padding bg-[#050505]">
+        <section className="section-padding border-t border-white/10 bg-[#050505]">
           <div className="container-main">
-
             <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
               <SectionHeading
                 eyebrow="Discover What's Next"
@@ -132,26 +227,24 @@ export default function Home() {
 
               <Link
                 href="/events"
-                className="flex items-center gap-3 text-xs font-semibold uppercase tracking-[2px] text-[#D4AF6A] hover:text-[#F5E5B5]"
+                className="inline-flex w-fit items-center gap-2 rounded-lg border border-white/15 px-5 py-2.5 text-xs font-semibold uppercase tracking-[2px] text-[#D4AF6A] transition hover:border-[#D4AF6A] hover:bg-[#D4AF6A] hover:text-black"
               >
                 View All Events
-                <FiArrowUpRight size={17} />
+                <FiArrowUpRight size={16} />
               </Link>
             </div>
 
-            <div className="grid gap-7 md:grid-cols-2 lg:grid-cols-3">
-              {events.map((event) => (
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+              {featuredEvents.map((event) => (
                 <EventCard key={event.title} {...event} />
               ))}
             </div>
-
           </div>
         </section>
 
         {/* CATEGORIES */}
-        <section className="section-padding bg-[#101010]">
+        <section className="section-padding border-t border-white/10 bg-[#101010]">
           <div className="container-main">
-
             <div className="mb-8 text-center">
               <SectionHeading
                 eyebrow="Explore IFE"
@@ -161,110 +254,111 @@ export default function Home() {
               />
             </div>
 
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-5 md:grid-cols-3">
               {categories.map((category) => (
                 <Link
                   href={category.href}
                   key={category.number}
-                  className="group relative h-[300px] overflow-hidden rounded-xl border border-white/10 transition hover:border-[#D4AF6A]/60"
+                  className="group relative h-[300px] overflow-hidden rounded-xl border border-white/10 transition hover:-translate-y-1 hover:border-[#D4AF6A]/60"
                 >
                   <Image
                     src={category.image}
                     alt={category.title}
                     fill
-                    className="object-cover transition duration-700 group-hover:scale-110"
+                    className="object-cover transition duration-700 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, 33vw"
                   />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-black/5" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/10" />
 
                   <div className="absolute inset-x-0 bottom-0 p-5">
-                    <p className="mb-2 text-xs tracking-[3px] text-[#D4AF6A]">
+                    <p className="mb-1.5 text-xs tracking-[3px] text-[#D4AF6A]">
                       {category.number}
                     </p>
 
-                    <h3 className="font-[var(--font-playfair)] text-2xl text-white">
+                    <h3 className="font-[var(--font-playfair)] text-2xl text-white transition group-hover:text-[#D4AF6A]">
                       {category.title}
                     </h3>
 
-                    <p className="mt-2 text-xs leading-5 text-white/60">
+                    <p className="mt-1.5 text-xs leading-5 text-white/65">
                       {category.description}
                     </p>
 
-                    <div className="mt-4 flex items-center gap-2 text-xs uppercase tracking-[2px] text-[#D4AF6A]">
+                    <div className="mt-3 flex items-center gap-2 text-xs uppercase tracking-[2px] text-[#D4AF6A]">
                       Explore More
-                      <FiArrowUpRight size={16} />
+                      <FiArrowUpRight size={15} />
                     </div>
                   </div>
                 </Link>
               ))}
             </div>
-
           </div>
         </section>
 
         {/* EXPERIENCE BANNER */}
-        <section className="relative overflow-hidden bg-[#080808] py-14">
-          <div
-            className="absolute inset-0 bg-cover bg-center opacity-30"
-            style={{
-              backgroundImage:
-                "url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=1800')",
-            }}
-          />
+        <section
+          className="relative overflow-hidden border-t border-white/10 bg-cover bg-center px-6 py-16"
+          style={{
+            backgroundImage:
+              "linear-gradient(90deg, rgba(5,5,5,0.94) 0%, rgba(5,5,5,0.8) 55%, rgba(5,5,5,0.6) 100%), url('https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=1800')",
+          }}
+        >
+          <div className="container-main relative z-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-center">
+            <div className="max-w-2xl">
+              <div className="mb-3 flex items-center gap-3">
+                <span className="h-px w-8 bg-[#D4AF6A]" />
+                <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
+                  More Than Just Events
+                </p>
+              </div>
 
-          <div className="absolute inset-0 bg-black/65" />
+              <h2 className="font-[var(--font-playfair)] text-3xl leading-tight text-white md:text-5xl">
+                Experience The{" "}
+                <span className="italic text-[#D4AF6A]">Extraordinary.</span>
+              </h2>
 
-          <div className="container-main relative z-10 text-center">
-            <p className="mb-4 text-xs uppercase tracking-[5px] text-[#D4AF6A]">
-              More Than Just Events
-            </p>
+              <p className="mt-3 max-w-xl text-xs leading-6 text-white/70 sm:text-sm">
+                Be part of unforgettable moments. Discover new experiences and
+                explore the world of IFE.
+              </p>
+            </div>
 
-            <h2 className="mx-auto max-w-4xl font-[var(--font-playfair)] text-4xl leading-tight text-white md:text-6xl">
-              Experience The Extraordinary.
-            </h2>
+            <div className="flex shrink-0 flex-wrap gap-3">
+              <Link
+                href="/events"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
+              >
+                Explore Events
+                <FiArrowRight size={15} />
+              </Link>
 
-            <p className="mx-auto mt-5 max-w-xl text-sm leading-7 text-white/60">
-              Be part of unforgettable moments. Discover new experiences
-              and explore the world of IFE.
-            </p>
-
-            <Link
-              href="/events"
-              className="mt-8 inline-flex items-center gap-3 bg-[#D4AF6A] px-9 py-4 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
-            >
-              Explore Events
-              <FiArrowRight size={17} />
-            </Link>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/30 bg-black/40 px-7 py-3.5 text-xs font-semibold uppercase tracking-[2px] text-white backdrop-blur-sm transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+              >
+                Contact Concierge
+              </Link>
+            </div>
           </div>
         </section>
 
         {/* NEWSLETTER */}
-        <section className="bg-[#111111] py-12">
-          <div className="container-main text-center">
-            <SectionHeading
-              eyebrow="Stay Connected"
-              title="Be The First To Know"
-              description="Stay updated with upcoming events, exclusive announcements and special experiences from IFE."
-              centered
-            />
+        <section className="border-t border-white/10 bg-[#0B0B0B] px-6 py-12">
+          <div className="container-main grid items-center gap-8 lg:grid-cols-[1fr_1.1fr]">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
+                Stay Connected
+              </p>
+              <h2 className="mt-2 font-[var(--font-playfair)] text-3xl text-white md:text-4xl">
+                Be The First To Know
+              </h2>
+              <p className="mt-2 max-w-md text-xs leading-6 text-white/60 sm:text-sm">
+                Stay updated with upcoming events, exclusive announcements, and
+                VIP pass releases from IFE.
+              </p>
+            </div>
 
-            <form className="mx-auto mt-8 flex max-w-xl flex-col gap-3 sm:flex-row">
-              <input
-                type="email"
-                placeholder="Enter your email address"
-                required
-                className="min-w-0 flex-1 border border-white/15 bg-black px-6 py-4 text-sm text-white outline-none placeholder:text-white/35 focus:border-[#D4AF6A]"
-              />
-
-              <button
-                type="submit"
-                className="bg-[#D4AF6A] px-8 py-4 text-xs font-bold uppercase tracking-[2px] text-black hover:bg-[#F5E5B5]"
-              >
-                Subscribe
-              </button>
-            </form>
-
+            <NewsletterBox />
           </div>
         </section>
       </main>

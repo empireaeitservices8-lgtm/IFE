@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import {
   FiArrowRight,
@@ -10,7 +10,7 @@ import {
   FiX,
 } from "react-icons/fi";
 
-type PopupEvent = {
+export type PopupEvent = {
   id: string;
   title: string;
   category: string;
@@ -32,6 +32,7 @@ type ApiEventItem = {
 };
 
 const POPUP_DISMISSED_KEY = "ife_home_popup_dismissed";
+const noopSubscribe = () => () => {};
 
 const fallbackImages: Record<string, string> = {
   FASHION:
@@ -44,20 +45,33 @@ const fallbackImages: Record<string, string> = {
     "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=1200",
 };
 
-export default function HomeEventPopup() {
-  const [open, setOpen] = useState(false);
-  const [event, setEvent] = useState<PopupEvent | null>(null);
+export default function HomeEventPopup({
+  initialEvent = null,
+}: {
+  initialEvent?: PopupEvent | null;
+}) {
+  const [fetchedEvent, setFetchedEvent] = useState<PopupEvent | null>(null);
+  const [closed, setClosed] = useState(false);
+
+  const dismissed = useSyncExternalStore(
+    noopSubscribe,
+    () => {
+      try {
+        return window.sessionStorage.getItem(POPUP_DISMISSED_KEY);
+      } catch {
+        return null;
+      }
+    },
+    () => "1"
+  );
+
+  const event = initialEvent ?? fetchedEvent;
+  const open = Boolean(event) && !closed && dismissed !== "1";
 
   useEffect(() => {
-    try {
-      if (window.sessionStorage.getItem(POPUP_DISMISSED_KEY) === "1") {
-        return;
-      }
-    } catch {}
+    if (initialEvent || dismissed === "1") return;
 
     let active = true;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
     fetch("/api/events?limit=1")
       .then((res) => res.json())
       .then((json) => {
@@ -65,7 +79,7 @@ export default function HomeEventPopup() {
         const item: ApiEventItem | undefined = json.data?.items?.[0];
         if (!item) return;
 
-        setEvent({
+        setFetchedEvent({
           id: item.id,
           title: item.title,
           category:
@@ -85,21 +99,16 @@ export default function HomeEventPopup() {
             ? `${item.venue.name}, ${item.venue.city}`
             : "Venue to be announced",
         });
-
-        timer = setTimeout(() => {
-          if (active) setOpen(true);
-        }, 1500);
       })
       .catch(() => {});
 
     return () => {
       active = false;
-      if (timer) clearTimeout(timer);
     };
-  }, []);
+  }, [initialEvent, dismissed]);
 
   const closePopup = () => {
-    setOpen(false);
+    setClosed(true);
     try {
       window.sessionStorage.setItem(POPUP_DISMISSED_KEY, "1");
     } catch {}
@@ -206,4 +215,3 @@ export default function HomeEventPopup() {
     </div>
   );
 }
-

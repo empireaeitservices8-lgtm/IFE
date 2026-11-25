@@ -8,6 +8,35 @@ import { Prisma } from "@/generated/prisma/client";
 import { AppError } from "@/lib/utils/api-response";
 import { recordAuditLog } from "@/lib/utils/audit";
 
+const EVENT_CACHE_TTL_MS = 30_000;
+
+interface CacheEntry<T> {
+  expiresAt: number;
+  value: T;
+}
+
+const globalForEventCache = globalThis as unknown as {
+  __ifeEventListCache?: Map<string, CacheEntry<unknown>>;
+  __ifeEventDetailCache?: Map<string, CacheEntry<unknown>>;
+};
+
+const eventListCache =
+  globalForEventCache.__ifeEventListCache ??
+  new Map<string, CacheEntry<unknown>>();
+const eventDetailCache =
+  globalForEventCache.__ifeEventDetailCache ??
+  new Map<string, CacheEntry<unknown>>();
+
+if (process.env.NODE_ENV !== "production") {
+  globalForEventCache.__ifeEventListCache = eventListCache;
+  globalForEventCache.__ifeEventDetailCache = eventDetailCache;
+}
+
+export function invalidatePublicEventCache() {
+  eventListCache.clear();
+  eventDetailCache.clear();
+}
+
 function slugify(value: string): string {
   return value
     .toLowerCase()
@@ -79,6 +108,41 @@ export async function listEvents(params: {
     where.status = EventStatus.PUBLISHED;
   }
 
+  const isPublicQuery = !params.includeUnpublished;
+  const cacheKey = isPublicQuery
+    ? JSON.stringify({
+        search: params.search?.trim() || "",
+        category: params.category || "ALL",
+        page,
+        limit,
+      })
+    : "";
+
+  if (isPublicQuery) {
+    const cached = eventListCache.get(cacheKey);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value as {
+        items: (Awaited<ReturnType<typeof prisma.event.findMany>>[number] & {
+          venue: { name: string; city: string } | null;
+          ticketTypes: {
+            id: string;
+            name: string;
+            price: Prisma.Decimal;
+            totalQuantity: number;
+            soldQuantity: number;
+            availableQuantity: number;
+          }[];
+        })[];
+        pagination: {
+          page: number;
+          limit: number;
+          total: number;
+          totalPages: number;
+        };
+      };
+    }
+  }
+
   const [total, items] = await Promise.all([
     prisma.event.count({ where }),
     prisma.event.findMany({
@@ -86,20 +150,27 @@ export async function listEvents(params: {
       skip,
       take: limit,
       orderBy: { startAt: "asc" },
-      include: {
-        venue: true,
-        artists: {
-          include: {
-            artist: true,
+      include: isPublicQuery
+        ? {
+            venue: { select: { id: true, name: true, city: true } },
+            ticketTypes: {
+              orderBy: { price: "asc" },
+            },
+          }
+        : {
+            venue: true,
+            artists: {
+              include: {
+                artist: true,
+              },
+            },
+            ticketTypes: {
+              orderBy: { price: "asc" },
+            },
+            _count: {
+              select: { bookings: true },
+            },
           },
-        },
-        ticketTypes: {
-          orderBy: { price: "asc" },
-        },
-        _count: {
-          select: { bookings: true },
-        },
-      },
     }),
   ]);
 
@@ -111,7 +182,7 @@ export async function listEvents(params: {
     })),
   }));
 
-  return {
+  const payload = {
     items: enriched,
     pagination: {
       page,
@@ -120,9 +191,18 @@ export async function listEvents(params: {
       totalPages: Math.ceil(total / limit) || 1,
     },
   };
+
+  if (isPublicQuery) {
+    eventListCache.set(cacheKey, {
+      expiresAt: Date.now() + EVENT_CACHE_TTL_MS,
+      value: payload,
+    });
+  }
+
+  return payload;
 }
 
-export async function getEventByIdOrSlug(
+async function fetchEventByIdOrSlug(
   idOrSlug: string,
   includeUnpublished = false
 ) {
@@ -159,6 +239,29 @@ export async function getEventByIdOrSlug(
       availableQuantity: Math.max(0, t.totalQuantity - t.soldQuantity),
     })),
   };
+}
+
+export async function getEventByIdOrSlug(
+  idOrSlug: string,
+  includeUnpublished = false
+) {
+  if (!includeUnpublished) {
+    const cached = eventDetailCache.get(idOrSlug);
+    if (cached && cached.expiresAt > Date.now()) {
+      return cached.value as Awaited<ReturnType<typeof fetchEventByIdOrSlug>>;
+    }
+  }
+
+  const result = await fetchEventByIdOrSlug(idOrSlug, includeUnpublished);
+
+  if (!includeUnpublished) {
+    eventDetailCache.set(idOrSlug, {
+      expiresAt: Date.now() + EVENT_CACHE_TTL_MS,
+      value: result,
+    });
+  }
+
+  return result;
 }
 
 export async function createEvent(
@@ -266,6 +369,7 @@ export async function createEvent(
     ipAddress: ipAddress ?? null,
   });
 
+  invalidatePublicEventCache();
   return event;
 }
 
@@ -423,6 +527,7 @@ export async function updateEvent(
     ipAddress: ipAddress ?? null,
   });
 
+  invalidatePublicEventCache();
   return updated;
 }
 
@@ -465,6 +570,7 @@ export async function updateEventStatus(
     ipAddress: ipAddress ?? null,
   });
 
+  invalidatePublicEventCache();
   return updated;
 }
 
@@ -492,6 +598,7 @@ export async function deleteEvent(
   }
 
   await prisma.event.delete({ where: { id } });
+  invalidatePublicEventCache();
 
   await recordAuditLog({
     actorId,

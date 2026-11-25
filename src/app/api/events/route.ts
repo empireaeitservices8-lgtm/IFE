@@ -24,7 +24,14 @@ export async function GET(req: NextRequest) {
       includeUnpublished: isStaff,
     });
 
-    return ok(result);
+    const response = ok(result);
+    if (!isStaff) {
+      response.headers.set(
+        "Cache-Control",
+        "public, s-maxage=30, stale-while-revalidate=60"
+      );
+    }
+    return response;
   } catch (error) {
     return handleApiError(error);
   }

@@ -64,7 +64,7 @@ export default function EntertainmentPage() {
 
       <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
         {/* Hero */}
-        <section className="relative flex min-h-[640px] items-center overflow-hidden">
+        <section className="relative flex min-h-[380px] items-end overflow-hidden border-b border-white/10">
           <Image
             src="https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=2000"
             alt="Live entertainment event"
@@ -77,38 +77,36 @@ export default function EntertainmentPage() {
           <div className="absolute inset-0 bg-gradient-to-r from-black via-black/75 to-black/25" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-black/40" />
 
-          <div className="container-main relative z-10 pb-20 pt-36">
-            <div className="mb-7 flex items-center gap-4">
-              <span className="h-px w-12 bg-[#D4AF6A]" />
-              <p className="text-[11px] font-semibold uppercase tracking-[5px] text-[#D4AF6A]">
+          <div className="container-main relative z-10 pb-10 pt-28">
+            <div className="mb-4 flex items-center gap-3">
+              <span className="h-px w-10 bg-[#D4AF6A]" />
+              <p className="text-[10px] font-semibold uppercase tracking-[5px] text-[#D4AF6A]">
                 International Fashion Entertainment
               </p>
             </div>
 
-            <h1 className="max-w-4xl font-[var(--font-playfair)] text-5xl leading-[1.1] sm:text-6xl lg:text-8xl">
-              Where Entertainment
-              <span className="block italic text-[#D4AF6A]">
-                Comes Alive.
-              </span>
+            <h1 className="max-w-4xl font-[var(--font-playfair)] text-4xl leading-[1.1] sm:text-5xl lg:text-6xl">
+              Where Entertainment{" "}
+              <span className="italic text-[#D4AF6A]">Comes Alive.</span>
             </h1>
 
-            <p className="mt-8 max-w-xl text-base leading-8 text-white/65 md:text-lg">
+            <p className="mt-4 max-w-xl text-sm leading-7 text-white/70 md:text-base">
               Discover extraordinary performances, spectacular concerts, and
               unforgettable entertainment experiences with IFE.
             </p>
 
-            <div className="mt-10 flex flex-wrap items-center gap-5">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               <Link
                 href="/events"
-                className="inline-flex items-center gap-3 bg-[#D4AF6A] px-8 py-4 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
               >
                 Explore Events
-                <FiArrowRight size={17} />
+                <FiArrowRight size={15} />
               </Link>
 
               <Link
                 href="/gallery"
-                className="border border-white/30 px-8 py-4 text-xs font-semibold uppercase tracking-[2px] text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/30 px-7 py-3.5 text-xs font-semibold uppercase tracking-[2px] text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
               >
                 View Gallery
               </Link>
@@ -116,74 +114,60 @@ export default function EntertainmentPage() {
           </div>
         </section>
 
-        {/* Introduction */}
-        <section className="container-main py-24 text-center">
-          <div className="mb-5 flex items-center justify-center gap-3">
-            <span className="h-px w-9 bg-[#D4AF6A]" />
-            <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
-              The IFE Experience
-            </p>
-          </div>
-
-          <h2 className="mt-4 font-[var(--font-playfair)] text-4xl leading-tight sm:text-5xl">
-            Entertainment Beyond{" "}
-            <span className="italic text-[#D4AF6A]">Expectations</span>
-          </h2>
-
-          <p className="mx-auto mt-7 max-w-2xl text-sm leading-8 text-white/55 md:text-base">
-            IFE brings together creativity, talent, and entertainment to create
-            memorable experiences. From live music to spectacular productions,
-            explore entertainment that inspires audiences worldwide.
-          </p>
-        </section>
-
         {/* Entertainment Categories */}
-        <section className="border-y border-white/10 bg-[#0B0B0B] py-24">
+        <section className="border-b border-white/10 bg-[#0B0B0B] py-12">
           <div className="container-main">
-            <div className="mb-14">
-              <div className="mb-4 flex items-center gap-3">
-                <span className="h-px w-9 bg-[#D4AF6A]" />
-                <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
-                  Discover
-                </p>
+            <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
+              <div>
+                <div className="mb-3 flex items-center gap-3">
+                  <span className="h-px w-8 bg-[#D4AF6A]" />
+                  <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
+                    The IFE Experience
+                  </p>
+                </div>
+                <h2 className="font-[var(--font-playfair)] text-3xl sm:text-4xl">
+                  Our Entertainment{" "}
+                  <span className="italic text-[#D4AF6A]">Experiences</span>
+                </h2>
               </div>
-              <h2 className="font-[var(--font-playfair)] text-4xl sm:text-5xl">
-                Our Entertainment{" "}
-                <span className="italic text-[#D4AF6A]">Experiences</span>
-              </h2>
+
+              <p className="max-w-md text-xs leading-6 text-white/55 sm:text-sm">
+                From live music concerts to curated stage productions, explore
+                entertainment crafted for unforgettable nights.
+              </p>
             </div>
 
-            <div className="grid gap-7 sm:grid-cols-2 lg:grid-cols-4">
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
               {experiences.map((item) => {
                 const Icon = item.icon;
 
                 return (
                   <article
                     key={item.title}
-                    className="group overflow-hidden border border-white/10 bg-[#111111] transition duration-500 hover:-translate-y-2 hover:border-[#D4AF6A]/50"
+                    className="group overflow-hidden rounded-xl border border-white/10 bg-[#111111] shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
                   >
-                    <div className="relative h-72 overflow-hidden">
+                    <div className="relative h-44 overflow-hidden">
                       <Image
                         src={item.image}
                         alt={item.title}
                         fill
                         unoptimized
-                        className="object-cover transition duration-700 group-hover:scale-110"
+                        className="object-cover transition duration-700 group-hover:scale-105"
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-                      <span className="absolute top-4 right-4 text-[10px] font-semibold tracking-[3px] text-white/60">
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-black/25 to-transparent" />
+                      <span className="absolute right-3.5 top-3.5 text-[10px] font-semibold tracking-[3px] text-white/70">
                         {item.number}
                       </span>
-                      <div className="absolute bottom-5 left-5 flex size-11 items-center justify-center border border-[#D4AF6A]/50 bg-black/60 text-[#D4AF6A] backdrop-blur-sm">
-                        <Icon size={20} />
+                      <div className="absolute bottom-3.5 left-3.5 flex size-9 items-center justify-center rounded-lg border border-[#D4AF6A]/50 bg-black/70 text-[#D4AF6A] backdrop-blur-sm">
+                        <Icon size={17} />
                       </div>
                     </div>
 
-                    <div className="p-6">
-                      <h3 className="font-[var(--font-playfair)] text-xl">
+                    <div className="p-4">
+                      <h3 className="font-[var(--font-playfair)] text-lg text-white transition group-hover:text-[#D4AF6A]">
                         {item.title}
                       </h3>
-                      <p className="mt-4 text-sm leading-7 text-white/55">
+                      <p className="mt-2 text-xs leading-5 text-white/60">
                         {item.description}
                       </p>
                     </div>
@@ -195,23 +179,33 @@ export default function EntertainmentPage() {
         </section>
 
         {/* CTA */}
-        <section className="container-main py-28 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
-            Be Part of the Experience
-          </p>
+        <section className="px-6 py-12">
+          <div className="container-main relative overflow-hidden rounded-2xl border border-[#D4AF6A]/25 bg-[radial-gradient(ellipse_at_top,rgba(212,175,106,0.14),#0D0D0D_65%)] px-6 py-10 text-center">
+            <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
+              Be Part of the Experience
+            </p>
 
-          <h2 className="mx-auto mt-6 max-w-3xl font-[var(--font-playfair)] text-4xl sm:text-6xl">
-            Your Next Unforgettable{" "}
-            <span className="italic text-[#D4AF6A]">Moment Awaits.</span>
-          </h2>
+            <h2 className="mx-auto mt-3 max-w-3xl font-[var(--font-playfair)] text-3xl sm:text-4xl">
+              Your Next Unforgettable{" "}
+              <span className="italic text-[#D4AF6A]">Moment Awaits.</span>
+            </h2>
 
-          <Link
-            href="/events"
-            className="mt-10 inline-flex items-center gap-3 border border-[#D4AF6A] px-8 py-4 text-xs font-bold uppercase tracking-[2px] text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
-          >
-            Browse Events
-            <FiArrowRight size={16} />
-          </Link>
+            <div className="mt-6 flex flex-wrap justify-center gap-3">
+              <Link
+                href="/events"
+                className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
+              >
+                Browse Events
+                <FiArrowRight size={15} />
+              </Link>
+              <Link
+                href="/contact"
+                className="inline-flex items-center gap-2 rounded-lg border border-white/25 px-7 py-3.5 text-xs font-semibold uppercase tracking-[2px] text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+              >
+                Contact Us
+              </Link>
+            </div>
+          </div>
         </section>
       </main>
 

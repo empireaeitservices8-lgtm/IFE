@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FiArrowUpRight, FiCalendar, FiMapPin } from "react-icons/fi";
 
 type EventCardProps = {
+  href?: string;
   image: string;
   category: string;
   title: string;
@@ -12,6 +13,7 @@ type EventCardProps = {
 };
 
 export default function EventCard({
+  href = "/events",
   image,
   category,
   title,
@@ -22,7 +24,7 @@ export default function EventCard({
   return (
     <article className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-[#111111] shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60">
       <Link
-        href="/events"
+        href={href}
         className="relative block h-[175px] shrink-0 overflow-hidden"
       >
         <Image
@@ -47,7 +49,7 @@ export default function EventCard({
       <div className="flex flex-1 flex-col justify-between p-4">
         <div>
           <h3 className="font-[var(--font-playfair)] text-xl leading-snug text-white transition group-hover:text-[#D4AF6A]">
-            <Link href="/events">{title}</Link>
+            <Link href={href}>{title}</Link>
           </h3>
 
           <div className="mt-3 space-y-1.5 text-xs text-white/65">
@@ -74,7 +76,7 @@ export default function EventCard({
           </div>
 
           <Link
-            href="/events"
+            href={href}
             className="inline-flex items-center gap-1 rounded-md bg-[#D4AF6A] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[1.5px] text-black transition hover:bg-[#F5E5B5]"
           >
             View Event
