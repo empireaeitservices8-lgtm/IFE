@@ -91,16 +91,14 @@ export default function Header() {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 z-50 w-full transition-all duration-300 ${
-          scrolled
+        className={`fixed top-0 left-0 z-50 w-full transition-all duration-300 ${scrolled
             ? "border-b border-white/15 bg-[#050505]/90 shadow-[0_12px_36px_rgba(0,0,0,0.55)] backdrop-blur-xl"
             : "border-b border-white/10 bg-black/45 backdrop-blur-md"
-        }`}
+          }`}
       >
         <div
-          className={`container-main flex items-center justify-between transition-all duration-300 ${
-            scrolled ? "h-20" : "h-24"
-          }`}
+          className={`container-main flex items-center justify-between transition-all duration-300 ${scrolled ? "h-20" : "h-24"
+            }`}
         >
           {/* Brand Logo */}
           <Link
@@ -129,17 +127,15 @@ export default function Header() {
                   key={link.name}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
-                  className={`group relative py-2 text-[11px] font-medium uppercase tracking-[1.8px] transition-colors ${
-                    active
+                  className={`group relative py-2 text-[11px] font-medium uppercase tracking-[1.8px] transition-colors ${active
                       ? "text-[#D4AF6A]"
                       : "text-white/75 hover:text-white"
-                  }`}
+                    }`}
                 >
                   {link.name}
                   <span
-                    className={`absolute bottom-0 left-0 h-[1.5px] bg-[#D4AF6A] transition-all duration-300 ${
-                      active ? "w-full" : "w-0 group-hover:w-full"
-                    }`}
+                    className={`absolute bottom-0 left-0 h-[1.5px] bg-[#D4AF6A] transition-all duration-300 ${active ? "w-full" : "w-0 group-hover:w-full"
+                      }`}
                   />
                 </Link>
               );
@@ -153,11 +149,10 @@ export default function Header() {
               onClick={() => setSearchOpen((prev) => !prev)}
               aria-label={searchOpen ? "Close search" : "Open search"}
               aria-expanded={searchOpen}
-              className={`flex h-10 w-10 items-center justify-center border transition-colors ${
-                searchOpen
+              className={`flex h-10 w-10 items-center justify-center border transition-colors ${searchOpen
                   ? "border-[#D4AF6A] bg-[#D4AF6A]/10 text-[#D4AF6A]"
                   : "border-white/15 bg-white/[0.03] text-white/80 hover:border-[#D4AF6A]/60 hover:text-[#D4AF6A]"
-              }`}
+                }`}
             >
               {searchOpen ? <FiX size={17} /> : <FiSearch size={17} />}
             </button>
@@ -285,11 +280,10 @@ export default function Header() {
                       href={link.href}
                       onClick={() => setMobileOpen(false)}
                       aria-current={active ? "page" : undefined}
-                      className={`flex items-center justify-between border-b border-white/10 py-4 transition-colors ${
-                        active
+                      className={`flex items-center justify-between border-b border-white/10 py-4 transition-colors ${active
                           ? "text-[#D4AF6A]"
                           : "text-white/80 hover:text-white"
-                      }`}
+                        }`}
                     >
                       <span className="font-[var(--font-playfair)] text-2xl tracking-tight">
                         {link.name}

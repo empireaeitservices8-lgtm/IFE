@@ -8,6 +8,7 @@ import {
   FiMaximize2,
   FiX,
 } from "react-icons/fi";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 type GalleryItem = {
   id: number;
@@ -171,40 +172,41 @@ export default function GalleryShowcase() {
       {/* Gallery Grid */}
       <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filteredItems.map((item, idx) => (
-          <button
-            key={item.id}
-            type="button"
-            onClick={() => setSelectedIndex(idx)}
-            className="group relative overflow-hidden rounded-xl border border-white/10 bg-[#111111] text-left shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
-          >
-            <div className="relative h-60 w-full overflow-hidden">
-              <Image
-                src={item.image}
-                alt={item.title}
-                fill
-                unoptimized
-                className="object-cover transition duration-700 group-hover:scale-105"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
+          <ScrollReveal key={item.id} index={idx % 9}>
+            <button
+              type="button"
+              onClick={() => setSelectedIndex(idx)}
+              className="group relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#111111] text-left shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
+            >
+              <div className="relative h-60 w-full overflow-hidden">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  unoptimized
+                  className="object-cover transition duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
 
-              <span className="absolute left-3.5 top-3.5 rounded-full border border-[#D4AF6A]/50 bg-black/75 px-3 py-1 text-[9px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] backdrop-blur-md">
-                {item.category}
-              </span>
+                <span className="absolute left-3.5 top-3.5 rounded-full border border-[#D4AF6A]/50 bg-black/75 px-3 py-1 text-[9px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] backdrop-blur-md">
+                  {item.category}
+                </span>
 
-              <span className="absolute right-3.5 top-3.5 flex size-8 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white/85 opacity-0 backdrop-blur-sm transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black group-hover:opacity-100">
-                <FiMaximize2 size={14} />
-              </span>
+                <span className="absolute right-3.5 top-3.5 flex size-8 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white/85 opacity-0 backdrop-blur-sm transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black group-hover:opacity-100">
+                  <FiMaximize2 size={14} />
+                </span>
 
-              <div className="absolute bottom-4 left-4 right-4">
-                <p className="text-[10px] uppercase tracking-[2.2px] text-white/60">
-                  {item.subtitle}
-                </p>
-                <h3 className="mt-1 font-[var(--font-playfair)] text-xl text-white transition group-hover:text-[#D4AF6A]">
-                  {item.title}
-                </h3>
+                <div className="absolute bottom-4 left-4 right-4">
+                  <p className="text-[10px] uppercase tracking-[2.2px] text-white/60">
+                    {item.subtitle}
+                  </p>
+                  <h3 className="mt-1 font-[var(--font-playfair)] text-xl text-white transition group-hover:text-[#D4AF6A]">
+                    {item.title}
+                  </h3>
+                </div>
               </div>
-            </div>
-          </button>
+            </button>
+          </ScrollReveal>
         ))}
       </div>
 

@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { FiArrowUpRight, FiCalendar, FiMapPin } from "react-icons/fi";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 type ExplorerEvent = {
   id: string;
@@ -257,8 +258,10 @@ export default function EventExplorer() {
           </div>
         ) : filteredEvents.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredEvents.map((event) => (
-              <EventCard key={event.id} event={event} />
+            {filteredEvents.map((event, idx) => (
+              <ScrollReveal key={event.id} index={idx % 8}>
+                <EventCard event={event} />
+              </ScrollReveal>
             ))}
           </div>
         ) : (

@@ -10,6 +10,7 @@ import HomeEventPopup, {
   type PopupEvent,
 } from "@/components/home/HomeEventPopup";
 import NewsletterBox from "@/components/home/NewsletterBox";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { listEvents } from "@/services/event.service";
 
@@ -150,7 +151,7 @@ export default async function Home() {
 
         {/* INTRO */}
         <section className="section-padding border-t border-white/10 bg-[#080808]">
-          <div className="container-main grid items-center gap-10 lg:grid-cols-2">
+          <ScrollReveal className="container-main grid items-center gap-10 lg:grid-cols-2">
             <div>
               <SectionHeading
                 eyebrow="Welcome to IFE"
@@ -212,7 +213,7 @@ export default async function Home() {
                 </p>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </section>
 
         {/* EVENTS */}
@@ -235,8 +236,10 @@ export default async function Home() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {featuredEvents.map((event) => (
-                <EventCard key={event.title} {...event} />
+              {featuredEvents.map((event, idx) => (
+                <ScrollReveal key={event.title} index={idx}>
+                  <EventCard {...event} />
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -255,41 +258,42 @@ export default async function Home() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-3">
-              {categories.map((category) => (
-                <Link
-                  href={category.href}
-                  key={category.number}
-                  className="group relative h-[300px] overflow-hidden rounded-xl border border-white/10 transition hover:-translate-y-1 hover:border-[#D4AF6A]/60"
-                >
-                  <Image
-                    src={category.image}
-                    alt={category.title}
-                    fill
-                    className="object-cover transition duration-700 group-hover:scale-105"
-                    sizes="(max-width: 768px) 100vw, 33vw"
-                  />
+              {categories.map((category, idx) => (
+                <ScrollReveal key={category.number} index={idx}>
+                  <Link
+                    href={category.href}
+                    className="group relative block h-[300px] overflow-hidden rounded-xl border border-white/10 transition hover:-translate-y-1 hover:border-[#D4AF6A]/60"
+                  >
+                    <Image
+                      src={category.image}
+                      alt={category.title}
+                      fill
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                    />
 
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/10" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/35 to-black/10" />
 
-                  <div className="absolute inset-x-0 bottom-0 p-5">
-                    <p className="mb-1.5 text-xs tracking-[3px] text-[#D4AF6A]">
-                      {category.number}
-                    </p>
+                    <div className="absolute inset-x-0 bottom-0 p-5">
+                      <p className="mb-1.5 text-xs tracking-[3px] text-[#D4AF6A]">
+                        {category.number}
+                      </p>
 
-                    <h3 className="font-[var(--font-playfair)] text-2xl text-white transition group-hover:text-[#D4AF6A]">
-                      {category.title}
-                    </h3>
+                      <h3 className="font-[var(--font-playfair)] text-2xl text-white transition group-hover:text-[#D4AF6A]">
+                        {category.title}
+                      </h3>
 
-                    <p className="mt-1.5 text-xs leading-5 text-white/65">
-                      {category.description}
-                    </p>
+                      <p className="mt-1.5 text-xs leading-5 text-white/65">
+                        {category.description}
+                      </p>
 
-                    <div className="mt-3 flex items-center gap-2 text-xs uppercase tracking-[2px] text-[#D4AF6A]">
-                      Explore More
-                      <FiArrowUpRight size={15} />
+                      <div className="mt-3 flex items-center gap-2 text-xs uppercase tracking-[2px] text-[#D4AF6A]">
+                        Explore More
+                        <FiArrowUpRight size={15} />
+                      </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </ScrollReveal>
               ))}
             </div>
           </div>

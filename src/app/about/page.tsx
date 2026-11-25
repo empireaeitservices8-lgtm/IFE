@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FiArrowRight, FiArrowUpRight } from "react-icons/fi";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 const experiences = [
   {
@@ -244,40 +245,41 @@ export default function AboutPage() {
             </div>
 
             <div className="grid gap-5 md:grid-cols-3">
-              {experiences.map((item) => (
-                <Link
-                  href={item.href}
-                  key={item.number}
-                  className="group overflow-hidden rounded-xl border border-white/10 bg-[#111111] transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
-                >
-                  <div
-                    className="relative h-[200px] overflow-hidden bg-cover bg-center transition duration-700 group-hover:scale-105"
-                    style={{
-                      backgroundImage: `url('${item.image}')`,
-                    }}
+              {experiences.map((item, idx) => (
+                <ScrollReveal key={item.number} index={idx}>
+                  <Link
+                    href={item.href}
+                    className="group block overflow-hidden rounded-xl border border-white/10 bg-[#111111] transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-black/30 to-transparent" />
-                    <span className="absolute bottom-3 left-4 font-[var(--font-playfair)] text-3xl italic text-[#D4AF6A]">
-                      {item.number}
-                    </span>
-                  </div>
-
-                  <div className="p-5">
-                    <div className="flex items-center justify-between gap-2">
-                      <h3 className="font-[var(--font-playfair)] text-xl transition group-hover:text-[#D4AF6A]">
-                        {item.title}
-                      </h3>
-                      <FiArrowUpRight
-                        size={16}
-                        className="text-white/40 transition group-hover:text-[#D4AF6A]"
-                      />
+                    <div
+                      className="relative h-[200px] overflow-hidden bg-cover bg-center transition duration-700 group-hover:scale-105"
+                      style={{
+                        backgroundImage: `url('${item.image}')`,
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-black/30 to-transparent" />
+                      <span className="absolute bottom-3 left-4 font-[var(--font-playfair)] text-3xl italic text-[#D4AF6A]">
+                        {item.number}
+                      </span>
                     </div>
 
-                    <p className="mt-2 text-xs leading-5 text-white/60">
-                      {item.description}
-                    </p>
-                  </div>
-                </Link>
+                    <div className="p-5">
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="font-[var(--font-playfair)] text-xl transition group-hover:text-[#D4AF6A]">
+                          {item.title}
+                        </h3>
+                        <FiArrowUpRight
+                          size={16}
+                          className="text-white/40 transition group-hover:text-[#D4AF6A]"
+                        />
+                      </div>
+
+                      <p className="mt-2 text-xs leading-5 text-white/60">
+                        {item.description}
+                      </p>
+                    </div>
+                  </Link>
+                </ScrollReveal>
               ))}
             </div>
           </div>
@@ -296,21 +298,20 @@ export default function AboutPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {values.map((value) => (
-                <div
-                  key={value.number}
-                  className="rounded-xl border border-white/10 bg-[#111111] p-5 transition hover:border-[#D4AF6A]/50"
-                >
-                  <p className="font-[var(--font-playfair)] text-2xl italic text-[#D4AF6A]">
-                    {value.number}
-                  </p>
-                  <h3 className="mt-3 font-[var(--font-playfair)] text-xl">
-                    {value.title}
-                  </h3>
-                  <p className="mt-2 text-xs leading-5 text-white/60">
-                    {value.description}
-                  </p>
-                </div>
+              {values.map((value, idx) => (
+                <ScrollReveal key={value.number} index={idx}>
+                  <div className="h-full rounded-xl border border-white/10 bg-[#111111] p-5 transition hover:border-[#D4AF6A]/50">
+                    <p className="font-[var(--font-playfair)] text-2xl italic text-[#D4AF6A]">
+                      {value.number}
+                    </p>
+                    <h3 className="mt-3 font-[var(--font-playfair)] text-xl">
+                      {value.title}
+                    </h3>
+                    <p className="mt-2 text-xs leading-5 text-white/60">
+                      {value.description}
+                    </p>
+                  </div>
+                </ScrollReveal>
               ))}
             </div>
           </div>

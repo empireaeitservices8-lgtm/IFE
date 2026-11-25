@@ -11,6 +11,7 @@ import {
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 
 export const metadata: Metadata = {
   title: "Entertainment | IFE",
@@ -138,40 +139,39 @@ export default function EntertainmentPage() {
             </div>
 
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-              {experiences.map((item) => {
+              {experiences.map((item, idx) => {
                 const Icon = item.icon;
 
                 return (
-                  <article
-                    key={item.title}
-                    className="group overflow-hidden rounded-xl border border-white/10 bg-[#111111] shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
-                  >
-                    <div className="relative h-44 overflow-hidden">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        unoptimized
-                        className="object-cover transition duration-700 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-black/25 to-transparent" />
-                      <span className="absolute right-3.5 top-3.5 text-[10px] font-semibold tracking-[3px] text-white/70">
-                        {item.number}
-                      </span>
-                      <div className="absolute bottom-3.5 left-3.5 flex size-9 items-center justify-center rounded-lg border border-[#D4AF6A]/50 bg-black/70 text-[#D4AF6A] backdrop-blur-sm">
-                        <Icon size={17} />
+                  <ScrollReveal key={item.title} index={idx}>
+                    <article className="group h-full overflow-hidden rounded-xl border border-white/10 bg-[#111111] shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60">
+                      <div className="relative h-44 overflow-hidden">
+                        <Image
+                          src={item.image}
+                          alt={item.title}
+                          fill
+                          unoptimized
+                          className="object-cover transition duration-700 group-hover:scale-105"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-black/25 to-transparent" />
+                        <span className="absolute right-3.5 top-3.5 text-[10px] font-semibold tracking-[3px] text-white/70">
+                          {item.number}
+                        </span>
+                        <div className="absolute bottom-3.5 left-3.5 flex size-9 items-center justify-center rounded-lg border border-[#D4AF6A]/50 bg-black/70 text-[#D4AF6A] backdrop-blur-sm">
+                          <Icon size={17} />
+                        </div>
                       </div>
-                    </div>
 
-                    <div className="p-4">
-                      <h3 className="font-[var(--font-playfair)] text-lg text-white transition group-hover:text-[#D4AF6A]">
-                        {item.title}
-                      </h3>
-                      <p className="mt-2 text-xs leading-5 text-white/60">
-                        {item.description}
-                      </p>
-                    </div>
-                  </article>
+                      <div className="p-4">
+                        <h3 className="font-[var(--font-playfair)] text-lg text-white transition group-hover:text-[#D4AF6A]">
+                          {item.title}
+                        </h3>
+                        <p className="mt-2 text-xs leading-5 text-white/60">
+                          {item.description}
+                        </p>
+                      </div>
+                    </article>
+                  </ScrollReveal>
                 );
               })}
             </div>

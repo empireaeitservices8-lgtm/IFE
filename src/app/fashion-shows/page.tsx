@@ -14,6 +14,7 @@ import {
 
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
+import ScrollReveal from "@/components/ui/ScrollReveal";
 import { listEvents } from "@/services/event.service";
 
 export const dynamic = "force-dynamic";
@@ -140,7 +141,7 @@ export default async function FashionShowsPage() {
 
           {fashionEvents.length > 0 ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {fashionEvents.map((ev) => {
+              {fashionEvents.map((ev, idx) => {
                 const dateLabel = new Date(ev.startAt).toLocaleDateString(
                   "en-IN",
                   { day: "2-digit", month: "short", year: "numeric" }
@@ -150,10 +151,8 @@ export default async function FashionShowsPage() {
                   : "Venue TBA";
 
                 return (
-                  <article
-                    key={ev.id}
-                    className="group flex flex-col overflow-hidden rounded-xl border border-white/10 bg-[#111111] shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
-                  >
+                  <ScrollReveal key={ev.id} index={idx % 6}>
+                    <article className="group flex h-full flex-col overflow-hidden rounded-xl border border-white/10 bg-[#111111] shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60">
                     <Link
                       href={`/events/${ev.id}`}
                       className="relative block h-[175px] shrink-0 overflow-hidden"
@@ -219,6 +218,7 @@ export default async function FashionShowsPage() {
                       </div>
                     </div>
                   </article>
+                  </ScrollReveal>
                 );
               })}
             </div>
@@ -255,28 +255,27 @@ export default async function FashionShowsPage() {
             </div>
 
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              {runwayExperiences.map((item) => {
+              {runwayExperiences.map((item, idx) => {
                 const Icon = item.icon;
                 return (
-                  <div
-                    key={item.number}
-                    className="rounded-xl border border-white/10 bg-[#101010] p-5 transition hover:border-[#D4AF6A]/50"
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex size-9 items-center justify-center rounded-lg border border-[#D4AF6A]/40 bg-black/60 text-[#D4AF6A]">
-                        <Icon size={16} />
+                  <ScrollReveal key={item.number} index={idx}>
+                    <div className="h-full rounded-xl border border-white/10 bg-[#101010] p-5 transition hover:border-[#D4AF6A]/50">
+                      <div className="flex items-center justify-between">
+                        <div className="flex size-9 items-center justify-center rounded-lg border border-[#D4AF6A]/40 bg-black/60 text-[#D4AF6A]">
+                          <Icon size={16} />
+                        </div>
+                        <span className="font-[var(--font-playfair)] text-sm italic text-[#D4AF6A]">
+                          {item.number}
+                        </span>
                       </div>
-                      <span className="font-[var(--font-playfair)] text-sm italic text-[#D4AF6A]">
-                        {item.number}
-                      </span>
+                      <h3 className="mt-4 font-[var(--font-playfair)] text-lg text-white">
+                        {item.title}
+                      </h3>
+                      <p className="mt-1.5 text-xs leading-5 text-white/60">
+                        {item.description}
+                      </p>
                     </div>
-                    <h3 className="mt-4 font-[var(--font-playfair)] text-lg text-white">
-                      {item.title}
-                    </h3>
-                    <p className="mt-1.5 text-xs leading-5 text-white/60">
-                      {item.description}
-                    </p>
-                  </div>
+                  </ScrollReveal>
                 );
               })}
             </div>
