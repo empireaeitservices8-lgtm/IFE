@@ -4,10 +4,8 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import type { ResolvedBookingTicket } from "@/lib/events/resolve-booking-event";
 import {
-  TICKET_PASSES,
   serializeTicketSelection,
   type SelectedTicketItem,
-  type TicketOptionId,
 } from "@/lib/events/ticket-selection";
 
 type TicketSelectorProps = {
@@ -21,24 +19,27 @@ const MAX_TOTAL_PASSES = 10;
 export default function TicketSelector({
   eventId,
   eventTitle,
+  liveTicketTypes = [],
 }: TicketSelectorProps) {
-  const [quantities, setQuantities] = useState<Record<TicketOptionId, number>>({
-    single: 1,
-    couple: 0,
-    group5: 0,
-    vip: 0,
+  const [quantities, setQuantities] = useState<Record<string, number>>(() => {
+    const initial: Record<string, number> = {};
+    const firstAvailable = liveTicketTypes.find((t) => t.availableQuantity > 0);
+    for (const t of liveTicketTypes) {
+      initial[t.id] = firstAvailable && t.id === firstAvailable.id ? 1 : 0;
+    }
+    return initial;
   });
 
   const selectedItems = useMemo<SelectedTicketItem[]>(() => {
-    return TICKET_PASSES.filter((pass) => quantities[pass.id] > 0).map(
-      (pass) => ({
-        id: pass.id,
-        name: pass.name,
-        price: pass.price,
-        quantity: quantities[pass.id],
-      })
-    );
-  }, [quantities]);
+    return liveTicketTypes
+      .filter((ticket) => (quantities[ticket.id] || 0) > 0)
+      .map((ticket) => ({
+        id: ticket.id,
+        name: ticket.name,
+        price: ticket.price,
+        quantity: quantities[ticket.id] || 0,
+      }));
+  }, [liveTicketTypes, quantities]);
 
   const totalQuantity = useMemo(
     () => selectedItems.reduce((sum, item) => sum + item.quantity, 0),
@@ -54,10 +55,14 @@ export default function TicketSelector({
     [selectedItems]
   );
 
-  const updateQuantity = (id: TicketOptionId, delta: number) => {
+  const updateQuantity = (
+    id: string,
+    delta: number,
+    availableQuantity: number
+  ) => {
     setQuantities((prev) => {
-      const current = prev[id];
-      const next = Math.max(0, current + delta);
+      const current = prev[id] || 0;
+      const next = Math.max(0, Math.min(availableQuantity, current + delta));
       const otherTotal = totalQuantity - current;
       if (otherTotal + next > MAX_TOTAL_PASSES) return prev;
       return { ...prev, [id]: next };
@@ -115,88 +120,108 @@ export default function TicketSelector({
         <div className="grid gap-7 lg:grid-cols-[1fr_360px]">
           {/* Pass Cards with Per-Card Stepper */}
           <div className="space-y-3">
-            {TICKET_PASSES.map((ticket) => {
-              const qty = quantities[ticket.id];
-              const isSelected = qty > 0;
-              const atMaxTotal = totalQuantity >= MAX_TOTAL_PASSES;
+            {liveTicketTypes.length === 0 ? (
+              <div className="rounded-sm border border-white/10 bg-[#111111] p-8 text-center">
+                <p className="font-[var(--font-playfair)] text-xl text-white">
+                  No Tickets Available Yet
+                </p>
+                <p className="mt-2 text-xs text-white/55">
+                  Ticket tiers for this event have not been published yet.
+                </p>
+              </div>
+            ) : (
+              liveTicketTypes.map((ticket) => {
+                const qty = quantities[ticket.id] || 0;
+                const isSelected = qty > 0;
+                const isSoldOut = ticket.availableQuantity <= 0;
+                const atMaxTotal =
+                  totalQuantity >= MAX_TOTAL_PASSES ||
+                  qty >= ticket.availableQuantity;
 
-              return (
-                <div
-                  key={ticket.id}
-                  className={`rounded-sm border p-4 transition duration-200 md:p-5 ${
-                    isSelected
-                      ? "border-[#D4AF6A] bg-[#D4AF6A]/[0.06]"
-                      : "border-white/10 bg-[#111111] hover:border-white/25"
-                  }`}
-                >
-                  <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                    <div className="flex-1">
-                      <div className="flex flex-wrap items-center gap-2.5">
-                        <h3 className="font-[var(--font-playfair)] text-lg md:text-xl">
-                          {ticket.name}
-                        </h3>
-                        {ticket.label && (
-                          <span className="border border-[#D4AF6A]/40 px-2 py-0.5 text-[9px] font-bold tracking-[0.18em] text-[#D4AF6A]">
-                            {ticket.label}
-                          </span>
+                return (
+                  <div
+                    key={ticket.id}
+                    className={`rounded-sm border p-4 transition duration-200 md:p-5 ${
+                      isSelected
+                        ? "border-[#D4AF6A] bg-[#D4AF6A]/[0.06]"
+                        : "border-white/10 bg-[#111111] hover:border-white/25"
+                    }`}
+                  >
+                    <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-2.5">
+                          <h3 className="font-[var(--font-playfair)] text-lg md:text-xl">
+                            {ticket.name}
+                          </h3>
+                          {isSoldOut ? (
+                            <span className="border border-red-500/40 px-2 py-0.5 text-[9px] font-bold tracking-[0.18em] text-red-400">
+                              SOLD OUT
+                            </span>
+                          ) : (
+                            <span className="border border-[#D4AF6A]/40 px-2 py-0.5 text-[9px] font-bold tracking-[0.18em] text-[#D4AF6A]">
+                              {ticket.availableQuantity} LEFT
+                            </span>
+                          )}
+                        </div>
+
+                        {ticket.description && (
+                          <p className="mt-1 text-xs text-white/55">
+                            {ticket.description}
+                          </p>
                         )}
                       </div>
 
-                      <p className="mt-1 text-xs text-white/55">
-                        {ticket.description}
-                      </p>
+                      <div className="flex items-center justify-between gap-5 sm:flex-col sm:items-end sm:gap-2">
+                        <div className="sm:text-right">
+                          <p className="text-lg font-semibold text-[#D4AF6A]">
+                            {formatPrice(ticket.price)}
+                          </p>
+                          <p className="text-[11px] text-white/35">Per pass</p>
+                        </div>
 
-                      <div className="mt-2.5 flex flex-wrap gap-x-4 gap-y-1">
-                        {ticket.benefits.map((benefit) => (
-                          <span
-                            key={benefit}
-                            className="flex items-center gap-1.5 text-xs text-white/55"
+                        <div className="flex items-center gap-2.5">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateQuantity(
+                                ticket.id,
+                                -1,
+                                ticket.availableQuantity
+                              )
+                            }
+                            disabled={qty <= 0}
+                            aria-label={`Decrease ${ticket.name} quantity`}
+                            className="flex h-9 w-9 items-center justify-center border border-white/20 text-base transition hover:border-[#D4AF6A] hover:text-[#D4AF6A] disabled:cursor-not-allowed disabled:opacity-30"
                           >
-                            <span className="text-[#D4AF6A]">✓</span>
-                            {benefit}
+                            −
+                          </button>
+
+                          <span className="min-w-6 text-center text-base font-semibold">
+                            {qty}
                           </span>
-                        ))}
-                      </div>
-                    </div>
 
-                    <div className="flex items-center justify-between gap-5 sm:flex-col sm:items-end sm:gap-2">
-                      <div className="sm:text-right">
-                        <p className="text-lg font-semibold text-[#D4AF6A]">
-                          {formatPrice(ticket.price)}
-                        </p>
-                        <p className="text-[11px] text-white/35">Per pass</p>
-                      </div>
-
-                      <div className="flex items-center gap-2.5">
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(ticket.id, -1)}
-                          disabled={qty <= 0}
-                          aria-label={`Decrease ${ticket.name} quantity`}
-                          className="flex h-9 w-9 items-center justify-center border border-white/20 text-base transition hover:border-[#D4AF6A] hover:text-[#D4AF6A] disabled:cursor-not-allowed disabled:opacity-30"
-                        >
-                          −
-                        </button>
-
-                        <span className="min-w-6 text-center text-base font-semibold">
-                          {qty}
-                        </span>
-
-                        <button
-                          type="button"
-                          onClick={() => updateQuantity(ticket.id, 1)}
-                          disabled={atMaxTotal}
-                          aria-label={`Increase ${ticket.name} quantity`}
-                          className="flex h-9 w-9 items-center justify-center border border-white/20 text-base transition hover:border-[#D4AF6A] hover:text-[#D4AF6A] disabled:cursor-not-allowed disabled:opacity-30"
-                        >
-                          +
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateQuantity(
+                                ticket.id,
+                                1,
+                                ticket.availableQuantity
+                              )
+                            }
+                            disabled={isSoldOut || atMaxTotal}
+                            aria-label={`Increase ${ticket.name} quantity`}
+                            className="flex h-9 w-9 items-center justify-center border border-white/20 text-base transition hover:border-[#D4AF6A] hover:text-[#D4AF6A] disabled:cursor-not-allowed disabled:opacity-30"
+                          >
+                            +
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              })
+            )}
           </div>
 
           {/* Booking Summary */}

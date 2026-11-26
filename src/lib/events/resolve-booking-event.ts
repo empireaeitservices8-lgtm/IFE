@@ -17,48 +17,6 @@ export interface ResolvedBookingEvent {
   ticketTypes: ResolvedBookingTicket[];
 }
 
-const legacyDemoEvents: Record<
-  string,
-  { title: string; date: string; time: string; venue: string }
-> = {
-  "1": {
-    title: "The IFE Fashion Showcase",
-    date: "Date to be announced",
-    time: "To Be Announced",
-    venue: "Venue to be announced",
-  },
-  "2": {
-    title: "Live Beyond",
-    date: "Date to be announced",
-    time: "To Be Announced",
-    venue: "Venue to be announced",
-  },
-  "3": {
-    title: "Excellence Awards",
-    date: "Date to be announced",
-    time: "To Be Announced",
-    venue: "Venue to be announced",
-  },
-  "4": {
-    title: "Runway Stories",
-    date: "Date to be announced",
-    time: "To Be Announced",
-    venue: "Venue to be announced",
-  },
-  "5": {
-    title: "The Grand Celebration",
-    date: "Date to be announced",
-    time: "To Be Announced",
-    venue: "Venue to be announced",
-  },
-  "6": {
-    title: "Creative Icons",
-    date: "Date to be announced",
-    time: "To Be Announced",
-    venue: "Venue to be announced",
-  },
-};
-
 export async function resolveBookingEvent(
   idOrSlug: string
 ): Promise<ResolvedBookingEvent | null> {
@@ -89,16 +47,7 @@ export async function resolveBookingEvent(
       })),
     };
   } catch {
-    const legacy = legacyDemoEvents[idOrSlug];
-    if (!legacy) return null;
-    return {
-      id: idOrSlug,
-      title: legacy.title,
-      date: legacy.date,
-      time: legacy.time,
-      venue: legacy.venue,
-      ticketTypes: [],
-    };
+    return null;
   }
 }
 

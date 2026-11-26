@@ -1,3 +1,5 @@
+import type { ResolvedBookingTicket } from "@/lib/events/resolve-booking-event";
+
 export type TicketOptionId = "single" | "couple" | "group5" | "vip";
 
 export interface TicketPassDefinition {
@@ -10,7 +12,7 @@ export interface TicketPassDefinition {
 }
 
 export interface SelectedTicketItem {
-  id: TicketOptionId;
+  id: string;
   name: string;
   price: number;
   quantity: number;
@@ -70,13 +72,76 @@ export function isTicketOptionId(value: string): value is TicketOptionId {
  * Parses either `items=single:2,vip:1` or legacy `ticket=single&quantity=2`
  * into a validated list of selected pass items (total quantity 1..10).
  */
-export function parseTicketSelection(params: {
-  items?: string;
-  ticket?: string;
-  quantity?: string;
-}): SelectedTicketItem[] {
+export function parseTicketSelection(
+  params: {
+    items?: string;
+    ticket?: string;
+    quantity?: string;
+  },
+  liveTicketTypes?: ResolvedBookingTicket[]
+): SelectedTicketItem[] {
   const parsed: SelectedTicketItem[] = [];
   let runningTotal = 0;
+
+  if (liveTicketTypes && liveTicketTypes.length > 0) {
+    const liveById = new Map(liveTicketTypes.map((t) => [t.id, t]));
+
+    if (params.items) {
+      for (const part of params.items.split(",")) {
+        const [rawId, rawQty] = part.split(":");
+        const id = rawId?.trim();
+        const qty = Number(rawQty);
+        if (!id || !Number.isInteger(qty) || qty < 1) continue;
+        const ticket =
+          liveById.get(id) ??
+          liveTicketTypes.find(
+            (t) => t.name.toLowerCase() === id.toLowerCase()
+          );
+        if (!ticket || ticket.availableQuantity <= 0) continue;
+
+        const remaining = 10 - runningTotal;
+        if (remaining <= 0) break;
+        const clampedQty = Math.min(qty, remaining, ticket.availableQuantity);
+        const existing = parsed.find((item) => item.id === ticket.id);
+        if (existing) {
+          existing.quantity += clampedQty;
+        } else {
+          parsed.push({
+            id: ticket.id,
+            name: ticket.name,
+            price: ticket.price,
+            quantity: clampedQty,
+          });
+        }
+        runningTotal += clampedQty;
+      }
+      return parsed;
+    }
+
+    if (params.ticket) {
+      const ticket =
+        liveById.get(params.ticket) ??
+        liveTicketTypes.find(
+          (t) => t.name.toLowerCase() === params.ticket!.toLowerCase()
+        );
+      const qty = Number(params.quantity || "1");
+      if (
+        ticket &&
+        ticket.availableQuantity > 0 &&
+        Number.isInteger(qty) &&
+        qty >= 1 &&
+        qty <= 10
+      ) {
+        parsed.push({
+          id: ticket.id,
+          name: ticket.name,
+          price: ticket.price,
+          quantity: Math.min(qty, ticket.availableQuantity),
+        });
+      }
+    }
+    return parsed;
+  }
 
   if (params.items) {
     for (const part of params.items.split(",")) {

@@ -43,11 +43,14 @@ export default async function AttendeeDetailsPage({
     notFound();
   }
 
-  const selectedItems = parseTicketSelection({
-    items: query.items,
-    ticket: query.ticket,
-    quantity: query.quantity,
-  });
+  const selectedItems = parseTicketSelection(
+    {
+      items: query.items,
+      ticket: query.ticket,
+      quantity: query.quantity,
+    },
+    event.ticketTypes
+  );
 
   if (selectedItems.length === 0) {
     redirect(`/events/${id}/tickets`);

@@ -176,6 +176,7 @@ export default function CheckoutForm({
         const matched =
           apiTickets.find(
             (t) =>
+              t.id === selected.id ||
               t.name.toLowerCase() === selected.name.toLowerCase() ||
               t.name.toLowerCase().includes(selected.id.toLowerCase())
           ) || apiTickets[0];
