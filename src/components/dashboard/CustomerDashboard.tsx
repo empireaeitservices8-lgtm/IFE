@@ -200,7 +200,7 @@ export default function CustomerDashboard() {
                 </p>
 
                 <p className="mt-2 text-xs text-gray-600">
-                  Sample dashboard data
+                  Live account summary
                 </p>
               </div>
             );

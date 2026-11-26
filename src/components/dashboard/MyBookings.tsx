@@ -11,7 +11,6 @@ import {
   ArrowRight,
   Eye,
   Clock,
-  CircleAlert,
 } from "lucide-react";
 
 type Booking = {
@@ -25,6 +24,8 @@ type Booking = {
   quantity: number;
   amount: number;
   category: string;
+  status: string;
+  paymentStatus: string;
 };
 
 type ApiMyBooking = {
@@ -32,6 +33,8 @@ type ApiMyBooking = {
   eventId: string;
   bookingCode: string;
   totalAmount: string | number;
+  status?: string;
+  paymentStatus?: string;
   event?: {
     title: string;
     category: string;
@@ -74,6 +77,8 @@ export default function MyBookings() {
             quantity: (b.items || []).reduce((s, i) => s + i.quantity, 0),
             amount: Number(b.totalAmount),
             category: b.event?.category || "EVENT",
+            status: b.status || "PENDING",
+            paymentStatus: b.paymentStatus || "PENDING",
           })
         );
         setBookings(mapped);
@@ -132,24 +137,6 @@ export default function MyBookings() {
           </div>
         </div>
 
-        {/* Demo notice */}
-        <div className="mb-8 flex gap-3 border border-[#D4AF6A]/30 bg-[#D4AF6A]/[0.06] p-4">
-          <CircleAlert
-            className="mt-0.5 shrink-0 text-[#D4AF6A]"
-            size={19}
-          />
-          <div>
-            <p className="text-sm font-semibold text-[#F5E5B5]">
-              Demonstration booking records
-            </p>
-            <p className="mt-1 text-xs leading-6 text-gray-400">
-              These are sample records for the frontend preview. They are
-              not connected to a customer account, database or verified
-              payment. Demo QR tickets are not valid for event entry.
-            </p>
-          </div>
-        </div>
-
         {/* Search and filter */}
         <div className="mb-8 grid gap-4 sm:grid-cols-[1fr_220px]">
           <div className="relative">
@@ -171,8 +158,11 @@ export default function MyBookings() {
             onChange={(event) => setFilter(event.target.value)}
             className="w-full border border-white/10 bg-[#111111] px-4 py-4 text-sm text-gray-300 outline-none focus:border-[#D4AF6A]"
           >
-            <option value="all">All Bookings</option>
-            <option value="demo">Demo Records</option>
+            <option value="all">All Categories</option>
+            <option value="fashion">Fashion</option>
+            <option value="entertainment">Entertainment</option>
+            <option value="concert">Concert</option>
+            <option value="awards">Awards</option>
           </select>
         </div>
 
@@ -183,11 +173,8 @@ export default function MyBookings() {
             <span className="font-semibold text-white">
               {filteredBookings.length}
             </span>{" "}
-            booking records
+            {filteredBookings.length === 1 ? "booking" : "bookings"}
           </p>
-          <span className="text-xs uppercase tracking-widest text-[#D4AF6A]">
-            Sample Data
-          </span>
         </div>
 
         {/* Booking cards */}
@@ -201,7 +188,7 @@ export default function MyBookings() {
                 <div className="min-w-0 flex-1">
                   <div className="mb-4 flex flex-wrap items-center gap-3">
                     <span className="border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#D4AF6A]">
-                      Demo Record
+                      {booking.status}
                     </span>
                     <span className="text-xs text-gray-500">
                       {booking.category}
@@ -265,9 +252,9 @@ export default function MyBookings() {
                         className="mt-0.5 shrink-0 text-[#D4AF6A]"
                       />
                       <div>
-                        <p className="text-xs text-gray-500">Record Status</p>
+                        <p className="text-xs text-gray-500">Booking Status</p>
                         <p className="mt-1 text-sm text-[#D4AF6A]">
-                          Demo Only — Not Confirmed
+                          {booking.status} ({booking.paymentStatus})
                         </p>
                       </div>
                     </div>
@@ -278,13 +265,13 @@ export default function MyBookings() {
                 <div className="flex flex-col justify-between gap-5 border-t border-white/10 pt-5 lg:w-52 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
                   <div>
                     <p className="text-xs uppercase tracking-widest text-gray-500">
-                      Illustrative Amount
+                      Total Paid
                     </p>
                     <p className="mt-2 text-3xl font-semibold text-[#F5E5B5]">
                       ₹{booking.amount.toLocaleString("en-IN")}
                     </p>
                     <p className="mt-1 text-[10px] text-gray-600">
-                      Sample amount, not a payment record
+                      Payment: {booking.paymentStatus}
                     </p>
                   </div>
 
@@ -298,7 +285,7 @@ export default function MyBookings() {
                     </Link>
 
                     <Link
-                      href={`/events/${booking.eventId}/booking-confirmation`}
+                      href={`/events/${booking.eventId}/booking-confirmation?bookingCode=${encodeURIComponent(booking.reference)}`}
                       className="flex items-center justify-center gap-2 bg-[#D4AF6A] px-4 py-3 text-xs font-semibold uppercase tracking-wider text-black transition hover:bg-[#F5E5B5]"
                     >
                       Booking Details
@@ -306,11 +293,11 @@ export default function MyBookings() {
                     </Link>
 
                     <Link
-                      href={`/events/${booking.eventId}/digital-ticket`}
+                      href={`/events/${booking.eventId}/digital-ticket?bookingCode=${encodeURIComponent(booking.reference)}`}
                       className="flex items-center justify-center gap-2 px-4 py-2 text-xs text-gray-400 transition hover:text-[#D4AF6A]"
                     >
                       <Ticket size={15} />
-                      View Demo Ticket
+                      View Digital Ticket
                     </Link>
                   </div>
                 </div>

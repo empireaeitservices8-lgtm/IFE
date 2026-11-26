@@ -10,7 +10,6 @@ import {
   MapPin,
   QrCode,
   ArrowRight,
-  CircleAlert,
   UserRound,
 } from "lucide-react";
 
@@ -129,25 +128,6 @@ export default function MyTickets() {
           </div>
         </div>
 
-        {/* Demo warning */}
-        <div className="mb-8 flex gap-3 border border-[#D4AF6A]/30 bg-[#D4AF6A]/[0.06] p-4">
-          <CircleAlert
-            size={19}
-            className="mt-0.5 shrink-0 text-[#D4AF6A]"
-          />
-          <div>
-            <p className="text-sm font-semibold text-[#F5E5B5]">
-              Demo tickets only
-            </p>
-            <p className="mt-1 text-xs leading-6 text-gray-400">
-              These sample tickets and references are for frontend testing.
-              They are not linked to verified bookings or payments and cannot
-              be used for event admission. Real tickets will require
-              server-side booking and payment verification.
-            </p>
-          </div>
-        </div>
-
         {/* Search */}
         <div className="mb-8">
           <div className="relative max-w-2xl">
@@ -168,11 +148,9 @@ export default function MyTickets() {
         {/* Count */}
         <div className="mb-5 flex items-center justify-between">
           <p className="text-sm text-gray-400">
-            {filteredTickets.length} ticket records
+            {filteredTickets.length}{" "}
+            {filteredTickets.length === 1 ? "ticket" : "tickets"}
           </p>
-          <span className="text-xs uppercase tracking-widest text-[#D4AF6A]">
-            Sample Data
-          </span>
         </div>
 
         {/* Ticket list */}
@@ -185,7 +163,7 @@ export default function MyTickets() {
               <div className="p-5 sm:p-7">
                 <div className="mb-5 flex items-center justify-between gap-3">
                   <span className="border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest text-[#D4AF6A]">
-                    Demo Ticket
+                    Digital Pass
                   </span>
                   <span className="text-xs text-gray-500">
                     {ticket.category}
@@ -269,10 +247,10 @@ export default function MyTickets() {
                   </div>
                   <div>
                     <p className="text-xs font-semibold text-gray-200">
-                      Demo QR Ticket
+                      QR Entry Pass
                     </p>
                     <p className="mt-1 text-[10px] text-gray-500">
-                      Not valid for admission
+                      Present at venue entry
                     </p>
                   </div>
                 </div>
