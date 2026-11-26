@@ -284,7 +284,7 @@ export async function verifyAndCapturePayment(input: {
       booking: updatedBooking,
       alreadyProcessed: false,
     };
-  });
+  }, { timeout: 15000, maxWait: 10000 });
 
   return result;
 }
@@ -356,7 +356,7 @@ export async function processRazorpayWebhook(
           confirmedAt: payment.booking.confirmedAt ?? new Date(),
         },
       });
-    });
+    }, { timeout: 15000, maxWait: 10000 });
   } else if (eventType === "payment.failed" && paymentEntity?.order_id) {
     const orderId = paymentEntity.order_id;
     await prisma.$transaction(async (tx) => {
@@ -381,7 +381,7 @@ export async function processRazorpayWebhook(
           paymentStatus: PaymentStatus.FAILED,
         },
       });
-    });
+    }, { timeout: 15000, maxWait: 10000 });
   } else if (eventType === "refund.processed") {
     const refundEntity = payload.payload?.refund?.entity;
     if (refundEntity?.id) {

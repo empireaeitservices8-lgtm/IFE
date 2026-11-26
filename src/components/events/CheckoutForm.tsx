@@ -237,7 +237,13 @@ export default function CheckoutForm({
 
       const RazorpayCtor = (
         window as unknown as {
-          Razorpay?: new (opts: Record<string, unknown>) => { open: () => void };
+          Razorpay?: new (opts: Record<string, unknown>) => {
+            open: () => void;
+            on?: (
+              event: string,
+              cb: (resp: { error?: { description?: string } }) => void
+            ) => void;
+          };
         }
       ).Razorpay;
 
@@ -253,7 +259,13 @@ export default function CheckoutForm({
 
       const Rzp = (
         window as unknown as {
-          Razorpay: new (opts: Record<string, unknown>) => { open: () => void };
+          Razorpay: new (opts: Record<string, unknown>) => {
+            open: () => void;
+            on?: (
+              event: string,
+              cb: (resp: { error?: { description?: string } }) => void
+            ) => void;
+          };
         }
       ).Razorpay;
 
@@ -271,8 +283,9 @@ export default function CheckoutForm({
         },
         modal: {
           ondismiss: () => {
+            setProcessing(false);
             setMessage(
-              `Payment window closed. Your guest booking (${bookingCode}) is reserved—you can retry payment.`
+              `Payment window closed. Your booking (${bookingCode}) is reserved—you can retry payment.`
             );
           },
         },
@@ -281,26 +294,42 @@ export default function CheckoutForm({
           razorpay_payment_id: string;
           razorpay_signature: string;
         }) => {
-          const verifyRes = await fetch("/api/payments/verify", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              bookingId,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            }),
-          });
-          if (verifyRes.ok) {
-            router.push(
-              `/events/${eventId}/payment-success?bookingCode=${encodeURIComponent(bookingCode)}`
-            );
-          } else {
+          try {
+            setProcessing(true);
+            const verifyRes = await fetch("/api/payments/verify", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                bookingId,
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+              }),
+            });
+            if (verifyRes.ok) {
+              router.push(
+                `/events/${eventId}/payment-success?bookingCode=${encodeURIComponent(bookingCode)}&paymentId=${encodeURIComponent(response.razorpay_payment_id)}&orderId=${encodeURIComponent(response.razorpay_order_id)}`
+              );
+            } else {
+              router.push(
+                `/events/${eventId}/payment-failed?bookingCode=${encodeURIComponent(bookingCode)}`
+              );
+            }
+          } catch {
             router.push(
               `/events/${eventId}/payment-failed?bookingCode=${encodeURIComponent(bookingCode)}`
             );
+          } finally {
+            setProcessing(false);
           }
         },
+      });
+      rzp.on?.("payment.failed", (resp) => {
+        setProcessing(false);
+        setMessage(
+          resp?.error?.description ||
+            `Payment failed. Your booking (${bookingCode}) is reserved—please try again.`
+        );
       });
       rzp.open();
     } catch {
