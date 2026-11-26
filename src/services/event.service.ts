@@ -1,3 +1,4 @@
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import {
   EventCategory,
@@ -8,33 +9,15 @@ import { Prisma } from "@/generated/prisma/client";
 import { AppError } from "@/lib/utils/api-response";
 import { recordAuditLog } from "@/lib/utils/audit";
 
-const EVENT_CACHE_TTL_MS = 30_000;
-
-interface CacheEntry<T> {
-  expiresAt: number;
-  value: T;
-}
-
-const globalForEventCache = globalThis as unknown as {
-  __ifeEventListCache?: Map<string, CacheEntry<unknown>>;
-  __ifeEventDetailCache?: Map<string, CacheEntry<unknown>>;
-};
-
-const eventListCache =
-  globalForEventCache.__ifeEventListCache ??
-  new Map<string, CacheEntry<unknown>>();
-const eventDetailCache =
-  globalForEventCache.__ifeEventDetailCache ??
-  new Map<string, CacheEntry<unknown>>();
-
-if (process.env.NODE_ENV !== "production") {
-  globalForEventCache.__ifeEventListCache = eventListCache;
-  globalForEventCache.__ifeEventDetailCache = eventDetailCache;
-}
-
 export function invalidatePublicEventCache() {
-  eventListCache.clear();
-  eventDetailCache.clear();
+  try {
+    revalidatePath("/");
+    revalidatePath("/events");
+    revalidatePath("/fashion-shows");
+    revalidatePath("/entertainment");
+  } catch {
+    // Ignore when called outside a Next.js request/route context
+  }
 }
 
 function slugify(value: string): string {
@@ -109,39 +92,6 @@ export async function listEvents(params: {
   }
 
   const isPublicQuery = !params.includeUnpublished;
-  const cacheKey = isPublicQuery
-    ? JSON.stringify({
-        search: params.search?.trim() || "",
-        category: params.category || "ALL",
-        page,
-        limit,
-      })
-    : "";
-
-  if (isPublicQuery) {
-    const cached = eventListCache.get(cacheKey);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.value as {
-        items: (Awaited<ReturnType<typeof prisma.event.findMany>>[number] & {
-          venue: { name: string; city: string } | null;
-          ticketTypes: {
-            id: string;
-            name: string;
-            price: Prisma.Decimal;
-            totalQuantity: number;
-            soldQuantity: number;
-            availableQuantity: number;
-          }[];
-        })[];
-        pagination: {
-          page: number;
-          limit: number;
-          total: number;
-          totalPages: number;
-        };
-      };
-    }
-  }
 
   const [total, items] = await Promise.all([
     prisma.event.count({ where }),
@@ -192,13 +142,6 @@ export async function listEvents(params: {
     },
   };
 
-  if (isPublicQuery) {
-    eventListCache.set(cacheKey, {
-      expiresAt: Date.now() + EVENT_CACHE_TTL_MS,
-      value: payload,
-    });
-  }
-
   return payload;
 }
 
@@ -245,23 +188,7 @@ export async function getEventByIdOrSlug(
   idOrSlug: string,
   includeUnpublished = false
 ) {
-  if (!includeUnpublished) {
-    const cached = eventDetailCache.get(idOrSlug);
-    if (cached && cached.expiresAt > Date.now()) {
-      return cached.value as Awaited<ReturnType<typeof fetchEventByIdOrSlug>>;
-    }
-  }
-
-  const result = await fetchEventByIdOrSlug(idOrSlug, includeUnpublished);
-
-  if (!includeUnpublished) {
-    eventDetailCache.set(idOrSlug, {
-      expiresAt: Date.now() + EVENT_CACHE_TTL_MS,
-      value: result,
-    });
-  }
-
-  return result;
+  return fetchEventByIdOrSlug(idOrSlug, includeUnpublished);
 }
 
 export async function createEvent(

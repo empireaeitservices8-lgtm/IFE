@@ -16,6 +16,14 @@ import { getEventByIdOrSlug } from "@/services/event.service";
 
 export const dynamic = "force-dynamic";
 
+type QuickPassView = {
+  id: string;
+  name: string;
+  price: string;
+  tag: string;
+  availableQuantity: number;
+};
+
 type EventView = {
   id: string;
   title: string;
@@ -29,6 +37,7 @@ type EventView = {
   fullDescription: string;
   highlights: string[];
   schedule: { time: string; title: string }[];
+  quickPasses: QuickPassView[];
 };
 
 const fallbackImages: Record<string, string> = {
@@ -42,13 +51,6 @@ const fallbackImages: Record<string, string> = {
     "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=1800",
 };
 
-const quickPasses = [
-  { id: "single", name: "Single Entry", price: "₹1,499", tag: "1 Guest" },
-  { id: "couple", name: "Couple Entry", price: "₹2,699", tag: "2 Guests" },
-  { id: "group5", name: "Group of 5", price: "₹6,999", tag: "5 Guests" },
-  { id: "vip", name: "VIP Pass", price: "₹3,499", tag: "VIP Lounge" },
-];
-
 type PageProps = {
   params: Promise<{ id: string }>;
 };
@@ -56,6 +58,10 @@ type PageProps = {
 async function getEvent(id: string): Promise<EventView | undefined> {
   try {
     const dbEvent = await getEventByIdOrSlug(id, false);
+    const liveTickets = dbEvent.ticketTypes || [];
+    const minPrice = liveTickets.length
+      ? Math.min(...liveTickets.map((t) => Number(t.price)))
+      : null;
 
     return {
       id: dbEvent.id,
@@ -77,7 +83,10 @@ async function getEvent(id: string): Promise<EventView | undefined> {
       location: dbEvent.venue
         ? `${dbEvent.venue.name}, ${dbEvent.venue.city}`
         : "Venue to be announced",
-      price: "From ₹1,499",
+      price:
+        minPrice !== null
+          ? `From ₹${minPrice.toLocaleString("en-IN")}`
+          : "Tickets TBA",
       image:
         dbEvent.bannerUrl ||
         fallbackImages[dbEvent.category] ||
@@ -96,6 +105,16 @@ async function getEvent(id: string): Promise<EventView | undefined> {
         { time: "Main Showcase", title: dbEvent.title },
         { time: "Closing", title: "Networking & Finale" },
       ],
+      quickPasses: liveTickets.map((t) => ({
+        id: t.id,
+        name: t.name,
+        price: `₹${Number(t.price).toLocaleString("en-IN")}`,
+        tag:
+          t.availableQuantity > 0
+            ? `${t.availableQuantity} left`
+            : "Sold Out",
+        availableQuantity: t.availableQuantity,
+      })),
     };
   } catch {
     return undefined;
@@ -271,23 +290,50 @@ export default async function EventDetailsPage({ params }: PageProps) {
                 </p>
 
                 <div className="mt-5 space-y-2.5">
-                  {quickPasses.map((pass) => (
-                    <Link
-                      key={pass.id}
-                      href={`/events/${event.id}/attendee-details?ticket=${pass.id}&quantity=1`}
-                      className="flex items-center justify-between border border-white/10 bg-[#080808] px-4 py-3 transition hover:border-[#D4AF6A]"
-                    >
-                      <div>
-                        <p className="text-sm font-medium text-white">
-                          {pass.name}
-                        </p>
-                        <p className="text-[11px] text-white/45">{pass.tag}</p>
-                      </div>
-                      <span className="text-sm font-semibold text-[#D4AF6A]">
-                        {pass.price}
-                      </span>
-                    </Link>
-                  ))}
+                  {event.quickPasses.length === 0 ? (
+                    <p className="border border-white/10 bg-[#080808] px-4 py-3 text-xs text-white/50">
+                      Ticket tiers will be announced soon.
+                    </p>
+                  ) : (
+                    event.quickPasses.map((pass) =>
+                      pass.availableQuantity > 0 ? (
+                        <Link
+                          key={pass.id}
+                          href={`/events/${event.id}/attendee-details?ticket=${pass.id}&quantity=1`}
+                          className="flex items-center justify-between border border-white/10 bg-[#080808] px-4 py-3 transition hover:border-[#D4AF6A]"
+                        >
+                          <div>
+                            <p className="text-sm font-medium text-white">
+                              {pass.name}
+                            </p>
+                            <p className="text-[11px] text-white/45">
+                              {pass.tag}
+                            </p>
+                          </div>
+                          <span className="text-sm font-semibold text-[#D4AF6A]">
+                            {pass.price}
+                          </span>
+                        </Link>
+                      ) : (
+                        <div
+                          key={pass.id}
+                          className="flex items-center justify-between border border-white/10 bg-[#080808] px-4 py-3 opacity-50"
+                        >
+                          <div>
+                            <p className="text-sm font-medium text-white">
+                              {pass.name}
+                            </p>
+                            <p className="text-[11px] text-red-400">
+                              {pass.tag}
+                            </p>
+                          </div>
+                          <span className="text-sm font-semibold text-[#D4AF6A]">
+                            {pass.price}
+                          </span>
+                        </div>
+                      )
+                    )
+                  )}
                 </div>
 
                 <Link

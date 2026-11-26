@@ -350,6 +350,27 @@ export default function AdminEventsPage() {
     }
   };
 
+  const cancelEvent = async (id: string) => {
+    setMenuEventId(null);
+    try {
+      const res = await fetch(`/api/events/${id}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: "CANCELLED" }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setError(json.message || "Failed to cancel event.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      await loadEvents();
+    } catch {
+      setError("Network error while cancelling event.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   const deleteEvent = async (id: string) => {
     const confirmed = window.confirm(
       "Are you sure you want to delete this event?"
@@ -362,12 +383,23 @@ export default function AdminEventsPage() {
       const res = await fetch(`/api/events/${id}`, { method: "DELETE" });
       const json = await res.json();
       if (!res.ok || !json.success) {
+        if (res.status === 409) {
+          const shouldCancel = window.confirm(
+            `${json.message || "This event has existing bookings."}\n\nWould you like to cancel and hide it from the public website instead?`
+          );
+          if (shouldCancel) {
+            await cancelEvent(id);
+            return;
+          }
+        }
         setError(json.message || "Failed to delete event.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
         return;
       }
       await loadEvents();
     } catch {
       setError("Network error while deleting event.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -678,6 +710,16 @@ export default function AdminEventsPage() {
                                 ? "Move to Draft"
                                 : "Publish Event"}
                             </button>
+
+                            {event.status !== "Cancelled" && (
+                              <button
+                                type="button"
+                                onClick={() => cancelEvent(event.id)}
+                                className="w-full px-3 py-3 text-left text-[11px] text-amber-300 transition hover:bg-amber-500/10"
+                              >
+                                Cancel Event
+                              </button>
+                            )}
 
                             <button
                               type="button"
