@@ -16,39 +16,6 @@ import { listEvents } from "@/services/event.service";
 
 export const dynamic = "force-dynamic";
 
-const fallbackEvents = [
-  {
-    href: "/events",
-    image:
-      "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=85&w=1000",
-    category: "Fashion",
-    title: "The Grand Fashion Night",
-    date: "Coming Soon",
-    location: "International Venue",
-    price: "From ₹1,499",
-  },
-  {
-    href: "/events",
-    image:
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=85&w=1000",
-    category: "Entertainment",
-    title: "The Ultimate Live Experience",
-    date: "Coming Soon",
-    location: "International Venue",
-    price: "From ₹1,499",
-  },
-  {
-    href: "/events",
-    image:
-      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=85&w=1000",
-    category: "Awards",
-    title: "The Celebration Experience",
-    date: "Coming Soon",
-    location: "International Venue",
-    price: "From ₹1,499",
-  },
-];
-
 const fallbackImages: Record<string, string> = {
   FASHION:
     "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=85&w=1200",
@@ -87,14 +54,27 @@ const categories = [
   },
 ];
 
+type FeaturedEventItem = {
+  href: string;
+  image: string;
+  category: string;
+  title: string;
+  date: string;
+  location: string;
+  price: string;
+};
+
 export default async function Home() {
-  let featuredEvents = fallbackEvents;
+  let featuredEvents: FeaturedEventItem[] = [];
   let popupEvent: PopupEvent | null = null;
 
   try {
     const result = await listEvents({ limit: 3, includeUnpublished: false });
     if (result.items.length > 0) {
       const first = result.items[0];
+      const firstMinPrice = first.ticketTypes?.length
+        ? Math.min(...first.ticketTypes.map((t) => Number(t.price)))
+        : null;
       popupEvent = {
         id: first.id,
         title: first.title,
@@ -114,30 +94,42 @@ export default async function Home() {
         venue: first.venue
           ? `${first.venue.name}, ${first.venue.city}`
           : "Venue to be announced",
+        price:
+          firstMinPrice !== null
+            ? `Passes from ₹${firstMinPrice.toLocaleString("en-IN")}`
+            : "Passes Available",
       };
 
-      featuredEvents = result.items.map((ev) => ({
-        href: `/events/${ev.id}`,
-        image:
-          ev.bannerUrl ||
-          fallbackImages[ev.category] ||
-          fallbackImages.FASHION,
-        category:
-          ev.category.charAt(0) + ev.category.slice(1).toLowerCase(),
-        title: ev.title,
-        date: new Date(ev.startAt).toLocaleDateString("en-IN", {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-        }),
-        location: ev.venue
-          ? `${ev.venue.name}, ${ev.venue.city}`
-          : "Venue TBA",
-        price: "From ₹1,499",
-      }));
+      featuredEvents = result.items.map((ev) => {
+        const minPrice = ev.ticketTypes?.length
+          ? Math.min(...ev.ticketTypes.map((t) => Number(t.price)))
+          : null;
+        return {
+          href: `/events/${ev.id}`,
+          image:
+            ev.bannerUrl ||
+            fallbackImages[ev.category] ||
+            fallbackImages.FASHION,
+          category:
+            ev.category.charAt(0) + ev.category.slice(1).toLowerCase(),
+          title: ev.title,
+          date: new Date(ev.startAt).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+          location: ev.venue
+            ? `${ev.venue.name}, ${ev.venue.city}`
+            : "Venue TBA",
+          price:
+            minPrice !== null
+              ? `From ₹${minPrice.toLocaleString("en-IN")}`
+              : "Tickets TBA",
+        };
+      });
     }
   } catch {
-    featuredEvents = fallbackEvents;
+    featuredEvents = [];
   }
 
   return (
@@ -235,13 +227,25 @@ export default async function Home() {
               </Link>
             </div>
 
-            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-              {featuredEvents.map((event, idx) => (
-                <ScrollReveal key={event.title} index={idx}>
-                  <EventCard {...event} />
-                </ScrollReveal>
-              ))}
-            </div>
+            {featuredEvents.length > 0 ? (
+              <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                {featuredEvents.map((event, idx) => (
+                  <ScrollReveal key={event.title} index={idx}>
+                    <EventCard {...event} />
+                  </ScrollReveal>
+                ))}
+              </div>
+            ) : (
+              <div className="rounded-xl border border-white/10 bg-[#101010] p-8 text-center">
+                <p className="font-[var(--font-playfair)] text-2xl text-white">
+                  Upcoming Events Coming Soon
+                </p>
+                <p className="mt-2 text-sm text-white/55">
+                  New experiences are being curated. Check back soon or reach
+                  out to our team.
+                </p>
+              </div>
+            )}
           </div>
         </section>
 

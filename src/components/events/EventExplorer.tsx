@@ -132,6 +132,9 @@ export default function EventExplorer() {
         if (!active || !json.success) return;
         const mapped: ExplorerEvent[] = (json.data.items || []).map(
           (ev: ApiEventItem) => {
+            const minPrice = ev.ticketTypes?.length
+              ? Math.min(...ev.ticketTypes.map((t) => Number(t.price)))
+              : null;
             return {
               id: ev.id,
               image:
@@ -149,7 +152,10 @@ export default function EventExplorer() {
               location: ev.venue
                 ? `${ev.venue.name}, ${ev.venue.city}`
                 : "Venue TBA",
-              price: "From ₹1,499",
+              price:
+                minPrice !== null
+                  ? `From ₹${minPrice.toLocaleString("en-IN")}`
+                  : "Tickets TBA",
               description: ev.shortDescription || ev.description.slice(0, 120),
             };
           }

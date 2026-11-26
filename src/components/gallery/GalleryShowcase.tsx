@@ -11,105 +11,68 @@ import {
 import ScrollReveal from "@/components/ui/ScrollReveal";
 
 type GalleryItem = {
-  id: number;
+  id: string;
   title: string;
-  category: "Fashion" | "Entertainment" | "Awards" | "Backstage";
+  category: string;
   subtitle: string;
   image: string;
 };
 
-const galleryItems: GalleryItem[] = [
-  {
-    id: 1,
-    title: "The Grand Runway Finale",
-    category: "Fashion",
-    subtitle: "International Couture Showcase",
-    image:
-      "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=85&w=1200",
-  },
-  {
-    id: 2,
-    title: "Spotlight Live Arena",
-    category: "Entertainment",
-    subtitle: "Headline Concert Production",
-    image:
-      "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=1200",
-  },
-  {
-    id: 3,
-    title: "Excellence Honors Night",
-    category: "Awards",
-    subtitle: "Red Carpet & Ceremony",
-    image:
-      "https://images.unsplash.com/photo-1503095396549-807759245b35?q=85&w=1200",
-  },
-  {
-    id: 4,
-    title: "Editorial Silhouette",
-    category: "Fashion",
-    subtitle: "Designer Capsule Presentation",
-    image:
-      "https://images.unsplash.com/photo-1509631179647-0177331693ae?q=85&w=1200",
-  },
-  {
-    id: 5,
-    title: "Backstage Preparation",
-    category: "Backstage",
-    subtitle: "Behind the Scenes",
-    image:
-      "https://images.unsplash.com/photo-1496747611176-843222e1e57c?q=85&w=1200",
-  },
-  {
-    id: 6,
-    title: "Electric Crowd Energy",
-    category: "Entertainment",
-    subtitle: "Live Music Experience",
-    image:
-      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?q=85&w=1200",
-  },
-  {
-    id: 7,
-    title: "Golden Hour Gala",
-    category: "Awards",
-    subtitle: "VIP Celebration Evening",
-    image:
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=85&w=1200",
-  },
-  {
-    id: 8,
-    title: "Runway Lighting & Sound",
-    category: "Backstage",
-    subtitle: "Stage Direction",
-    image:
-      "https://images.unsplash.com/photo-1506157786151-b8491531f063?q=85&w=1200",
-  },
-  {
-    id: 9,
-    title: "Acoustic Stage Session",
-    category: "Entertainment",
-    subtitle: "Special Guest Performance",
-    image:
-      "https://images.unsplash.com/photo-1501612780327-45045538702b?q=85&w=1200",
-  },
-];
+type ApiGalleryItem = {
+  id: string;
+  title: string;
+  caption?: string | null;
+  category: string;
+  mediaUrl: string;
+  event?: { title: string } | null;
+};
 
-const categories = [
-  "All",
-  "Fashion",
-  "Entertainment",
-  "Awards",
-  "Backstage",
-] as const;
+function formatCategory(cat: string): string {
+  if (!cat) return "Events";
+  return cat.charAt(0) + cat.slice(1).toLowerCase();
+}
 
 export default function GalleryShowcase() {
-  const [activeCategory, setActiveCategory] =
-    useState<(typeof categories)[number]>("All");
+  const [items, setItems] = useState<GalleryItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [activeCategory, setActiveCategory] = useState<string>("All");
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
+  useEffect(() => {
+    let active = true;
+    fetch("/api/gallery?limit=50")
+      .then((res) => res.json())
+      .then((json) => {
+        if (!active || !json.success) return;
+        const mapped: GalleryItem[] = (json.data?.items || []).map(
+          (g: ApiGalleryItem) => ({
+            id: g.id,
+            title: g.title,
+            category: formatCategory(g.category),
+            subtitle: g.caption || g.event?.title || "IFE Showcase",
+            image: g.mediaUrl,
+          })
+        );
+        setItems(mapped);
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (active) setLoading(false);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(items.map((item) => item.category)))],
+    [items]
+  );
+
   const filteredItems = useMemo(() => {
-    if (activeCategory === "All") return galleryItems;
-    return galleryItems.filter((item) => item.category === activeCategory);
-  }, [activeCategory]);
+    if (activeCategory === "All") return items;
+    return items.filter((item) => item.category === activeCategory);
+  }, [activeCategory, items]);
 
   useEffect(() => {
     if (selectedIndex === null) return;
@@ -170,45 +133,66 @@ export default function GalleryShowcase() {
       </div>
 
       {/* Gallery Grid */}
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {filteredItems.map((item, idx) => (
-          <ScrollReveal key={item.id} index={idx % 9}>
-            <button
-              type="button"
-              onClick={() => setSelectedIndex(idx)}
-              className="group relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#111111] text-left shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
-            >
-              <div className="relative h-60 w-full overflow-hidden">
-                <Image
-                  src={item.image}
-                  alt={item.title}
-                  fill
-                  unoptimized
-                  className="object-cover transition duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
+      {loading ? (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {[1, 2, 3].map((n) => (
+            <div
+              key={n}
+              className="h-60 animate-pulse rounded-xl border border-white/10 bg-[#111111]"
+            />
+          ))}
+        </div>
+      ) : filteredItems.length === 0 ? (
+        <div className="rounded-xl border border-white/10 bg-[#101010] p-10 text-center">
+          <p className="font-[var(--font-playfair)] text-2xl text-white">
+            Gallery Moments Coming Soon
+          </p>
+          <p className="mt-2 text-sm text-white/55">
+            Official event photography and highlights will appear here once
+            published.
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+          {filteredItems.map((item, idx) => (
+            <ScrollReveal key={item.id} index={idx % 9}>
+              <button
+                type="button"
+                onClick={() => setSelectedIndex(idx)}
+                className="group relative w-full overflow-hidden rounded-xl border border-white/10 bg-[#111111] text-left shadow-lg shadow-black/40 transition duration-300 hover:-translate-y-1 hover:border-[#D4AF6A]/60"
+              >
+                <div className="relative h-60 w-full overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    unoptimized
+                    className="object-cover transition duration-700 group-hover:scale-105"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/25 to-transparent" />
 
-                <span className="absolute left-3.5 top-3.5 rounded-full border border-[#D4AF6A]/50 bg-black/75 px-3 py-1 text-[9px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] backdrop-blur-md">
-                  {item.category}
-                </span>
+                  <span className="absolute left-3.5 top-3.5 rounded-full border border-[#D4AF6A]/50 bg-black/75 px-3 py-1 text-[9px] font-semibold uppercase tracking-[2px] text-[#D4AF6A] backdrop-blur-md">
+                    {item.category}
+                  </span>
 
-                <span className="absolute right-3.5 top-3.5 flex size-8 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white/85 opacity-0 backdrop-blur-sm transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black group-hover:opacity-100">
-                  <FiMaximize2 size={14} />
-                </span>
+                  <span className="absolute right-3.5 top-3.5 flex size-8 items-center justify-center rounded-full border border-white/25 bg-black/55 text-white/85 opacity-0 backdrop-blur-sm transition group-hover:border-[#D4AF6A] group-hover:bg-[#D4AF6A] group-hover:text-black group-hover:opacity-100">
+                    <FiMaximize2 size={14} />
+                  </span>
 
-                <div className="absolute bottom-4 left-4 right-4">
-                  <p className="text-[10px] uppercase tracking-[2.2px] text-white/60">
-                    {item.subtitle}
-                  </p>
-                  <h3 className="mt-1 font-[var(--font-playfair)] text-xl text-white transition group-hover:text-[#D4AF6A]">
-                    {item.title}
-                  </h3>
+                  <div className="absolute bottom-4 left-4 right-4">
+                    <p className="text-[10px] uppercase tracking-[2.2px] text-white/60">
+                      {item.subtitle}
+                    </p>
+                    <h3 className="mt-1 font-[var(--font-playfair)] text-xl text-white transition group-hover:text-[#D4AF6A]">
+                      {item.title}
+                    </h3>
+                  </div>
                 </div>
-              </div>
-            </button>
-          </ScrollReveal>
-        ))}
-      </div>
+              </button>
+            </ScrollReveal>
+          ))}
+        </div>
+      )}
 
       {/* Lightbox Modal */}
       {activeItem && (

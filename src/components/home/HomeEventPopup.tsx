@@ -18,6 +18,7 @@ export type PopupEvent = {
   image: string;
   date: string;
   venue: string;
+  price?: string;
 };
 
 type ApiEventItem = {
@@ -29,6 +30,7 @@ type ApiEventItem = {
   bannerUrl: string | null;
   startAt: string;
   venue?: { name: string; city: string } | null;
+  ticketTypes?: { price: string | number }[];
 };
 
 const POPUP_DISMISSED_KEY = "ife_home_popup_dismissed";
@@ -188,7 +190,7 @@ export default function HomeEventPopup({
           <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#D4AF6A]">
               <FiTag size={13} />
-              Passes from ₹1,499
+              {event.price || "Passes Available"}
             </span>
 
             <div className="flex flex-wrap gap-2.5">

@@ -149,6 +149,9 @@ export default async function FashionShowsPage() {
                 const venueLabel = ev.venue
                   ? `${ev.venue.name}, ${ev.venue.city}`
                   : "Venue TBA";
+                const minPrice = ev.ticketTypes?.length
+                  ? Math.min(...ev.ticketTypes.map((t) => Number(t.price)))
+                  : null;
 
                 return (
                   <ScrollReveal key={ev.id} index={idx % 6}>
@@ -204,7 +207,9 @@ export default async function FashionShowsPage() {
                             Passes
                           </p>
                           <p className="text-xs font-semibold text-[#D4AF6A]">
-                            From ₹1,499
+                            {minPrice !== null
+                              ? `From ₹${minPrice.toLocaleString("en-IN")}`
+                              : "Tickets TBA"}
                           </p>
                         </div>
 

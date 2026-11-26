@@ -11,7 +11,6 @@ import {
   Ticket,
   Trash2,
   ArrowRight,
-  CircleAlert,
   Sparkles,
 } from "lucide-react";
 
@@ -26,47 +25,8 @@ type WishlistEvent = {
   image: string;
 };
 
-const initialWishlist: WishlistEvent[] = [
-  {
-    id: "1",
-    title: "The IFE Fashion Showcase",
-    category: "Fashion Show",
-    date: "Date to be announced",
-    venue: "Venue to be announced",
-    description:
-      "An exclusive fashion experience celebrating creativity, style and emerging talent.",
-    startingPrice: 499,
-    image:
-      "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: "2",
-    title: "Live Beyond",
-    category: "Entertainment",
-    date: "Date to be announced",
-    venue: "Venue to be announced",
-    description:
-      "A live entertainment experience featuring music, performances and unforgettable moments.",
-    startingPrice: 999,
-    image:
-      "https://images.unsplash.com/photo-1501386761578-eac5c94b800a?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: "4",
-    title: "Runway Stories",
-    category: "Fashion",
-    date: "Date to be announced",
-    venue: "Venue to be announced",
-    description:
-      "Discover fashion stories through runway presentations and artistic expression.",
-    startingPrice: 499,
-    image:
-      "https://images.unsplash.com/photo-1469334031218-e382a71b716b?auto=format&fit=crop&w=900&q=85",
-  },
-];
-
 export default function Wishlist() {
-  const [events, setEvents] = useState(initialWishlist);
+  const [events, setEvents] = useState<WishlistEvent[]>([]);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [removedEvent, setRemovedEvent] = useState("");
@@ -117,7 +77,7 @@ export default function Wishlist() {
               </h1>
               <p className="mt-3 max-w-xl text-sm leading-7 text-gray-400">
                 Keep track of the events you love and come back to book your
-                tickets whenever you're ready.
+                tickets whenever you&apos;re ready.
               </p>
             </div>
 
@@ -128,24 +88,6 @@ export default function Wishlist() {
               Discover Events
               <ArrowRight size={16} />
             </Link>
-          </div>
-        </div>
-
-        {/* Demo notice */}
-        <div className="mb-8 flex gap-3 border border-[#D4AF6A]/30 bg-[#D4AF6A]/[0.06] p-4">
-          <CircleAlert
-            size={19}
-            className="mt-0.5 shrink-0 text-[#D4AF6A]"
-          />
-          <div>
-            <p className="text-sm font-semibold text-[#F5E5B5]">
-              Demonstration wishlist
-            </p>
-            <p className="mt-1 text-xs leading-6 text-gray-400">
-              These are sample saved events. Removing an event updates this
-              page's temporary browser state only. Your changes are not
-              permanently stored or linked to a customer account.
-            </p>
           </div>
         </div>
 
