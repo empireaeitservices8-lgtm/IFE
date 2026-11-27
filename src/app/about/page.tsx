@@ -1,8 +1,28 @@
+import Image from "next/image";
 import Link from "next/link";
 import { FiArrowRight, FiArrowUpRight } from "react-icons/fi";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import ScrollReveal from "@/components/ui/ScrollReveal";
+
+const directors = [
+  {
+    name: "Nisanth S S",
+    role: "Director – IFEMED Services Private Limited",
+    bio: "Nisanth S S is an award-winning Show Director with experience in successfully directing over 41 shows. He is a recipient of the Best Show Director Award 2026, recognized for his outstanding creativity, leadership, and excellence in show direction. He has made a remarkable contribution to the fashion and entertainment industry.",
+    highlight: "41+ Shows Directed • Best Show Director Award 2026",
+    tags: "Award-Winning Show Director | Event Director | Creative Professional",
+    image: "/images/directors/nisanth-ss.jpg",
+  },
+  {
+    name: "Aiswarya Sivakumar",
+    role: "Director – IFEMED Services Pvt Ltd",
+    bio: "Film Actress, Model & Director of International Fashion & Entertainment (IFE), Aiswarya Sivakumar is known for her creativity, leadership, and passion for fashion and entertainment. With 17+ successfully directed shows, she is recognized for creating impactful concepts, delivering flawless events, and empowering emerging talent.",
+    highlight: "17+ Shows Directed",
+    tags: "Actress | Model | Director | Fashion & Entertainment Professional",
+    image: "/images/directors/aiswarya-sivakumar.jpg",
+  },
+];
 
 const experiences = [
   {
@@ -216,6 +236,69 @@ export default function AboutPage() {
                 entertainment and meaningful experiences, connecting creative
                 communities and audiences across borders.
               </p>
+            </div>
+          </div>
+        </section>
+
+        {/* LEADERSHIP / DIRECTORS */}
+        <section className="border-b border-white/10 bg-[#050505] px-4 py-10 sm:px-6 sm:py-14">
+          <div className="container-main">
+            <div className="mb-8 max-w-2xl">
+              <div className="mb-3 flex items-center gap-3">
+                <span className="h-px w-8 bg-[#D4AF6A]" />
+                <p className="text-[10px] font-semibold uppercase tracking-[4px] text-[#D4AF6A]">
+                  Leadership
+                </p>
+              </div>
+              <h2 className="font-[var(--font-playfair)] text-3xl md:text-4xl">
+                Meet Our <span className="italic text-[#D4AF6A]">Directors</span>
+              </h2>
+              <p className="mt-2.5 text-sm leading-6 text-white/60">
+                The creative visionaries guiding International Fashion &amp;
+                Entertainment and IFEMED Services Private Limited.
+              </p>
+            </div>
+
+            <div className="grid gap-6 lg:grid-cols-2">
+              {directors.map((director, idx) => (
+                <ScrollReveal key={director.name} index={idx}>
+                  <article className="flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#101010] transition hover:border-[#D4AF6A]/50 sm:flex-row">
+                    <div className="relative h-72 w-full shrink-0 overflow-hidden bg-[#080808] sm:h-auto sm:w-56">
+                      <Image
+                        src={director.image}
+                        alt={director.name}
+                        fill
+                        className="object-cover object-top"
+                        sizes="(max-width: 640px) 100vw, 224px"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent sm:bg-gradient-to-r sm:from-transparent sm:to-black/25" />
+                    </div>
+
+                    <div className="flex flex-1 flex-col justify-between p-5 sm:p-6">
+                      <div>
+                        <span className="inline-block rounded-full border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[1.5px] text-[#F5E5B5]">
+                          {director.highlight}
+                        </span>
+
+                        <h3 className="mt-3 font-[var(--font-playfair)] text-2xl text-white">
+                          {director.name}
+                        </h3>
+                        <p className="mt-1 text-xs font-semibold uppercase tracking-wider text-[#D4AF6A]">
+                          {director.role}
+                        </p>
+
+                        <p className="mt-3 text-xs leading-6 text-white/70 sm:text-sm">
+                          {director.bio}
+                        </p>
+                      </div>
+
+                      <p className="mt-4 border-t border-white/10 pt-3 text-[11px] italic text-white/55">
+                        {director.tags}
+                      </p>
+                    </div>
+                  </article>
+                </ScrollReveal>
+              ))}
             </div>
           </div>
         </section>

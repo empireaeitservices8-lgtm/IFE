@@ -235,9 +235,12 @@ export default function ContactPage() {
                     <p className="text-[9px] font-semibold uppercase tracking-[2px] text-white/45">
                       Email
                     </p>
-                    <p className="text-sm text-white">
-                      concierge@ife-events.com
-                    </p>
+                    <a
+                      href="mailto:ifeentertainments24@gmail.com"
+                      className="text-sm text-white transition hover:text-[#D4AF6A]"
+                    >
+                      ifeentertainments24@gmail.com
+                    </a>
                   </div>
                 </div>
 
@@ -249,9 +252,21 @@ export default function ContactPage() {
                     <p className="text-[9px] font-semibold uppercase tracking-[2px] text-white/45">
                       Phone
                     </p>
-                    <p className="text-sm text-white">
-                      +44 (0) 20 7946 0000
-                    </p>
+                    <div className="flex flex-wrap gap-x-2 text-sm text-white">
+                      <a
+                        href="tel:+917012699060"
+                        className="transition hover:text-[#D4AF6A]"
+                      >
+                        7012699060
+                      </a>
+                      <span className="text-white/30">/</span>
+                      <a
+                        href="tel:+917025256662"
+                        className="transition hover:text-[#D4AF6A]"
+                      >
+                        7025256662
+                      </a>
+                    </div>
                   </div>
                 </div>
 
@@ -261,10 +276,10 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-[9px] font-semibold uppercase tracking-[2px] text-white/45">
-                      Headquarters
+                      Location
                     </p>
                     <p className="text-sm text-white">
-                      International Fashion &amp; Entertainment House
+                      Kaloor, Ernakulam
                     </p>
                   </div>
                 </div>
@@ -275,10 +290,10 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <p className="text-[9px] font-semibold uppercase tracking-[2px] text-white/45">
-                      Business Hours
+                      Hours
                     </p>
                     <p className="text-sm text-white">
-                      Monday – Friday, 09:00 – 18:00
+                      5:00 PM – 12:00 AM
                     </p>
                   </div>
                 </div>
