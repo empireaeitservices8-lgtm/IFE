@@ -1,17 +1,19 @@
 
 import type { Metadata } from "next";
-import { Playfair_Display, Inter } from "next/font/google";
+import { Space_Grotesk, Work_Sans } from "next/font/google";
 import BackToTop from "@/components/ui/BackToTop";
 import "./globals.css";
 
-const playfair = Playfair_Display({
-  variable: "--font-playfair",
+const spaceGrotesk = Space_Grotesk({
+  variable: "--font-display",
   subsets: ["latin"],
+  weight: ["500", "600", "700"],
 });
 
-const inter = Inter({
-  variable: "--font-inter",
+const workSans = Work_Sans({
+  variable: "--font-work-sans",
   subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 export const metadata: Metadata = {
@@ -27,7 +29,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${playfair.variable} ${inter.variable} antialiased`}>
+      <body className={`${spaceGrotesk.variable} ${workSans.variable} antialiased`}>
         {children}
         <BackToTop />
       </body>

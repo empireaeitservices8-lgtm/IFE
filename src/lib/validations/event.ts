@@ -36,6 +36,7 @@ export const createEventSchema = z
     capacity: z.coerce.number().int().min(1, "Capacity must be at least 1."),
     status: z.nativeEnum(EventStatus).optional(),
     isPopupFeatured: z.boolean().optional(),
+    isBannerFeatured: z.boolean().optional(),
     venueId: z.string().trim().min(1).optional().nullable(),
     artists: z.array(eventArtistInputSchema).optional(),
     ticketTypes: z.array(eventTicketInputSchema).optional(),
@@ -63,6 +64,7 @@ export const updateEventSchema = z
     capacity: z.coerce.number().int().min(1).optional(),
     status: z.nativeEnum(EventStatus).optional(),
     isPopupFeatured: z.boolean().optional(),
+    isBannerFeatured: z.boolean().optional(),
     venueId: z.string().trim().min(1).optional().nullable(),
     artists: z.array(eventArtistInputSchema).optional(),
     ticketTypes: z.array(eventTicketInputSchema).optional(),
@@ -90,5 +92,9 @@ export const publishEventSchema = z.object({
 
 export const setPopupEventSchema = z.object({
   isPopupFeatured: z.boolean(),
+});
+
+export const setBannerEventSchema = z.object({
+  isBannerFeatured: z.boolean(),
 });
 

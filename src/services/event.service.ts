@@ -210,6 +210,7 @@ export async function createEvent(
     capacity: number;
     status?: EventStatus;
     isPopupFeatured?: boolean;
+    isBannerFeatured?: boolean;
     venueId?: string | null;
     artists?: { artistId: string; eventRole?: string | null }[];
     ticketTypes?: {
@@ -253,6 +254,12 @@ export async function createEvent(
         data: { isPopupFeatured: false },
       });
     }
+    if (input.isBannerFeatured) {
+      await tx.event.updateMany({
+        where: { isBannerFeatured: true },
+        data: { isBannerFeatured: false },
+      });
+    }
 
     const created = await tx.event.create({
       data: {
@@ -267,6 +274,7 @@ export async function createEvent(
         capacity: input.capacity,
         status,
         isPopupFeatured: input.isPopupFeatured ?? false,
+        isBannerFeatured: input.isBannerFeatured ?? false,
         publishedAt: status === EventStatus.PUBLISHED ? new Date() : null,
         venueId: input.venueId ?? null,
         createdById: actorId,
@@ -329,6 +337,7 @@ export async function updateEvent(
     capacity?: number;
     status?: EventStatus;
     isPopupFeatured?: boolean;
+    isBannerFeatured?: boolean;
     venueId?: string | null;
     artists?: { artistId: string; eventRole?: string | null }[];
     ticketTypes?: {
@@ -377,6 +386,12 @@ export async function updateEvent(
         await tx.event.updateMany({
           where: { id: { not: id }, isPopupFeatured: true },
           data: { isPopupFeatured: false },
+        });
+      }
+      if (input.isBannerFeatured) {
+        await tx.event.updateMany({
+          where: { id: { not: id }, isBannerFeatured: true },
+          data: { isBannerFeatured: false },
         });
       }
 
@@ -455,6 +470,9 @@ export async function updateEvent(
           ...(input.capacity !== undefined ? { capacity: input.capacity } : {}),
           ...(input.isPopupFeatured !== undefined
             ? { isPopupFeatured: input.isPopupFeatured }
+            : {}),
+          ...(input.isBannerFeatured !== undefined
+            ? { isBannerFeatured: input.isBannerFeatured }
             : {}),
           ...(input.venueId !== undefined ? { venueId: input.venueId } : {}),
           ...(input.status !== undefined
@@ -574,6 +592,58 @@ export async function setEventPopupFeatured(
     description: isPopupFeatured
       ? `Set "${existing.title}" as homepage popup`
       : `Removed "${existing.title}" from homepage popup`,
+    ipAddress: ipAddress ?? null,
+  });
+
+  invalidatePublicEventCache();
+  return updated;
+}
+
+export async function setEventBannerFeatured(
+  id: string,
+  isBannerFeatured: boolean,
+  actorId: string,
+  ipAddress?: string
+) {
+  const existing = await prisma.event.findUnique({
+    where: { id },
+    select: { id: true, title: true, status: true },
+  });
+
+  if (!existing) {
+    throw new AppError("Event not found.", 404);
+  }
+
+  if (isBannerFeatured && existing.status !== EventStatus.PUBLISHED) {
+    throw new AppError(
+      "Only published events can be featured in the homepage banner.",
+      400
+    );
+  }
+
+  const updated = await prisma.$transaction(async (tx) => {
+    if (isBannerFeatured) {
+      await tx.event.updateMany({
+        where: { id: { not: id }, isBannerFeatured: true },
+        data: { isBannerFeatured: false },
+      });
+    }
+
+    return tx.event.update({
+      where: { id },
+      data: { isBannerFeatured },
+      select: { id: true, title: true, isBannerFeatured: true },
+    });
+  }, { timeout: 15000, maxWait: 10000 });
+
+  await recordAuditLog({
+    actorId,
+    action: "SET_BANNER_EVENT",
+    entityType: "Event",
+    entityId: id,
+    description: isBannerFeatured
+      ? `Set "${existing.title}" as homepage banner`
+      : `Removed "${existing.title}" from homepage banner`,
     ipAddress: ipAddress ?? null,
   });
 

@@ -43,6 +43,7 @@ type EventItem = {
   revenue: number;
   status: EventStatus;
   isPopupFeatured: boolean;
+  isBannerFeatured: boolean;
 };
 
 type ApiEvent = {
@@ -53,6 +54,7 @@ type ApiEvent = {
   startAt: string;
   status: string;
   isPopupFeatured?: boolean;
+  isBannerFeatured?: boolean;
   venue?: { name: string } | null;
   ticketTypes?: { price: string | number; totalQuantity: number; soldQuantity: number }[];
 };
@@ -258,6 +260,7 @@ export default function AdminEventsPage() {
         revenue,
         status: mapEventStatus(ev.status),
         isPopupFeatured: Boolean(ev.isPopupFeatured),
+        isBannerFeatured: Boolean(ev.isBannerFeatured),
       };
     });
 
@@ -371,6 +374,28 @@ export default function AdminEventsPage() {
       await loadEvents();
     } catch {
       setError("Network error while updating homepage popup.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const setBannerEvent = async (id: string, isBannerFeatured: boolean) => {
+    setMenuEventId(null);
+    setError("");
+    try {
+      const res = await fetch(`/api/events/${id}/banner`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isBannerFeatured }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setError(json.message || "Failed to update homepage banner.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      await loadEvents();
+    } catch {
+      setError("Network error while updating homepage banner.");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -634,6 +659,11 @@ export default function AdminEventsPage() {
                                   Popup
                                 </span>
                               )}
+                              {event.isBannerFeatured && (
+                                <span className="rounded-full border border-emerald-500/40 bg-emerald-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-emerald-300">
+                                  Banner
+                                </span>
+                              )}
                             </p>
                             <p className="mt-1 text-[10px] text-gray-600">
                               ID: {event.id.slice(0, 10)}
@@ -742,17 +772,33 @@ export default function AdminEventsPage() {
                             </button>
 
                             {event.status === "Published" && (
-                              <button
-                                type="button"
-                                onClick={() =>
-                                  setPopupEvent(event.id, !event.isPopupFeatured)
-                                }
-                                className="w-full px-3 py-3 text-left text-[11px] text-[#D4AF6A] transition hover:bg-[#D4AF6A]/10"
-                              >
-                                {event.isPopupFeatured
-                                  ? "Remove from Popup"
-                                  : "Set as Homepage Popup"}
-                              </button>
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setPopupEvent(event.id, !event.isPopupFeatured)
+                                  }
+                                  className="w-full px-3 py-3 text-left text-[11px] text-[#D4AF6A] transition hover:bg-[#D4AF6A]/10"
+                                >
+                                  {event.isPopupFeatured
+                                    ? "Remove from Popup"
+                                    : "Set as Homepage Popup"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setBannerEvent(
+                                      event.id,
+                                      !event.isBannerFeatured
+                                    )
+                                  }
+                                  className="w-full px-3 py-3 text-left text-[11px] text-emerald-300 transition hover:bg-emerald-500/10"
+                                >
+                                  {event.isBannerFeatured
+                                    ? "Remove from Banner"
+                                    : "Set as Homepage Banner"}
+                                </button>
+                              </>
                             )}
 
                             {event.status !== "Cancelled" && (

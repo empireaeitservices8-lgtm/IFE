@@ -62,6 +62,7 @@ export default function EditEventPage() {
     capacity: "500",
     status: "DRAFT",
     isPopupFeatured: false,
+    isBannerFeatured: false,
     venueId: "",
   });
   const [newVenue, setNewVenue] = useState({
@@ -100,6 +101,7 @@ export default function EditEventPage() {
           capacity: String(ev.capacity ?? 500),
           status: ev.status || "DRAFT",
           isPopupFeatured: Boolean(ev.isPopupFeatured),
+          isBannerFeatured: Boolean(ev.isBannerFeatured),
           venueId: ev.venueId || "",
         });
         setTicketTypes(
@@ -224,6 +226,7 @@ export default function EditEventPage() {
           capacity: Number(form.capacity),
           status: form.status,
           isPopupFeatured: form.isPopupFeatured,
+          isBannerFeatured: form.isBannerFeatured,
           venueId: resolvedVenueId,
           ticketTypes: ticketTypes
             .filter((t) => t.name.trim().length > 0)
@@ -431,17 +434,31 @@ export default function EditEventPage() {
                   />
                 </label>
 
-                <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-300 md:col-span-2">
-                  <input
-                    type="checkbox"
-                    checked={form.isPopupFeatured}
-                    onChange={(e) =>
-                      setForm({ ...form, isPopupFeatured: e.target.checked })
-                    }
-                    className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
-                  />
-                  Feature this event in the Homepage Popup
-                </label>
+                <div className="flex flex-wrap gap-6 md:col-span-2">
+                  <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={form.isPopupFeatured}
+                      onChange={(e) =>
+                        setForm({ ...form, isPopupFeatured: e.target.checked })
+                      }
+                      className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
+                    />
+                    Feature in Homepage Popup
+                  </label>
+
+                  <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={form.isBannerFeatured}
+                      onChange={(e) =>
+                        setForm({ ...form, isBannerFeatured: e.target.checked })
+                      }
+                      className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
+                    />
+                    Feature in Homepage Banner
+                  </label>
+                </div>
               </div>
             </section>
 

@@ -9,6 +9,9 @@ import EventCard from "@/components/home/EventCard";
 import HomeEventPopup, {
   type PopupEvent,
 } from "@/components/home/HomeEventPopup";
+import NewYearGalaBanner, {
+  type NewYearGalaBannerProps,
+} from "@/components/home/NewYearGalaBanner";
 import NewsletterBox from "@/components/home/NewsletterBox";
 import ScrollReveal from "@/components/ui/ScrollReveal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -32,24 +35,21 @@ const categories = [
     number: "01",
     title: "Fashion Shows",
     description: "Experience creativity, elegance and global fashion.",
-    image:
-      "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?q=85&w=900",
+    image: "/images/category-fashion-shows.jpg",
     href: "/fashion-shows",
   },
   {
     number: "02",
     title: "Entertainment",
     description: "Unforgettable performances and live experiences.",
-    image:
-      "https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?q=85&w=900",
+    image: "/images/category-entertainment.jpg",
     href: "/entertainment",
   },
   {
     number: "03",
     title: "Award Shows",
     description: "Celebrate excellence and extraordinary talent.",
-    image:
-      "https://images.unsplash.com/photo-1503095396549-807759245b35?q=85&w=900",
+    image: "/images/new-year-gala-bg.jpg",
     href: "/events",
   },
 ];
@@ -67,10 +67,48 @@ type FeaturedEventItem = {
 export default async function Home() {
   let featuredEvents: FeaturedEventItem[] = [];
   let popupEvent: PopupEvent | null = null;
+  let galaBanner: NewYearGalaBannerProps | null = null;
 
   try {
     const result = await listEvents({ limit: 12, includeUnpublished: false });
     if (result.items.length > 0) {
+      const galaSource =
+        result.items.find((ev) => ev.isBannerFeatured) ??
+        result.items.find((ev) =>
+          ev.title.toLowerCase().includes("goodbye gala")
+        ) ??
+        result.items.find((ev) => ev.title.toLowerCase().includes("new year")) ??
+        null;
+
+      if (galaSource) {
+        const galaMinPrice = galaSource.ticketTypes?.length
+          ? Math.min(...galaSource.ticketTypes.map((t) => Number(t.price)))
+          : null;
+        galaBanner = {
+          id: galaSource.id,
+          title: galaSource.title,
+          description:
+            galaSource.shortDescription ||
+            galaSource.description.slice(0, 170),
+          image:
+            galaSource.bannerUrl ||
+            fallbackImages[galaSource.category] ||
+            fallbackImages.AWARDS,
+          date: new Date(galaSource.startAt).toLocaleDateString("en-IN", {
+            day: "2-digit",
+            month: "short",
+            year: "numeric",
+          }),
+          venue: galaSource.venue
+            ? `${galaSource.venue.name}, ${galaSource.venue.city}`
+            : "Venue to be announced",
+          price:
+            galaMinPrice !== null
+              ? `Passes from ₹${galaMinPrice.toLocaleString("en-IN")}`
+              : "Tickets TBA",
+        };
+      }
+
       const first =
         result.items.find((ev) => ev.isPopupFeatured) ?? result.items[0];
       const firstMinPrice = first.ticketTypes?.length
@@ -141,6 +179,9 @@ export default async function Home() {
       <main>
         {/* HERO */}
         <Hero />
+
+        {/* NEW YEAR GALA BANNER */}
+        {galaBanner && <NewYearGalaBanner {...galaBanner} />}
 
         {/* INTRO */}
         <section className="section-padding border-t border-white/10 bg-[#080808]">
