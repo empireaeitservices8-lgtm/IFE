@@ -63,6 +63,11 @@ export default function EditEventPage() {
     status: "DRAFT",
     venueId: "",
   });
+  const [newVenue, setNewVenue] = useState({
+    name: "",
+    city: "",
+    address: "",
+  });
 
   useEffect(() => {
     let active = true;
@@ -167,6 +172,34 @@ export default function EditEventPage() {
 
     try {
       setSaving(true);
+      let resolvedVenueId: string | null = form.venueId || null;
+
+      if (form.venueId === "__new__") {
+        if (!newVenue.name.trim() || !newVenue.city.trim()) {
+          setMessageType("error");
+          setMessage("Please enter both the new venue name and city.");
+          return;
+        }
+        const venueRes = await fetch("/api/venues", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            name: newVenue.name.trim(),
+            city: newVenue.city.trim(),
+            address: newVenue.address.trim() || newVenue.name.trim(),
+            country: "India",
+            capacity: Math.max(1, Number(form.capacity) || 500),
+          }),
+        });
+        const venueJson = await venueRes.json();
+        if (!venueRes.ok || !venueJson.success || !venueJson.data?.venue?.id) {
+          setMessageType("error");
+          setMessage(venueJson.message || "Failed to create new venue.");
+          return;
+        }
+        resolvedVenueId = venueJson.data.venue.id;
+      }
+
       const startAt = new Date(`${form.startDate}T${form.startTime}:00`);
       const endAt = new Date(
         `${form.endDate || form.startDate}T${form.endTime || "23:00"}:00`
@@ -188,7 +221,7 @@ export default function EditEventPage() {
           ).toISOString(),
           capacity: Number(form.capacity),
           status: form.status,
-          venueId: form.venueId || null,
+          venueId: resolvedVenueId,
           ticketTypes: ticketTypes
             .filter((t) => t.name.trim().length > 0)
             .map((t) => ({
@@ -509,6 +542,7 @@ export default function EditEventPage() {
                     }
                   >
                     <option value="">No venue assigned</option>
+                    <option value="__new__">+ Fill / Create New Venue</option>
                     {venues.map((v) => (
                       <option key={v.id} value={v.id}>
                         {v.name} ({v.city})
@@ -528,6 +562,43 @@ export default function EditEventPage() {
                     }
                   />
                 </label>
+                {form.venueId === "__new__" && (
+                  <div className="grid gap-4 rounded-xl border border-white/10 bg-black/40 p-4 md:col-span-2 md:grid-cols-3">
+                    <label className={labelClass}>
+                      New Venue Name *
+                      <input
+                        className={inputClass}
+                        placeholder="e.g. Taj Lands End Ballroom"
+                        value={newVenue.name}
+                        onChange={(e) =>
+                          setNewVenue({ ...newVenue, name: e.target.value })
+                        }
+                      />
+                    </label>
+                    <label className={labelClass}>
+                      City *
+                      <input
+                        className={inputClass}
+                        placeholder="e.g. Mumbai"
+                        value={newVenue.city}
+                        onChange={(e) =>
+                          setNewVenue({ ...newVenue, city: e.target.value })
+                        }
+                      />
+                    </label>
+                    <label className={labelClass}>
+                      Address
+                      <input
+                        className={inputClass}
+                        placeholder="Street, state"
+                        value={newVenue.address}
+                        onChange={(e) =>
+                          setNewVenue({ ...newVenue, address: e.target.value })
+                        }
+                      />
+                    </label>
+                  </div>
+                )}
               </div>
             </section>
 

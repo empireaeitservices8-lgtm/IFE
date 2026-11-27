@@ -52,6 +52,9 @@ export default function NewEventPage() {
     venueId: "",
     venue: "",
     address: "",
+    city: "",
+    state: "",
+    country: "India",
     capacity: "500",
   });
   const [ticketTiers, setTicketTiers] = useState<
@@ -162,7 +165,9 @@ export default function NewEventPage() {
           body: JSON.stringify({
             name: form.venue.trim(),
             address: form.address.trim() || form.venue.trim(),
-            city: "Kochi",
+            city: form.city.trim() || "Mumbai",
+            ...(form.state.trim() ? { state: form.state.trim() } : {}),
+            country: form.country.trim() || "India",
             capacity: totalCapacity,
           }),
         });
@@ -445,29 +450,78 @@ export default function NewEventPage() {
               </div>
               <div>
                 <h3 className="font-semibold">Venue Details</h3>
-                <p className="text-xs text-gray-500">Where the event will take place</p>
+                <p className="text-xs text-gray-500">
+                  Choose an existing venue or fill in details for a new one
+                </p>
               </div>
             </div>
 
             <div className="grid gap-5 md:grid-cols-2">
-              <label className={labelClass}>
-                Venue Name *
-                <input
+              <label className={`${labelClass} md:col-span-2`}>
+                Select Existing Venue
+                <select
                   className={inputClass}
-                  placeholder="e.g. Grand Convention Centre"
-                  value={form.venue}
-                  onChange={(e) => updateField("venue", e.target.value)}
-                />
+                  value={form.venueId}
+                  onChange={(e) => updateField("venueId", e.target.value)}
+                >
+                  <option value="">+ Create / Fill a New Venue</option>
+                  {venues.map((v) => (
+                    <option key={v.id} value={v.id}>
+                      {v.name} ({v.city})
+                    </option>
+                  ))}
+                </select>
               </label>
-              <label className={labelClass}>
-                Venue Address
-                <input
-                  className={inputClass}
-                  placeholder="Street, city, state"
-                  value={form.address}
-                  onChange={(e) => updateField("address", e.target.value)}
-                />
-              </label>
+
+              {!form.venueId && (
+                <>
+                  <label className={labelClass}>
+                    Venue Name *
+                    <input
+                      className={inputClass}
+                      placeholder="e.g. Taj Lands End Ballroom"
+                      value={form.venue}
+                      onChange={(e) => updateField("venue", e.target.value)}
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    City *
+                    <input
+                      className={inputClass}
+                      placeholder="e.g. Mumbai, Bengaluru, Kochi"
+                      value={form.city}
+                      onChange={(e) => updateField("city", e.target.value)}
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    State
+                    <input
+                      className={inputClass}
+                      placeholder="e.g. Maharashtra, Karnataka, Kerala"
+                      value={form.state}
+                      onChange={(e) => updateField("state", e.target.value)}
+                    />
+                  </label>
+                  <label className={labelClass}>
+                    Country
+                    <input
+                      className={inputClass}
+                      placeholder="e.g. India"
+                      value={form.country}
+                      onChange={(e) => updateField("country", e.target.value)}
+                    />
+                  </label>
+                  <label className={`${labelClass} md:col-span-2`}>
+                    Venue Address
+                    <input
+                      className={inputClass}
+                      placeholder="Street, landmark, postal code"
+                      value={form.address}
+                      onChange={(e) => updateField("address", e.target.value)}
+                    />
+                  </label>
+                </>
+              )}
             </div>
           </section>
 

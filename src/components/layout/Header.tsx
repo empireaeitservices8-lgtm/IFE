@@ -21,11 +21,13 @@ const navLinks = [
   { name: "Fashion Shows", href: "/fashion-shows" },
   { name: "Entertainment", href: "/entertainment" },
   { name: "Gallery", href: "/gallery" },
+  { name: "Check Ticket", href: "/check-ticket" },
   { name: "Contact", href: "/contact" },
 ];
 
 const quickExploreLinks = [
   { name: "Upcoming Events", href: "/events" },
+  { name: "Check Ticket", href: "/check-ticket" },
   { name: "Fashion Shows", href: "/fashion-shows" },
   { name: "Live Entertainment", href: "/entertainment" },
   { name: "My Tickets", href: "/my-tickets" },
