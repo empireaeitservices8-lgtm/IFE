@@ -54,6 +54,8 @@ export default function EditEventPage() {
     category: "FASHION",
     shortDescription: "",
     description: "",
+    highlights: "",
+    rules: "",
     bannerUrl: "",
     startDate: "",
     startTime: "",
@@ -93,6 +95,8 @@ export default function EditEventPage() {
           category: ev.category || "FASHION",
           shortDescription: ev.shortDescription || "",
           description: ev.description || "",
+          highlights: ev.highlights || "",
+          rules: ev.rules || "",
           bannerUrl: ev.bannerUrl || "",
           startDate: toDateInput(ev.startAt),
           startTime: toTimeInput(ev.startAt),
@@ -217,6 +221,8 @@ export default function EditEventPage() {
           category: form.category,
           shortDescription: form.shortDescription.trim() || null,
           description: form.description.trim(),
+          highlights: form.highlights.trim() || null,
+          rules: form.rules.trim() || null,
           bannerUrl: form.bannerUrl.trim() || null,
           startAt: startAt.toISOString(),
           endAt: (endAt > startAt
@@ -430,6 +436,32 @@ export default function EditEventPage() {
                     value={form.description}
                     onChange={(e) =>
                       setForm({ ...form, description: e.target.value })
+                    }
+                  />
+                </label>
+
+                <label className={labelClass}>
+                  Event Highlights (one per line)
+                  <textarea
+                    rows={5}
+                    placeholder={"Fashion Show\nDance Event\nWater Drumset\nNew Year Special DJ Party\nUnlimited Buffet & Fun"}
+                    className={inputClass}
+                    value={form.highlights}
+                    onChange={(e) =>
+                      setForm({ ...form, highlights: e.target.value })
+                    }
+                  />
+                </label>
+
+                <label className={labelClass}>
+                  Event Rules &amp; Guidelines (one per line)
+                  <textarea
+                    rows={5}
+                    placeholder={"Entry gate closes at 10:30 PM. No entry after this time.\nA valid pass or ticket is required for entry."}
+                    className={inputClass}
+                    value={form.rules}
+                    onChange={(e) =>
+                      setForm({ ...form, rules: e.target.value })
                     }
                   />
                 </label>

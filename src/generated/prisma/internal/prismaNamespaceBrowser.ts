@@ -149,6 +149,8 @@ export const EventScalarFieldEnum = {
   category: 'category',
   shortDescription: 'shortDescription',
   description: 'description',
+  highlights: 'highlights',
+  rules: 'rules',
   bannerUrl: 'bannerUrl',
   startAt: 'startAt',
   endAt: 'endAt',
@@ -384,6 +386,8 @@ export const EventOrderByRelevanceFieldEnum = {
   slug: 'slug',
   shortDescription: 'shortDescription',
   description: 'description',
+  highlights: 'highlights',
+  rules: 'rules',
   bannerUrl: 'bannerUrl',
   venueId: 'venueId',
   createdById: 'createdById'

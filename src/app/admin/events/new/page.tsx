@@ -44,6 +44,8 @@ export default function NewEventPage() {
     category: "Fashion",
     shortDescription: "",
     description: "",
+    highlights: "",
+    rules: "",
     bannerUrl: "",
     startDate: "",
     startTime: "",
@@ -212,6 +214,8 @@ export default function NewEventPage() {
             form.description.trim() ||
             form.shortDescription.trim() ||
             `${form.title.trim()} presented by International Fashion Entertainment.`,
+          highlights: form.highlights.trim() || null,
+          rules: form.rules.trim() || null,
           bannerUrl: form.bannerUrl.trim() || null,
           startAt: startAt.toISOString(),
           endAt: endAt.toISOString(),
@@ -340,6 +344,28 @@ export default function NewEventPage() {
                   placeholder="Describe the event, activities, performers and experience..."
                   value={form.description}
                   onChange={(e) => updateField("description", e.target.value)}
+                />
+              </label>
+
+              <label className={labelClass}>
+                Event Highlights (one per line)
+                <textarea
+                  rows={5}
+                  className={inputClass}
+                  placeholder={"Fashion Show\nDance Event\nWater Drumset\nNew Year Special DJ Party\nUnlimited Buffet & Fun"}
+                  value={form.highlights}
+                  onChange={(e) => updateField("highlights", e.target.value)}
+                />
+              </label>
+
+              <label className={labelClass}>
+                Event Rules &amp; Guidelines (one per line)
+                <textarea
+                  rows={5}
+                  className={inputClass}
+                  placeholder={"Entry gate closes at 10:30 PM. No entry after this time.\nA valid pass or ticket is required for entry."}
+                  value={form.rules}
+                  onChange={(e) => updateField("rules", e.target.value)}
                 />
               </label>
             </div>

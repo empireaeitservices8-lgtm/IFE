@@ -217,6 +217,8 @@ model Event {
   category         EventCategory
   shortDescription String?       @db.Text
   description      String        @db.LongText
+  highlights       String?       @db.Text
+  rules            String?       @db.Text
   bannerUrl        String?       @db.Text
 
   startAt DateTime

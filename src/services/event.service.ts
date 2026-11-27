@@ -204,6 +204,8 @@ export async function createEvent(
     category: EventCategory;
     shortDescription?: string | null;
     description: string;
+    highlights?: string | null;
+    rules?: string | null;
     bannerUrl?: string | null;
     startAt: Date;
     endAt: Date;
@@ -268,6 +270,8 @@ export async function createEvent(
         category: input.category,
         shortDescription: input.shortDescription ?? null,
         description: input.description,
+        highlights: input.highlights ?? null,
+        rules: input.rules ?? null,
         bannerUrl: input.bannerUrl ?? null,
         startAt: input.startAt,
         endAt: input.endAt,
@@ -331,6 +335,8 @@ export async function updateEvent(
     category?: EventCategory;
     shortDescription?: string | null;
     description?: string;
+    highlights?: string | null;
+    rules?: string | null;
     bannerUrl?: string | null;
     startAt?: Date;
     endAt?: Date;
@@ -464,6 +470,10 @@ export async function updateEvent(
           ...(input.description !== undefined
             ? { description: input.description }
             : {}),
+          ...(input.highlights !== undefined
+            ? { highlights: input.highlights }
+            : {}),
+          ...(input.rules !== undefined ? { rules: input.rules } : {}),
           ...(input.bannerUrl !== undefined ? { bannerUrl: input.bannerUrl } : {}),
           ...(input.startAt !== undefined ? { startAt: input.startAt } : {}),
           ...(input.endAt !== undefined ? { endAt: input.endAt } : {}),

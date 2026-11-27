@@ -36,6 +36,7 @@ type EventView = {
   description: string;
   fullDescription: string;
   highlights: string[];
+  rules: string[];
   schedule: { time: string; title: string }[];
   quickPasses: QuickPassView[];
 };
@@ -94,12 +95,23 @@ async function getEvent(id: string): Promise<EventView | undefined> {
       description:
         dbEvent.shortDescription || dbEvent.description.slice(0, 160),
       fullDescription: dbEvent.description,
-      highlights: [
-        "Curated international showcase",
-        "Reserved seating & VIP hospitality",
-        "Official digital ticket with QR verification",
-        "Exclusive IFE experience",
-      ],
+      highlights: dbEvent.highlights
+        ? dbEvent.highlights
+            .split(/\r?\n/)
+            .map((line) => line.replace(/^[-*•\s]+/, "").trim())
+            .filter(Boolean)
+        : [
+            "Curated international showcase",
+            "Reserved seating & VIP hospitality",
+            "Official digital ticket with QR verification",
+            "Exclusive IFE experience",
+          ],
+      rules: dbEvent.rules
+        ? dbEvent.rules
+            .split(/\r?\n/)
+            .map((line) => line.replace(/^\d+[.)]\s*/, "").trim())
+            .filter(Boolean)
+        : [],
       schedule: [
         { time: "Doors Open", title: "Guest Registration & Red Carpet" },
         { time: "Main Showcase", title: dbEvent.title },
@@ -274,6 +286,27 @@ export default async function EventDetailsPage({ params }: PageProps) {
                   ))}
                 </div>
               </div>
+
+              {event.rules.length > 0 && (
+                <div>
+                  <h2 className="font-[var(--font-playfair)] text-2xl">
+                    Event Rules &amp; Guidelines
+                  </h2>
+                  <ol className="mt-4 divide-y divide-white/10 border border-white/10 bg-[#0d0d0d]">
+                    {event.rules.map((rule, index) => (
+                      <li
+                        key={`${index}-${rule.slice(0, 24)}`}
+                        className="flex items-start gap-4 px-5 py-4"
+                      >
+                        <span className="mt-0.5 shrink-0 font-[var(--font-playfair)] text-sm font-semibold text-[#D4AF6A]">
+                          {String(index + 1).padStart(2, "0")}
+                        </span>
+                        <p className="text-sm leading-6 text-white/80">{rule}</p>
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              )}
             </div>
 
             {/* RIGHT COLUMN: QUICK PASSES & BOOKING */}
