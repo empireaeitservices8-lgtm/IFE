@@ -74,7 +74,7 @@ export default function HomeEventPopup({
     if (initialEvent || dismissed === "1") return;
 
     let active = true;
-    fetch("/api/events?limit=1")
+    fetch("/api/events?limit=1&status=PUBLISHED")
       .then((res) => res.json())
       .then((json) => {
         if (!active || !json.success) return;

@@ -25,12 +25,7 @@ export async function GET(req: NextRequest) {
     });
 
     const response = ok(result);
-    if (!isStaff) {
-      response.headers.set(
-        "Cache-Control",
-        "public, s-maxage=30, stale-while-revalidate=60"
-      );
-    }
+    response.headers.set("Cache-Control", "no-store");
     return response;
   } catch (error) {
     return handleApiError(error);

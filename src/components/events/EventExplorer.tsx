@@ -126,7 +126,7 @@ export default function EventExplorer() {
 
   useEffect(() => {
     let active = true;
-    fetch("/api/events?limit=50")
+    fetch("/api/events?limit=50&status=PUBLISHED")
       .then((res) => res.json())
       .then((json) => {
         if (!active || !json.success) return;
