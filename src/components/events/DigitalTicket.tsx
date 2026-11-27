@@ -17,6 +17,18 @@ type Attendee = {
   name?: string;
   email?: string;
   phone?: string;
+  passName?: string;
+};
+
+export type DigitalTicketInitialBooking = {
+  bookingCode: string;
+  status: string;
+  passes: {
+    fullName: string;
+    email: string;
+    phone: string;
+    passName?: string;
+  }[];
 };
 
 type Props = {
@@ -24,6 +36,7 @@ type Props = {
   eventTitle: string;
   eventDate: string;
   venue: string;
+  initialBooking?: DigitalTicketInitialBooking | null;
 };
 
 export default function DigitalTicket({
@@ -31,11 +44,15 @@ export default function DigitalTicket({
   eventTitle,
   eventDate,
   venue,
+  initialBooking = null,
 }: Props) {
   const rawAttendees = useSessionStorageValue(`ife-attendees-${eventId}`);
   const rawBooking = useSessionStorageValue(`ife-booking-${eventId}`);
 
   const attendees = useMemo<Attendee[]>(() => {
+    if (initialBooking?.passes?.length) {
+      return initialBooking.passes;
+    }
     if (!rawAttendees) return [];
     try {
       const parsed: unknown = JSON.parse(rawAttendees);
@@ -43,9 +60,12 @@ export default function DigitalTicket({
     } catch {
       return [];
     }
-  }, [rawAttendees]);
+  }, [initialBooking, rawAttendees]);
 
   const bookingCode = useMemo<string>(() => {
+    if (initialBooking?.bookingCode) {
+      return initialBooking.bookingCode;
+    }
     if (rawBooking) {
       try {
         const parsed = JSON.parse(rawBooking) as { bookingCode?: string };
@@ -53,7 +73,7 @@ export default function DigitalTicket({
       } catch {}
     }
     return `IFE-${eventId.slice(0, 6).toUpperCase()}`;
-  }, [rawBooking, eventId]);
+  }, [initialBooking, rawBooking, eventId]);
 
   const handlePrint = () => {
     window.print();
@@ -85,7 +105,7 @@ export default function DigitalTicket({
             </button>
 
             <Link
-              href={`/events/${eventId}/booking-confirmation`}
+              href={`/events/${eventId}/booking-confirmation?bookingCode=${encodeURIComponent(bookingCode)}`}
               className="inline-flex items-center gap-2 border border-white/20 px-4 py-2.5 text-xs font-semibold text-white transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
             >
               <FiArrowLeft size={14} />
@@ -134,7 +154,11 @@ export default function DigitalTicket({
                     </div>
 
                     <span className="border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-emerald-300 print:border-gray-400 print:text-gray-700">
-                      Confirmed Pass
+                      {initialBooking?.status === "CANCELLED"
+                        ? "Cancelled"
+                        : initialBooking?.status === "PENDING"
+                          ? "Pending Pass"
+                          : "Confirmed Pass"}
                     </span>
                   </div>
 
@@ -144,6 +168,7 @@ export default function DigitalTicket({
                       <div>
                         <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500 print:text-gray-600">
                           Attendee {String(index + 1).padStart(2, "0")}
+                          {attendee.passName ? ` • ${attendee.passName}` : ""}
                         </p>
                         <h3 className="mt-0.5 text-lg font-semibold">
                           {attendee.fullName ||
