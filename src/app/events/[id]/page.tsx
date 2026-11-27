@@ -161,16 +161,16 @@ export default async function EventDetailsPage({ params }: PageProps) {
     <>
       <Header />
 
-      <main className="min-h-screen bg-[#050505] text-white">
+      <main className="min-h-screen bg-[#050505] pb-20 text-white lg:pb-0">
         {/* SLIM EVENT HERO */}
         <section
-          className="relative border-b border-white/10 bg-cover bg-center pb-8 pt-24"
+          className="relative border-b border-white/10 bg-cover bg-center pb-6 pt-24 sm:pb-8"
           style={{
             backgroundImage: `linear-gradient(90deg, rgba(5,5,5,0.95), rgba(5,5,5,0.7)), linear-gradient(0deg, #050505, transparent 80%), url('${event.image}')`,
           }}
         >
           <div className="container-main relative z-10">
-            <div className="mb-4 flex flex-wrap items-center gap-2 text-xs text-white/55">
+            <div className="mb-3 flex flex-wrap items-center gap-2 text-xs text-white/55 sm:mb-4">
               <Link
                 href="/events"
                 className="inline-flex items-center gap-1.5 transition hover:text-[#D4AF6A]"
@@ -182,42 +182,42 @@ export default async function EventDetailsPage({ params }: PageProps) {
               <span className="text-[#D4AF6A]">{event.category}</span>
             </div>
 
-            <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
+            <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end lg:gap-6">
               <div className="max-w-3xl">
-                <h1 className="font-[var(--font-playfair)] text-3xl leading-tight md:text-5xl">
+                <h1 className="font-[var(--font-playfair)] text-2xl leading-tight sm:text-4xl md:text-5xl">
                   {event.title}
                   <span className="text-[#D4AF6A]">.</span>
                 </h1>
 
-                <p className="mt-3 text-sm leading-6 text-white/75 md:text-base">
+                <p className="mt-2.5 text-xs leading-5 text-white/75 sm:mt-3 sm:text-sm sm:leading-6 md:text-base">
                   {event.description}
                 </p>
 
                 {/* Inline Key Info */}
-                <div className="mt-5 flex flex-wrap gap-x-6 gap-y-2.5 text-xs text-white/80">
-                  <span className="inline-flex items-center gap-2">
-                    <FiCalendar size={14} className="text-[#D4AF6A]" />
-                    {event.date}
+                <div className="mt-4 grid grid-cols-2 gap-x-4 gap-y-2 text-xs text-white/80 sm:mt-5 sm:flex sm:flex-wrap sm:gap-x-6 sm:gap-y-2.5">
+                  <span className="inline-flex items-center gap-1.5 sm:gap-2">
+                    <FiCalendar size={14} className="shrink-0 text-[#D4AF6A]" />
+                    <span className="truncate">{event.date}</span>
                   </span>
-                  <span className="inline-flex items-center gap-2">
-                    <FiClock size={14} className="text-[#D4AF6A]" />
-                    {event.time}
+                  <span className="inline-flex items-center gap-1.5 sm:gap-2">
+                    <FiClock size={14} className="shrink-0 text-[#D4AF6A]" />
+                    <span className="truncate">{event.time}</span>
                   </span>
-                  <span className="inline-flex items-center gap-2">
-                    <FiMapPin size={14} className="text-[#D4AF6A]" />
-                    {event.location}
+                  <span className="col-span-2 inline-flex items-center gap-1.5 sm:col-span-1 sm:gap-2">
+                    <FiMapPin size={14} className="shrink-0 text-[#D4AF6A]" />
+                    <span className="truncate">{event.location}</span>
                   </span>
-                  <span className="inline-flex items-center gap-2 font-semibold text-[#D4AF6A]">
-                    <FiTag size={14} />
+                  <span className="inline-flex items-center gap-1.5 font-semibold text-[#D4AF6A] sm:gap-2">
+                    <FiTag size={14} className="shrink-0" />
                     {event.price}
                   </span>
                 </div>
               </div>
 
-              <div className="flex shrink-0 flex-wrap gap-3">
+              <div className="hidden shrink-0 flex-wrap gap-3 sm:flex">
                 <Link
                   href={`/events/${event.id}/tickets`}
-                  className="inline-flex items-center gap-2 bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
+                  className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
                 >
                   Book Tickets
                   <FiArrowRight size={15} />
@@ -228,57 +228,57 @@ export default async function EventDetailsPage({ params }: PageProps) {
         </section>
 
         {/* MAIN CONTENT + QUICK PASS SIDEBAR */}
-        <section className="px-6 py-10">
-          <div className="container-main grid items-start gap-8 lg:grid-cols-[1fr_360px]">
+        <section className="py-6 sm:px-6 sm:py-10">
+          <div className="container-main grid items-start gap-6 lg:grid-cols-[1fr_360px] lg:gap-8">
             {/* LEFT COLUMN: DETAILS, HIGHLIGHTS & SCHEDULE */}
-            <div className="space-y-8">
-              <div className="border border-white/10 bg-[#0d0d0d] p-6">
+            <div className="space-y-5 sm:space-y-8">
+              <div className="rounded-xl border border-white/10 bg-[#0d0d0d] p-4 sm:p-6">
                 <p className="text-[10px] font-semibold uppercase tracking-[3px] text-[#D4AF6A]">
                   About This Event
                 </p>
-                <p className="mt-3 text-sm leading-7 text-white/75 md:text-base">
+                <p className="mt-2.5 text-xs leading-6 text-white/75 sm:mt-3 sm:text-sm sm:leading-7 md:text-base">
                   {event.fullDescription}
                 </p>
               </div>
 
               <div>
-                <h2 className="font-[var(--font-playfair)] text-2xl">
+                <h2 className="font-[var(--font-playfair)] text-xl sm:text-2xl">
                   What&apos;s Included
                 </h2>
-                <div className="mt-4 grid gap-3 sm:grid-cols-2">
+                <div className="mt-3 grid gap-2 sm:mt-4 sm:grid-cols-2 sm:gap-3">
                   {event.highlights.map((highlight) => (
                     <div
                       key={highlight}
-                      className="flex items-center gap-3 border border-white/10 bg-[#0d0d0d] p-4"
+                      className="flex items-center gap-2.5 rounded-lg border border-white/10 bg-[#0d0d0d] px-3.5 py-2.5 sm:gap-3 sm:p-4"
                     >
                       <FiCheck
-                        size={16}
+                        size={15}
                         className="shrink-0 text-[#D4AF6A]"
                       />
-                      <p className="text-sm text-white/80">{highlight}</p>
+                      <p className="text-xs text-white/85 sm:text-sm">{highlight}</p>
                     </div>
                   ))}
                 </div>
               </div>
 
               <div>
-                <h2 className="font-[var(--font-playfair)] text-2xl">
+                <h2 className="font-[var(--font-playfair)] text-xl sm:text-2xl">
                   Event Schedule
                 </h2>
-                <div className="mt-4 divide-y divide-white/10 border border-white/10 bg-[#0d0d0d]">
+                <div className="mt-3 divide-y divide-white/10 overflow-hidden rounded-xl border border-white/10 bg-[#0d0d0d] sm:mt-4">
                   {event.schedule.map((item, index) => (
                     <div
                       key={item.title}
-                      className="flex items-center gap-5 px-5 py-4"
+                      className="flex items-center gap-4 px-4 py-3 sm:gap-5 sm:px-5 sm:py-4"
                     >
-                      <span className="font-[var(--font-playfair)] text-lg italic text-[#D4AF6A]">
+                      <span className="font-[var(--font-playfair)] text-base italic text-[#D4AF6A] sm:text-lg">
                         0{index + 1}
                       </span>
                       <div>
-                        <p className="text-[11px] uppercase tracking-[2px] text-white/45">
+                        <p className="text-[10px] uppercase tracking-[2px] text-white/45 sm:text-[11px]">
                           {item.time}
                         </p>
-                        <p className="mt-0.5 text-sm font-medium text-white">
+                        <p className="mt-0.5 text-xs font-medium text-white sm:text-sm">
                           {item.title}
                         </p>
                       </div>
@@ -288,30 +288,43 @@ export default async function EventDetailsPage({ params }: PageProps) {
               </div>
 
               {event.rules.length > 0 && (
-                <div>
-                  <h2 className="font-[var(--font-playfair)] text-2xl">
-                    Event Rules &amp; Guidelines
-                  </h2>
-                  <ol className="mt-4 divide-y divide-white/10 border border-white/10 bg-[#0d0d0d]">
+                <details className="group overflow-hidden rounded-xl border border-white/10 bg-[#0d0d0d]">
+                  <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3.5 sm:px-5 sm:py-4">
+                    <div>
+                      <h2 className="font-[var(--font-playfair)] text-lg text-white sm:text-2xl">
+                        Event Rules &amp; Guidelines
+                      </h2>
+                      <p className="mt-0.5 text-[11px] text-white/50">
+                        {event.rules.length} important venue &amp; entry rules
+                      </p>
+                    </div>
+                    <span className="shrink-0 rounded-full border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-wider text-[#D4AF6A]">
+                      <span className="group-open:hidden">View Rules</span>
+                      <span className="hidden group-open:inline">Hide</span>
+                    </span>
+                  </summary>
+                  <ol className="divide-y divide-white/10 border-t border-white/10">
                     {event.rules.map((rule, index) => (
                       <li
                         key={`${index}-${rule.slice(0, 24)}`}
-                        className="flex items-start gap-4 px-5 py-4"
+                        className="flex items-start gap-3 px-4 py-2.5 sm:gap-4 sm:px-5 sm:py-3.5"
                       >
-                        <span className="mt-0.5 shrink-0 font-[var(--font-playfair)] text-sm font-semibold text-[#D4AF6A]">
+                        <span className="mt-0.5 shrink-0 font-[var(--font-playfair)] text-xs font-semibold text-[#D4AF6A] sm:text-sm">
                           {String(index + 1).padStart(2, "0")}
                         </span>
-                        <p className="text-sm leading-6 text-white/80">{rule}</p>
+                        <p className="text-xs leading-5 text-white/80 sm:text-sm sm:leading-6">
+                          {rule}
+                        </p>
                       </li>
                     ))}
                   </ol>
-                </div>
+                </details>
               )}
             </div>
 
-            {/* RIGHT COLUMN: QUICK PASSES & BOOKING */}
-            <aside className="lg:sticky lg:top-24">
-              <div className="border border-white/10 bg-[#101010] p-6">
+            {/* RIGHT COLUMN: QUICK PASSES & BOOKING (shown first on mobile) */}
+            <aside className="order-first lg:order-none lg:sticky lg:top-24">
+              <div className="rounded-xl border border-white/10 bg-[#101010] p-4 sm:p-6">
                 <p className="text-[10px] font-semibold uppercase tracking-[3px] text-[#D4AF6A]">
                   Quick Pass Selection
                 </p>
@@ -380,7 +393,7 @@ export default async function EventDetailsPage({ params }: PageProps) {
 
               <Link
                 href="/events"
-                className="mt-3 flex items-center justify-center gap-2 border border-white/15 py-3 text-[11px] font-semibold uppercase tracking-[2px] text-white/60 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                className="mt-3 flex items-center justify-center gap-2 rounded-lg border border-white/15 py-3 text-[11px] font-semibold uppercase tracking-[2px] text-white/60 transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
               >
                 <FiArrowLeft size={14} />
                 Browse More Events
@@ -388,6 +401,23 @@ export default async function EventDetailsPage({ params }: PageProps) {
             </aside>
           </div>
         </section>
+
+        {/* Sticky Mobile Bottom Booking Bar */}
+        <div className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t border-white/15 bg-[#080808]/95 px-4 py-3 backdrop-blur-xl lg:hidden">
+          <div>
+            <p className="text-[10px] uppercase tracking-[2px] text-white/50">
+              Passes
+            </p>
+            <p className="text-sm font-semibold text-[#D4AF6A]">{event.price}</p>
+          </div>
+          <Link
+            href={`/events/${event.id}/tickets`}
+            className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
+          >
+            Book Tickets
+            <FiArrowRight size={14} />
+          </Link>
+        </div>
       </main>
 
       <Footer />

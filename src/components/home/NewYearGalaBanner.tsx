@@ -24,7 +24,7 @@ export function NewYearGalaBanner({
   price,
 }: NewYearGalaBannerProps) {
   return (
-    <section className="border-t border-white/10 bg-[#050505] py-10 sm:py-12">
+    <section className="border-t border-white/10 bg-[#050505] py-6 sm:py-12">
       <ScrollReveal className="container-main">
         <div className="relative overflow-hidden rounded-2xl border border-[#D4AF6A]/40 bg-[#080706] shadow-[0_24px_70px_rgba(0,0,0,0.7)]">
           {/* Generated New Year Gala Background */}
@@ -38,7 +38,7 @@ export function NewYearGalaBanner({
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/95 via-[#050505]/80 to-[#050505]/50" />
 
-          <div className="relative z-10 grid items-center gap-8 p-6 sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:p-10">
+          <div className="relative z-10 grid items-center gap-5 p-4 sm:gap-8 sm:p-8 lg:grid-cols-[1.2fr_0.8fr] lg:p-10">
             {/* Left Content */}
             <div>
               <p className="inline-block rounded-full border border-[#D4AF6A]/45 bg-[#D4AF6A]/10 px-4 py-1 text-[10px] font-semibold uppercase tracking-[2.8px] text-[#F5E5B5] backdrop-blur-sm">
@@ -76,16 +76,16 @@ export function NewYearGalaBanner({
               </div>
 
               {/* Actions */}
-              <div className="mt-6 flex flex-wrap gap-3">
+              <div className="mt-5 flex flex-col gap-2.5 sm:mt-6 sm:flex-row sm:flex-wrap sm:gap-3">
                 <Link
                   href={`/events/${id}/tickets`}
-                  className="inline-flex items-center justify-center rounded-lg bg-[#D4AF6A] px-6 py-3.5 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5]"
+                  className="inline-flex items-center justify-center rounded-lg bg-[#D4AF6A] px-6 py-3 text-xs font-bold uppercase tracking-[2px] text-black transition hover:bg-[#F5E5B5] sm:py-3.5"
                 >
                   Book Gala Passes
                 </Link>
                 <Link
                   href={`/events/${id}`}
-                  className="inline-flex items-center justify-center rounded-lg border border-white/25 bg-black/45 px-6 py-3.5 text-xs font-semibold uppercase tracking-[2px] text-white backdrop-blur-sm transition hover:border-[#D4AF6A] hover:text-[#D4AF6A]"
+                  className="inline-flex items-center justify-center rounded-lg border border-white/25 bg-black/45 px-6 py-3 text-xs font-semibold uppercase tracking-[2px] text-white backdrop-blur-sm transition hover:border-[#D4AF6A] hover:text-[#D4AF6A] sm:py-3.5"
                 >
                   View Gala Details
                 </Link>
@@ -93,7 +93,7 @@ export function NewYearGalaBanner({
             </div>
 
             {/* Right Visual Card */}
-            <div className="relative h-64 overflow-hidden rounded-xl border border-white/15 sm:h-72 lg:h-80">
+            <div className="relative h-48 overflow-hidden rounded-xl border border-white/15 sm:h-72 lg:h-80">
               <Image
                 src={image}
                 alt={title}
