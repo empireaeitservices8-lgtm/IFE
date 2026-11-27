@@ -39,6 +39,7 @@ export const createEventSchema = z
     status: z.nativeEnum(EventStatus).optional(),
     isPopupFeatured: z.boolean().optional(),
     isBannerFeatured: z.boolean().optional(),
+    isComingSoon: z.boolean().optional(),
     venueId: z.string().trim().min(1).optional().nullable(),
     artists: z.array(eventArtistInputSchema).optional(),
     ticketTypes: z.array(eventTicketInputSchema).optional(),
@@ -69,6 +70,7 @@ export const updateEventSchema = z
     status: z.nativeEnum(EventStatus).optional(),
     isPopupFeatured: z.boolean().optional(),
     isBannerFeatured: z.boolean().optional(),
+    isComingSoon: z.boolean().optional(),
     venueId: z.string().trim().min(1).optional().nullable(),
     artists: z.array(eventArtistInputSchema).optional(),
     ticketTypes: z.array(eventTicketInputSchema).optional(),
@@ -100,5 +102,9 @@ export const setPopupEventSchema = z.object({
 
 export const setBannerEventSchema = z.object({
   isBannerFeatured: z.boolean(),
+});
+
+export const setComingSoonEventSchema = z.object({
+  isComingSoon: z.boolean(),
 });
 

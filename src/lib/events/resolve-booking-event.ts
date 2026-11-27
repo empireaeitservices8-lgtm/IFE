@@ -14,6 +14,7 @@ export interface ResolvedBookingEvent {
   date: string;
   time: string;
   venue: string;
+  isComingSoon: boolean;
   ticketTypes: ResolvedBookingTicket[];
 }
 
@@ -38,6 +39,7 @@ export async function resolveBookingEvent(
       venue: dbEvent.venue
         ? `${dbEvent.venue.name}, ${dbEvent.venue.city}`
         : "Venue to be announced",
+      isComingSoon: Boolean(dbEvent.isComingSoon),
       ticketTypes: (dbEvent.ticketTypes || []).map((t) => ({
         id: t.id,
         name: t.name,

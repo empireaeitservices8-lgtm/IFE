@@ -52,6 +52,7 @@ export type EventMinAggregateOutputType = {
   status: $Enums.EventStatus | null
   isPopupFeatured: boolean | null
   isBannerFeatured: boolean | null
+  isComingSoon: boolean | null
   displayOrder: number | null
   venueId: string | null
   createdById: string | null
@@ -76,6 +77,7 @@ export type EventMaxAggregateOutputType = {
   status: $Enums.EventStatus | null
   isPopupFeatured: boolean | null
   isBannerFeatured: boolean | null
+  isComingSoon: boolean | null
   displayOrder: number | null
   venueId: string | null
   createdById: string | null
@@ -100,6 +102,7 @@ export type EventCountAggregateOutputType = {
   status: number
   isPopupFeatured: number
   isBannerFeatured: number
+  isComingSoon: number
   displayOrder: number
   venueId: number
   createdById: number
@@ -136,6 +139,7 @@ export type EventMinAggregateInputType = {
   status?: true
   isPopupFeatured?: true
   isBannerFeatured?: true
+  isComingSoon?: true
   displayOrder?: true
   venueId?: true
   createdById?: true
@@ -160,6 +164,7 @@ export type EventMaxAggregateInputType = {
   status?: true
   isPopupFeatured?: true
   isBannerFeatured?: true
+  isComingSoon?: true
   displayOrder?: true
   venueId?: true
   createdById?: true
@@ -184,6 +189,7 @@ export type EventCountAggregateInputType = {
   status?: true
   isPopupFeatured?: true
   isBannerFeatured?: true
+  isComingSoon?: true
   displayOrder?: true
   venueId?: true
   createdById?: true
@@ -295,6 +301,7 @@ export type EventGroupByOutputType = {
   status: $Enums.EventStatus
   isPopupFeatured: boolean
   isBannerFeatured: boolean
+  isComingSoon: boolean
   displayOrder: number
   venueId: string | null
   createdById: string | null
@@ -342,6 +349,7 @@ export type EventWhereInput = {
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFilter<"Event"> | boolean
   isBannerFeatured?: Prisma.BoolFilter<"Event"> | boolean
+  isComingSoon?: Prisma.BoolFilter<"Event"> | boolean
   displayOrder?: Prisma.IntFilter<"Event"> | number
   venueId?: Prisma.StringNullableFilter<"Event"> | string | null
   createdById?: Prisma.StringNullableFilter<"Event"> | string | null
@@ -372,6 +380,7 @@ export type EventOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   isPopupFeatured?: Prisma.SortOrder
   isBannerFeatured?: Prisma.SortOrder
+  isComingSoon?: Prisma.SortOrder
   displayOrder?: Prisma.SortOrder
   venueId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -406,6 +415,7 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFilter<"Event"> | boolean
   isBannerFeatured?: Prisma.BoolFilter<"Event"> | boolean
+  isComingSoon?: Prisma.BoolFilter<"Event"> | boolean
   displayOrder?: Prisma.IntFilter<"Event"> | number
   venueId?: Prisma.StringNullableFilter<"Event"> | string | null
   createdById?: Prisma.StringNullableFilter<"Event"> | string | null
@@ -436,6 +446,7 @@ export type EventOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   isPopupFeatured?: Prisma.SortOrder
   isBannerFeatured?: Prisma.SortOrder
+  isComingSoon?: Prisma.SortOrder
   displayOrder?: Prisma.SortOrder
   venueId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdById?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -468,6 +479,7 @@ export type EventScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumEventStatusWithAggregatesFilter<"Event"> | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolWithAggregatesFilter<"Event"> | boolean
   isBannerFeatured?: Prisma.BoolWithAggregatesFilter<"Event"> | boolean
+  isComingSoon?: Prisma.BoolWithAggregatesFilter<"Event"> | boolean
   displayOrder?: Prisma.IntWithAggregatesFilter<"Event"> | number
   venueId?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
   createdById?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
@@ -492,6 +504,7 @@ export type EventCreateInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   publishedAt?: Date | string | null
   createdAt?: Date | string
@@ -520,6 +533,7 @@ export type EventUncheckedCreateInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   venueId?: string | null
   createdById?: string | null
@@ -548,6 +562,7 @@ export type EventUpdateInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -576,6 +591,7 @@ export type EventUncheckedUpdateInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   venueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -604,6 +620,7 @@ export type EventCreateManyInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   venueId?: string | null
   createdById?: string | null
@@ -628,6 +645,7 @@ export type EventUpdateManyMutationInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -650,6 +668,7 @@ export type EventUncheckedUpdateManyInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   venueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -695,6 +714,7 @@ export type EventCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   isPopupFeatured?: Prisma.SortOrder
   isBannerFeatured?: Prisma.SortOrder
+  isComingSoon?: Prisma.SortOrder
   displayOrder?: Prisma.SortOrder
   venueId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
@@ -724,6 +744,7 @@ export type EventMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   isPopupFeatured?: Prisma.SortOrder
   isBannerFeatured?: Prisma.SortOrder
+  isComingSoon?: Prisma.SortOrder
   displayOrder?: Prisma.SortOrder
   venueId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
@@ -748,6 +769,7 @@ export type EventMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   isPopupFeatured?: Prisma.SortOrder
   isBannerFeatured?: Prisma.SortOrder
+  isComingSoon?: Prisma.SortOrder
   displayOrder?: Prisma.SortOrder
   venueId?: Prisma.SortOrder
   createdById?: Prisma.SortOrder
@@ -936,6 +958,7 @@ export type EventCreateWithoutCreatedByInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   publishedAt?: Date | string | null
   createdAt?: Date | string
@@ -963,6 +986,7 @@ export type EventUncheckedCreateWithoutCreatedByInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   venueId?: string | null
   publishedAt?: Date | string | null
@@ -1019,6 +1043,7 @@ export type EventScalarWhereInput = {
   status?: Prisma.EnumEventStatusFilter<"Event"> | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFilter<"Event"> | boolean
   isBannerFeatured?: Prisma.BoolFilter<"Event"> | boolean
+  isComingSoon?: Prisma.BoolFilter<"Event"> | boolean
   displayOrder?: Prisma.IntFilter<"Event"> | number
   venueId?: Prisma.StringNullableFilter<"Event"> | string | null
   createdById?: Prisma.StringNullableFilter<"Event"> | string | null
@@ -1043,6 +1068,7 @@ export type EventCreateWithoutVenueInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   publishedAt?: Date | string | null
   createdAt?: Date | string
@@ -1070,6 +1096,7 @@ export type EventUncheckedCreateWithoutVenueInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   createdById?: string | null
   publishedAt?: Date | string | null
@@ -1123,6 +1150,7 @@ export type EventCreateWithoutArtistsInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   publishedAt?: Date | string | null
   createdAt?: Date | string
@@ -1150,6 +1178,7 @@ export type EventUncheckedCreateWithoutArtistsInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   venueId?: string | null
   createdById?: string | null
@@ -1193,6 +1222,7 @@ export type EventUpdateWithoutArtistsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1220,6 +1250,7 @@ export type EventUncheckedUpdateWithoutArtistsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   venueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1247,6 +1278,7 @@ export type EventCreateWithoutTicketTypesInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   publishedAt?: Date | string | null
   createdAt?: Date | string
@@ -1274,6 +1306,7 @@ export type EventUncheckedCreateWithoutTicketTypesInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   venueId?: string | null
   createdById?: string | null
@@ -1317,6 +1350,7 @@ export type EventUpdateWithoutTicketTypesInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1344,6 +1378,7 @@ export type EventUncheckedUpdateWithoutTicketTypesInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   venueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1371,6 +1406,7 @@ export type EventCreateWithoutBookingsInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   publishedAt?: Date | string | null
   createdAt?: Date | string
@@ -1398,6 +1434,7 @@ export type EventUncheckedCreateWithoutBookingsInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   venueId?: string | null
   createdById?: string | null
@@ -1441,6 +1478,7 @@ export type EventUpdateWithoutBookingsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1468,6 +1506,7 @@ export type EventUncheckedUpdateWithoutBookingsInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   venueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1495,6 +1534,7 @@ export type EventCreateWithoutGalleryInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   publishedAt?: Date | string | null
   createdAt?: Date | string
@@ -1522,6 +1562,7 @@ export type EventUncheckedCreateWithoutGalleryInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   venueId?: string | null
   createdById?: string | null
@@ -1565,6 +1606,7 @@ export type EventUpdateWithoutGalleryInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1592,6 +1634,7 @@ export type EventUncheckedUpdateWithoutGalleryInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   venueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1619,6 +1662,7 @@ export type EventCreateManyCreatedByInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   venueId?: string | null
   publishedAt?: Date | string | null
@@ -1642,6 +1686,7 @@ export type EventUpdateWithoutCreatedByInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1669,6 +1714,7 @@ export type EventUncheckedUpdateWithoutCreatedByInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   venueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1696,6 +1742,7 @@ export type EventUncheckedUpdateManyWithoutCreatedByInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   venueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1719,6 +1766,7 @@ export type EventCreateManyVenueInput = {
   status?: $Enums.EventStatus
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: number
   createdById?: string | null
   publishedAt?: Date | string | null
@@ -1742,6 +1790,7 @@ export type EventUpdateWithoutVenueInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1769,6 +1818,7 @@ export type EventUncheckedUpdateWithoutVenueInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1796,6 +1846,7 @@ export type EventUncheckedUpdateManyWithoutVenueInput = {
   status?: Prisma.EnumEventStatusFieldUpdateOperationsInput | $Enums.EventStatus
   isPopupFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   isBannerFeatured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isComingSoon?: Prisma.BoolFieldUpdateOperationsInput | boolean
   displayOrder?: Prisma.IntFieldUpdateOperationsInput | number
   createdById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   publishedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1877,6 +1928,7 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   status?: boolean
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: boolean
   venueId?: boolean
   createdById?: boolean
@@ -1910,6 +1962,7 @@ export type EventSelectScalar = {
   status?: boolean
   isPopupFeatured?: boolean
   isBannerFeatured?: boolean
+  isComingSoon?: boolean
   displayOrder?: boolean
   venueId?: boolean
   createdById?: boolean
@@ -1918,7 +1971,7 @@ export type EventSelectScalar = {
   updatedAt?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "category" | "shortDescription" | "description" | "highlights" | "rules" | "bannerUrl" | "startAt" | "endAt" | "capacity" | "status" | "isPopupFeatured" | "isBannerFeatured" | "displayOrder" | "venueId" | "createdById" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "slug" | "category" | "shortDescription" | "description" | "highlights" | "rules" | "bannerUrl" | "startAt" | "endAt" | "capacity" | "status" | "isPopupFeatured" | "isBannerFeatured" | "isComingSoon" | "displayOrder" | "venueId" | "createdById" | "publishedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   venue?: boolean | Prisma.Event$venueArgs<ExtArgs>
   createdBy?: boolean | Prisma.Event$createdByArgs<ExtArgs>
@@ -1955,6 +2008,7 @@ export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     status: $Enums.EventStatus
     isPopupFeatured: boolean
     isBannerFeatured: boolean
+    isComingSoon: boolean
     displayOrder: number
     venueId: string | null
     createdById: string | null
@@ -2351,6 +2405,7 @@ export interface EventFieldRefs {
   readonly status: Prisma.FieldRef<"Event", 'EventStatus'>
   readonly isPopupFeatured: Prisma.FieldRef<"Event", 'Boolean'>
   readonly isBannerFeatured: Prisma.FieldRef<"Event", 'Boolean'>
+  readonly isComingSoon: Prisma.FieldRef<"Event", 'Boolean'>
   readonly displayOrder: Prisma.FieldRef<"Event", 'Int'>
   readonly venueId: Prisma.FieldRef<"Event", 'String'>
   readonly createdById: Prisma.FieldRef<"Event", 'String'>

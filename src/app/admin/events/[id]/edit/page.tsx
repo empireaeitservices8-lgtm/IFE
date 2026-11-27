@@ -65,6 +65,7 @@ export default function EditEventPage() {
     status: "DRAFT",
     isPopupFeatured: false,
     isBannerFeatured: false,
+    isComingSoon: false,
     venueId: "",
   });
   const [newVenue, setNewVenue] = useState({
@@ -106,6 +107,7 @@ export default function EditEventPage() {
           status: ev.status || "DRAFT",
           isPopupFeatured: Boolean(ev.isPopupFeatured),
           isBannerFeatured: Boolean(ev.isBannerFeatured),
+          isComingSoon: Boolean(ev.isComingSoon),
           venueId: ev.venueId || "",
         });
         setTicketTypes(
@@ -233,6 +235,7 @@ export default function EditEventPage() {
           status: form.status,
           isPopupFeatured: form.isPopupFeatured,
           isBannerFeatured: form.isBannerFeatured,
+          isComingSoon: form.isComingSoon,
           venueId: resolvedVenueId,
           ticketTypes: ticketTypes
             .filter((t) => t.name.trim().length > 0)
@@ -489,6 +492,18 @@ export default function EditEventPage() {
                       className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
                     />
                     Feature in Homepage Banner
+                  </label>
+
+                  <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-300">
+                    <input
+                      type="checkbox"
+                      checked={form.isComingSoon}
+                      onChange={(e) =>
+                        setForm({ ...form, isComingSoon: e.target.checked })
+                      }
+                      className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
+                    />
+                    Mark as Coming Soon
                   </label>
                 </div>
               </div>

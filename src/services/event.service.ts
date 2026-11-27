@@ -213,6 +213,7 @@ export async function createEvent(
     status?: EventStatus;
     isPopupFeatured?: boolean;
     isBannerFeatured?: boolean;
+    isComingSoon?: boolean;
     venueId?: string | null;
     artists?: { artistId: string; eventRole?: string | null }[];
     ticketTypes?: {
@@ -279,6 +280,7 @@ export async function createEvent(
         status,
         isPopupFeatured: input.isPopupFeatured ?? false,
         isBannerFeatured: input.isBannerFeatured ?? false,
+        isComingSoon: input.isComingSoon ?? false,
         publishedAt: status === EventStatus.PUBLISHED ? new Date() : null,
         venueId: input.venueId ?? null,
         createdById: actorId,
@@ -344,6 +346,7 @@ export async function updateEvent(
     status?: EventStatus;
     isPopupFeatured?: boolean;
     isBannerFeatured?: boolean;
+    isComingSoon?: boolean;
     venueId?: string | null;
     artists?: { artistId: string; eventRole?: string | null }[];
     ticketTypes?: {
@@ -483,6 +486,9 @@ export async function updateEvent(
             : {}),
           ...(input.isBannerFeatured !== undefined
             ? { isBannerFeatured: input.isBannerFeatured }
+            : {}),
+          ...(input.isComingSoon !== undefined
+            ? { isComingSoon: input.isComingSoon }
             : {}),
           ...(input.venueId !== undefined ? { venueId: input.venueId } : {}),
           ...(input.status !== undefined
@@ -654,6 +660,42 @@ export async function setEventBannerFeatured(
     description: isBannerFeatured
       ? `Set "${existing.title}" as homepage banner`
       : `Removed "${existing.title}" from homepage banner`,
+    ipAddress: ipAddress ?? null,
+  });
+
+  invalidatePublicEventCache();
+  return updated;
+}
+
+export async function setEventComingSoon(
+  id: string,
+  isComingSoon: boolean,
+  actorId: string,
+  ipAddress?: string
+) {
+  const existing = await prisma.event.findUnique({
+    where: { id },
+    select: { id: true, title: true },
+  });
+
+  if (!existing) {
+    throw new AppError("Event not found.", 404);
+  }
+
+  const updated = await prisma.event.update({
+    where: { id },
+    data: { isComingSoon },
+    select: { id: true, title: true, isComingSoon: true },
+  });
+
+  await recordAuditLog({
+    actorId,
+    action: "SET_COMING_SOON_EVENT",
+    entityType: "Event",
+    entityId: id,
+    description: isComingSoon
+      ? `Marked "${existing.title}" as Coming Soon`
+      : `Removed Coming Soon from "${existing.title}"`,
     ipAddress: ipAddress ?? null,
   });
 

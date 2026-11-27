@@ -60,6 +60,7 @@ export default function NewEventPage() {
     capacity: "500",
     isPopupFeatured: false,
     isBannerFeatured: false,
+    isComingSoon: false,
   });
   const [ticketTiers, setTicketTiers] = useState<
     { name: string; price: string; totalQuantity: string }[]
@@ -223,6 +224,7 @@ export default function NewEventPage() {
           status: status === "Published" ? "PUBLISHED" : "DRAFT",
           isPopupFeatured: form.isPopupFeatured,
           isBannerFeatured: form.isBannerFeatured,
+          isComingSoon: form.isComingSoon,
           venueId: resolvedVenueId,
           ticketTypes: validTiers,
         }),
@@ -624,6 +626,21 @@ export default function NewEventPage() {
                   className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
                 />
                 Feature in Homepage Banner
+              </label>
+
+              <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-300">
+                <input
+                  type="checkbox"
+                  checked={form.isComingSoon}
+                  onChange={(e) =>
+                    setForm((current) => ({
+                      ...current,
+                      isComingSoon: e.target.checked,
+                    }))
+                  }
+                  className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
+                />
+                Mark as Coming Soon
               </label>
             </div>
 

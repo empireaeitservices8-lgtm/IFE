@@ -25,6 +25,7 @@ type ApiEventItem = {
   description: string;
   bannerUrl: string | null;
   startAt: string;
+  isComingSoon?: boolean;
   venue?: { name: string; city: string } | null;
   ticketTypes?: { price: string | number }[];
 };
@@ -152,8 +153,9 @@ export default function EventExplorer() {
               location: ev.venue
                 ? `${ev.venue.name}, ${ev.venue.city}`
                 : "Venue TBA",
-              price:
-                minPrice !== null
+              price: ev.isComingSoon
+                ? "Coming Soon"
+                : minPrice !== null
                   ? `From ₹${minPrice.toLocaleString("en-IN")}`
                   : "Tickets TBA",
               description: ev.shortDescription || ev.description.slice(0, 120),

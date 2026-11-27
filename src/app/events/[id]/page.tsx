@@ -32,6 +32,7 @@ type EventView = {
   time: string;
   location: string;
   price: string;
+  isComingSoon: boolean;
   image: string;
   description: string;
   fullDescription: string;
@@ -84,10 +85,12 @@ async function getEvent(id: string): Promise<EventView | undefined> {
       location: dbEvent.venue
         ? `${dbEvent.venue.name}, ${dbEvent.venue.city}`
         : "Venue to be announced",
-      price:
-        minPrice !== null
+      price: dbEvent.isComingSoon
+        ? "Coming Soon"
+        : minPrice !== null
           ? `From ₹${minPrice.toLocaleString("en-IN")}`
           : "Tickets TBA",
+      isComingSoon: Boolean(dbEvent.isComingSoon),
       image:
         dbEvent.bannerUrl ||
         fallbackImages[dbEvent.category] ||
@@ -215,13 +218,19 @@ export default async function EventDetailsPage({ params }: PageProps) {
               </div>
 
               <div className="hidden shrink-0 flex-wrap gap-3 sm:flex">
-                <Link
-                  href={`/events/${event.id}/tickets`}
-                  className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
-                >
-                  Book Tickets
-                  <FiArrowRight size={15} />
-                </Link>
+                {event.isComingSoon ? (
+                  <span className="inline-flex items-center gap-2 rounded-lg border border-[#D4AF6A]/45 bg-[#D4AF6A]/15 px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-[#F5E5B5]">
+                    Coming Soon
+                  </span>
+                ) : (
+                  <Link
+                    href={`/events/${event.id}/tickets`}
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
+                  >
+                    Book Tickets
+                    <FiArrowRight size={15} />
+                  </Link>
+                )}
               </div>
             </div>
           </div>
@@ -336,7 +345,12 @@ export default async function EventDetailsPage({ params }: PageProps) {
                 </p>
 
                 <div className="mt-5 space-y-2.5">
-                  {event.quickPasses.length === 0 ? (
+                  {event.isComingSoon ? (
+                    <p className="rounded-lg border border-[#D4AF6A]/35 bg-[#D4AF6A]/10 px-4 py-3 text-xs leading-5 text-[#F5E5B5]">
+                      Tickets for this event are coming soon. Stay tuned for
+                      pass availability.
+                    </p>
+                  ) : event.quickPasses.length === 0 ? (
                     <p className="border border-white/10 bg-[#080808] px-4 py-3 text-xs text-white/50">
                       Ticket tiers will be announced soon.
                     </p>
@@ -382,13 +396,19 @@ export default async function EventDetailsPage({ params }: PageProps) {
                   )}
                 </div>
 
-                <Link
-                  href={`/events/${event.id}/tickets`}
-                  className="mt-5 flex w-full items-center justify-center gap-2 bg-[#D4AF6A] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
-                >
-                  Select Tickets &amp; Quantity
-                  <FiArrowRight size={15} />
-                </Link>
+                {event.isComingSoon ? (
+                  <span className="mt-5 flex w-full items-center justify-center rounded-lg border border-[#D4AF6A]/45 bg-[#D4AF6A]/10 px-6 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-[#F5E5B5]">
+                    Tickets Coming Soon
+                  </span>
+                ) : (
+                  <Link
+                    href={`/events/${event.id}/tickets`}
+                    className="mt-5 flex w-full items-center justify-center gap-2 rounded-lg bg-[#D4AF6A] px-6 py-3.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
+                  >
+                    Select Tickets &amp; Quantity
+                    <FiArrowRight size={15} />
+                  </Link>
+                )}
               </div>
 
               <Link
@@ -410,13 +430,19 @@ export default async function EventDetailsPage({ params }: PageProps) {
             </p>
             <p className="text-sm font-semibold text-[#D4AF6A]">{event.price}</p>
           </div>
-          <Link
-            href={`/events/${event.id}/tickets`}
-            className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
-          >
-            Book Tickets
-            <FiArrowRight size={14} />
-          </Link>
+          {event.isComingSoon ? (
+            <span className="inline-flex items-center gap-2 rounded-lg border border-[#D4AF6A]/45 bg-[#D4AF6A]/15 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-[#F5E5B5]">
+              Coming Soon
+            </span>
+          ) : (
+            <Link
+              href={`/events/${event.id}/tickets`}
+              className="inline-flex items-center gap-2 rounded-lg bg-[#D4AF6A] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.18em] text-black transition hover:bg-[#F5E5B5]"
+            >
+              Book Tickets
+              <FiArrowRight size={14} />
+            </Link>
+          )}
         </div>
       </main>
 

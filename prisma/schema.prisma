@@ -228,6 +228,7 @@ model Event {
   status           EventStatus @default(DRAFT)
   isPopupFeatured  Boolean     @default(false)
   isBannerFeatured Boolean     @default(false)
+  isComingSoon     Boolean     @default(false)
   displayOrder     Int         @default(0)
 
   venueId String?

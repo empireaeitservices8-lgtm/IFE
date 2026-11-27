@@ -207,17 +207,23 @@ export default async function FashionShowsPage() {
                             Passes
                           </p>
                           <p className="text-xs font-semibold text-[#D4AF6A]">
-                            {minPrice !== null
-                              ? `From ₹${minPrice.toLocaleString("en-IN")}`
-                              : "Tickets TBA"}
+                            {ev.isComingSoon
+                              ? "Coming Soon"
+                              : minPrice !== null
+                                ? `From ₹${minPrice.toLocaleString("en-IN")}`
+                                : "Tickets TBA"}
                           </p>
                         </div>
 
                         <Link
-                          href={`/events/${ev.id}/tickets`}
+                          href={
+                            ev.isComingSoon
+                              ? `/events/${ev.id}`
+                              : `/events/${ev.id}/tickets`
+                          }
                           className="inline-flex items-center gap-1 rounded-md bg-[#D4AF6A] px-3 py-1.5 text-[10px] font-bold uppercase tracking-[1.5px] text-black transition hover:bg-[#F5E5B5]"
                         >
-                          Book Tickets
+                          {ev.isComingSoon ? "Coming Soon" : "Book Tickets"}
                           <FiArrowRight size={12} />
                         </Link>
                       </div>

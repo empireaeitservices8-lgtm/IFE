@@ -158,6 +158,7 @@ export const EventScalarFieldEnum = {
   status: 'status',
   isPopupFeatured: 'isPopupFeatured',
   isBannerFeatured: 'isBannerFeatured',
+  isComingSoon: 'isComingSoon',
   displayOrder: 'displayOrder',
   venueId: 'venueId',
   createdById: 'createdById',

@@ -160,8 +160,9 @@ export default async function Home() {
           location: ev.venue
             ? `${ev.venue.name}, ${ev.venue.city}`
             : "Venue TBA",
-          price:
-            minPrice !== null
+          price: ev.isComingSoon
+            ? "Coming Soon"
+            : minPrice !== null
               ? `From ₹${minPrice.toLocaleString("en-IN")}`
               : "Tickets TBA",
         };

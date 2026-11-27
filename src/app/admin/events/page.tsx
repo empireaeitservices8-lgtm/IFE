@@ -44,6 +44,7 @@ type EventItem = {
   status: EventStatus;
   isPopupFeatured: boolean;
   isBannerFeatured: boolean;
+  isComingSoon: boolean;
 };
 
 type ApiEvent = {
@@ -55,6 +56,7 @@ type ApiEvent = {
   status: string;
   isPopupFeatured?: boolean;
   isBannerFeatured?: boolean;
+  isComingSoon?: boolean;
   venue?: { name: string } | null;
   ticketTypes?: { price: string | number; totalQuantity: number; soldQuantity: number }[];
 };
@@ -261,6 +263,7 @@ export default function AdminEventsPage() {
         status: mapEventStatus(ev.status),
         isPopupFeatured: Boolean(ev.isPopupFeatured),
         isBannerFeatured: Boolean(ev.isBannerFeatured),
+        isComingSoon: Boolean(ev.isComingSoon),
       };
     });
 
@@ -396,6 +399,28 @@ export default function AdminEventsPage() {
       await loadEvents();
     } catch {
       setError("Network error while updating homepage banner.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const setComingSoonEvent = async (id: string, isComingSoon: boolean) => {
+    setMenuEventId(null);
+    setError("");
+    try {
+      const res = await fetch(`/api/events/${id}/coming-soon`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isComingSoon }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setError(json.message || "Failed to update Coming Soon status.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      await loadEvents();
+    } catch {
+      setError("Network error while updating Coming Soon status.");
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
@@ -664,6 +689,11 @@ export default function AdminEventsPage() {
                                   Banner
                                 </span>
                               )}
+                              {event.isComingSoon && (
+                                <span className="rounded-full border border-sky-500/40 bg-sky-500/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-sky-300">
+                                  Coming Soon
+                                </span>
+                              )}
                             </p>
                             <p className="mt-1 text-[10px] text-gray-600">
                               ID: {event.id.slice(0, 10)}
@@ -797,6 +827,20 @@ export default function AdminEventsPage() {
                                   {event.isBannerFeatured
                                     ? "Remove from Banner"
                                     : "Set as Homepage Banner"}
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setComingSoonEvent(
+                                      event.id,
+                                      !event.isComingSoon
+                                    )
+                                  }
+                                  className="w-full px-3 py-3 text-left text-[11px] text-sky-300 transition hover:bg-sky-500/10"
+                                >
+                                  {event.isComingSoon
+                                    ? "Remove Coming Soon"
+                                    : "Mark as Coming Soon"}
                                 </button>
                               </>
                             )}
