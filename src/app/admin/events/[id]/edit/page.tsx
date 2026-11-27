@@ -8,7 +8,9 @@ import {
   FiCalendar,
   FiImage,
   FiMapPin,
+  FiPlus,
   FiSave,
+  FiTrash2,
   FiUpload,
 } from "react-icons/fi";
 import { HiOutlineTicket } from "react-icons/hi2";
@@ -187,13 +189,15 @@ export default function EditEventPage() {
           capacity: Number(form.capacity),
           status: form.status,
           venueId: form.venueId || null,
-          ticketTypes: ticketTypes.map((t) => ({
-            id: t.id,
-            name: t.name,
-            price: Number(t.price),
-            totalQuantity: Number(t.totalQuantity),
-            status: t.status,
-          })),
+          ticketTypes: ticketTypes
+            .filter((t) => t.name.trim().length > 0)
+            .map((t) => ({
+              ...(t.id ? { id: t.id } : {}),
+              name: t.name.trim(),
+              price: Number(t.price),
+              totalQuantity: Number(t.totalQuantity),
+              status: t.status || "ACTIVE",
+            })),
         }),
       });
 
@@ -215,6 +219,62 @@ export default function EditEventPage() {
       setMessage("Network error while saving event.");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function handleRemoveTicketTier(ticket: TicketRow, index: number) {
+    if (!ticket.id) {
+      setTicketTypes((prev) => prev.filter((_, i) => i !== index));
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Remove "${ticket.name}" from this event?`
+    );
+    if (!confirmed) return;
+    setMessage("");
+
+    try {
+      const res = await fetch(`/api/tickets/${ticket.id}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setTicketTypes((prev) => prev.filter((t) => t.id !== ticket.id));
+        setMessageType("success");
+        setMessage(`Removed "${ticket.name}".`);
+        return;
+      }
+
+      if (res.status === 409) {
+        const shouldPause = window.confirm(
+          `${json.message || "This ticket tier has existing bookings."}\n\nPause and hide "${ticket.name}" from the public website instead?`
+        );
+        if (shouldPause) {
+          const patchRes = await fetch(`/api/tickets/${ticket.id}/status`, {
+            method: "PATCH",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ status: "PAUSED" }),
+          });
+          const patchJson = await patchRes.json();
+          if (patchRes.ok && patchJson.success) {
+            setTicketTypes((prev) =>
+              prev.map((t) =>
+                t.id === ticket.id ? { ...t, status: "PAUSED" } : t
+              )
+            );
+            setMessageType("success");
+            setMessage(`"${ticket.name}" paused and hidden from public checkout.`);
+            return;
+          }
+        }
+      }
+
+      setMessageType("error");
+      setMessage(json.message || `Failed to remove "${ticket.name}".`);
+    } catch {
+      setMessageType("error");
+      setMessage("Network error while removing ticket tier.");
     }
   }
 
@@ -471,24 +531,91 @@ export default function EditEventPage() {
               </div>
             </section>
 
-            {ticketTypes.length > 0 && (
-              <section className="rounded-2xl border border-white/10 bg-[#101010] p-6">
-                <div className="mb-5 flex items-center gap-3">
+            <section className="rounded-2xl border border-white/10 bg-[#101010] p-6">
+              <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
+                <div className="flex items-center gap-3">
                   <div className="rounded-xl bg-[#D4AF6A]/10 p-3 text-[#D4AF6A]">
                     <HiOutlineTicket size={19} />
                   </div>
-                  <h2 className="font-semibold">Ticket Tiers</h2>
+                  <div>
+                    <h2 className="font-semibold">Ticket Tiers</h2>
+                    <p className="text-xs text-gray-500">
+                      Add new ticket tiers or edit existing prices and quantities
+                    </p>
+                  </div>
                 </div>
 
+                <button
+                  type="button"
+                  onClick={() =>
+                    setTicketTypes((prev) => [
+                      ...prev,
+                      {
+                        id: "",
+                        name: "",
+                        price: "999",
+                        totalQuantity: "100",
+                        status: "ACTIVE",
+                      },
+                    ])
+                  }
+                  className="inline-flex items-center gap-2 rounded-xl border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-4 py-2 text-xs font-semibold text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
+                >
+                  <FiPlus size={14} />
+                  Add Ticket Tier
+                </button>
+              </div>
+
+              {ticketTypes.length === 0 ? (
+                <p className="rounded-xl border border-white/10 bg-black/40 p-6 text-center text-xs text-gray-400">
+                  No ticket tiers yet. Click &ldquo;Add Ticket Tier&rdquo; to
+                  create one.
+                </p>
+              ) : (
                 <div className="grid gap-4 md:grid-cols-3">
                   {ticketTypes.map((ticket, idx) => (
                     <div
-                      key={ticket.id}
+                      key={ticket.id || `new-${idx}`}
                       className="space-y-3 rounded-xl border border-white/10 bg-black/40 p-4"
                     >
-                      <p className="text-sm font-semibold text-[#D4AF6A]">
-                        {ticket.name}
-                      </p>
+                      <div className="flex items-center justify-between gap-2">
+                        <p className="text-sm font-semibold text-[#D4AF6A]">
+                          {ticket.name || `New Tier #${idx + 1}`}
+                          {ticket.status === "PAUSED" && (
+                            <span className="ml-2 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-medium text-amber-300">
+                              Paused
+                            </span>
+                          )}
+                        </p>
+                        <button
+                          type="button"
+                          title={`Remove ${ticket.name || "tier"}`}
+                          onClick={() => handleRemoveTicketTier(ticket, idx)}
+                          className="rounded-lg border border-white/10 p-1.5 text-red-400/80 transition hover:border-red-500/50 hover:text-red-400"
+                        >
+                          <FiTrash2 size={14} />
+                        </button>
+                      </div>
+                      {!ticket.id && (
+                        <label className="block text-xs text-gray-400">
+                          Tier Name *
+                          <input
+                            required
+                            placeholder="e.g. General Admission, VIP Pass"
+                            className={inputClass}
+                            value={ticket.name}
+                            onChange={(e) =>
+                              setTicketTypes((prev) =>
+                                prev.map((row, i) =>
+                                  i === idx
+                                    ? { ...row, name: e.target.value }
+                                    : row
+                                )
+                              )
+                            }
+                          />
+                        </label>
+                      )}
                       <label className="block text-xs text-gray-400">
                         Price (₹)
                         <input
@@ -528,8 +655,8 @@ export default function EditEventPage() {
                     </div>
                   ))}
                 </div>
-              </section>
-            )}
+              )}
+            </section>
 
             <div className="flex justify-end gap-3">
               <Link

@@ -13,6 +13,8 @@ export function invalidatePublicEventCache() {
   try {
     revalidatePath("/");
     revalidatePath("/events");
+    revalidatePath("/events/[id]", "page");
+    revalidatePath("/events/[id]/tickets", "page");
     revalidatePath("/fashion-shows");
     revalidatePath("/entertainment");
   } catch {
@@ -104,6 +106,7 @@ export async function listEvents(params: {
         ? {
             venue: { select: { id: true, name: true, city: true } },
             ticketTypes: {
+              where: { status: { not: TicketStatus.PAUSED } },
               orderBy: { price: "asc" },
             },
           }
@@ -162,6 +165,9 @@ async function fetchEventByIdOrSlug(
         },
       },
       ticketTypes: {
+        where: includeUnpublished
+          ? undefined
+          : { status: { not: TicketStatus.PAUSED } },
         orderBy: { price: "asc" },
       },
       gallery: {

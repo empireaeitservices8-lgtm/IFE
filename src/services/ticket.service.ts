@@ -3,6 +3,7 @@ import { TicketStatus } from "@/generated/prisma/enums";
 import { Prisma } from "@/generated/prisma/client";
 import { AppError } from "@/lib/utils/api-response";
 import { recordAuditLog } from "@/lib/utils/audit";
+import { invalidatePublicEventCache } from "@/services/event.service";
 
 function enrichTicket<
   T extends { totalQuantity: number; soldQuantity: number; status: TicketStatus }
@@ -234,6 +235,7 @@ export async function updateTicket(
     ipAddress: ipAddress ?? null,
   });
 
+  invalidatePublicEventCache();
   return enrichTicket(ticket);
 }
 
@@ -274,6 +276,7 @@ export async function updateTicketStatus(
     ipAddress: ipAddress ?? null,
   });
 
+  invalidatePublicEventCache();
   return enrichTicket(ticket);
 }
 
@@ -300,6 +303,7 @@ export async function deleteTicket(
   }
 
   await prisma.ticketType.delete({ where: { id } });
+  invalidatePublicEventCache();
 
   await recordAuditLog({
     actorId,

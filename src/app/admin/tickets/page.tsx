@@ -16,6 +16,7 @@ import {
   Pencil,
   PauseCircle,
   PlayCircle,
+  Trash2,
   X,
 } from "lucide-react";
 
@@ -194,6 +195,42 @@ export default function TicketManagementPage() {
       setError("Network error while saving ticket changes.");
     } finally {
       setSavingEdit(false);
+    }
+  }
+
+  async function deleteTicket(ticket: TicketRecord) {
+    const confirmed = window.confirm(
+      `Remove "${ticket.category}" from "${ticket.event}"?`
+    );
+    if (!confirmed) return;
+    setError("");
+
+    try {
+      const res = await fetch(`/api/tickets/${ticket.id}`, {
+        method: "DELETE",
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        if (res.status === 409) {
+          const shouldPause = window.confirm(
+            `${json.message || "This ticket tier has existing bookings."}\n\nPause and hide it from the public website instead?`
+          );
+          if (shouldPause) {
+            await fetch(`/api/tickets/${ticket.id}/status`, {
+              method: "PATCH",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ status: "PAUSED" }),
+            });
+            await loadTickets();
+            return;
+          }
+        }
+        setError(json.message || "Failed to remove ticket.");
+        return;
+      }
+      await loadTickets();
+    } catch {
+      setError("Network error while removing ticket.");
     }
   }
 
@@ -395,6 +432,14 @@ export default function TicketManagementPage() {
                                 <Eye size={15} />
                               </Link>
                             )}
+                            <button
+                              type="button"
+                              title="Remove ticket tier"
+                              onClick={() => deleteTicket(ticket)}
+                              className="rounded-lg border border-white/10 p-2 text-red-400/80 transition hover:border-red-500/60 hover:text-red-400"
+                            >
+                              <Trash2 size={15} />
+                            </button>
                           </div>
                         </td>
                       </tr>

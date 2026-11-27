@@ -11,8 +11,10 @@ import {
   MapPin,
   Ticket,
   ImagePlus,
+  Plus,
   Save,
   Send,
+  Trash2,
 } from "lucide-react";
 
 type VenueOption = {
@@ -51,10 +53,14 @@ export default function NewEventPage() {
     venue: "",
     address: "",
     capacity: "500",
-    generalPrice: "499",
-    premiumPrice: "999",
-    vipPrice: "1999",
   });
+  const [ticketTiers, setTicketTiers] = useState<
+    { name: string; price: string; totalQuantity: string }[]
+  >([
+    { name: "Single Entry", price: "1499", totalQuantity: "250" },
+    { name: "Couple Entry", price: "2699", totalQuantity: "150" },
+    { name: "VIP Pass", price: "3499", totalQuantity: "100" },
+  ]);
 
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState<"success" | "error">("success");
@@ -131,13 +137,17 @@ export default function NewEventPage() {
     }
 
     if (
-      form.generalPrice === "" ||
-      Number(form.generalPrice) < 0 ||
-      Number(form.premiumPrice) < 0 ||
-      Number(form.vipPrice) < 0
+      ticketTiers.length === 0 ||
+      ticketTiers.some(
+        (t) =>
+          !t.name.trim() ||
+          t.price === "" ||
+          Number(t.price) < 0 ||
+          Number(t.totalQuantity) < 1
+      )
     ) {
       setMessageType("error");
-      setMessage("Please enter valid ticket prices.");
+      setMessage("Please enter a valid name, price, and quantity for each ticket tier.");
       return;
     }
 
@@ -170,9 +180,19 @@ export default function NewEventPage() {
         endAt = new Date(startAt.getTime() + 3 * 60 * 60 * 1000);
       }
 
-      const generalQty = Math.max(1, Math.floor(totalCapacity * 0.5));
-      const premiumQty = Math.max(1, Math.floor(totalCapacity * 0.3));
-      const vipQty = Math.max(1, totalCapacity - generalQty - premiumQty);
+      const validTiers = ticketTiers
+        .map((t) => ({
+          name: t.name.trim(),
+          price: Math.max(0, Number(t.price) || 0),
+          totalQuantity: Math.max(1, Number(t.totalQuantity) || 1),
+        }))
+        .filter((t) => t.name.length > 0);
+
+      if (validTiers.length === 0) {
+        setMessageType("error");
+        setMessage("Please add at least one ticket tier with a name.");
+        return;
+      }
 
       const res = await fetch("/api/events", {
         method: "POST",
@@ -191,23 +211,7 @@ export default function NewEventPage() {
           capacity: totalCapacity,
           status: status === "Published" ? "PUBLISHED" : "DRAFT",
           venueId: resolvedVenueId,
-          ticketTypes: [
-            {
-              name: "General Admission",
-              price: Number(form.generalPrice),
-              totalQuantity: generalQty,
-            },
-            {
-              name: "Premium Access",
-              price: Number(form.premiumPrice || form.generalPrice),
-              totalQuantity: premiumQty,
-            },
-            {
-              name: "VIP Experience",
-              price: Number(form.vipPrice || form.premiumPrice || form.generalPrice),
-              totalQuantity: vipQty,
-            },
-          ],
+          ticketTypes: validTiers,
         }),
       });
 
@@ -468,14 +472,32 @@ export default function NewEventPage() {
           </section>
 
           <section className="rounded-2xl border border-white/10 bg-[#101010] p-5 md:p-7">
-            <div className="mb-6 flex items-center gap-3">
-              <div className="rounded-xl bg-[#D4AF6A]/10 p-3 text-[#D4AF6A]">
-                <Ticket size={20} />
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-xl bg-[#D4AF6A]/10 p-3 text-[#D4AF6A]">
+                  <Ticket size={20} />
+                </div>
+                <div>
+                  <h3 className="font-semibold">Ticket Configuration</h3>
+                  <p className="text-xs text-gray-500">
+                    Add, rename, or remove ticket tiers dynamically
+                  </p>
+                </div>
               </div>
-              <div>
-                <h3 className="font-semibold">Ticket Configuration</h3>
-                <p className="text-xs text-gray-500">Set the capacity and ticket prices</p>
-              </div>
+
+              <button
+                type="button"
+                onClick={() =>
+                  setTicketTiers((prev) => [
+                    ...prev,
+                    { name: "", price: "999", totalQuantity: "100" },
+                  ])
+                }
+                className="inline-flex items-center gap-2 rounded-xl border border-[#D4AF6A]/40 bg-[#D4AF6A]/10 px-4 py-2 text-xs font-semibold text-[#D4AF6A] transition hover:bg-[#D4AF6A] hover:text-black"
+              >
+                <Plus size={14} />
+                Add Ticket Tier
+              </button>
             </div>
 
             <label className={`${labelClass} block max-w-sm`}>
@@ -489,22 +511,90 @@ export default function NewEventPage() {
               />
             </label>
 
-            <div className="mt-6 grid gap-5 md:grid-cols-3">
-              {[
-                ["General Ticket", "generalPrice"],
-                ["Premium Ticket", "premiumPrice"],
-                ["VIP Ticket", "vipPrice"],
-              ].map(([label, name]) => (
-                <label key={name} className={labelClass}>
-                  {label} (₹)
-                  <input
-                    type="number"
-                    min="0"
-                    className={inputClass}
-                    value={form[name as keyof typeof form]}
-                    onChange={(e) => updateField(name, e.target.value)}
-                  />
-                </label>
+            <div className="mt-6 grid gap-4 md:grid-cols-3">
+              {ticketTiers.map((tier, idx) => (
+                <div
+                  key={idx}
+                  className="space-y-3 rounded-xl border border-white/10 bg-[#080808] p-4"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#D4AF6A]">
+                      Tier #{idx + 1}
+                    </span>
+                    {ticketTiers.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setTicketTiers((prev) =>
+                            prev.filter((_, i) => i !== idx)
+                          )
+                        }
+                        title="Remove tier"
+                        className="rounded-lg border border-white/10 p-1.5 text-red-400/80 transition hover:border-red-500/50 hover:text-red-400"
+                      >
+                        <Trash2 size={14} />
+                      </button>
+                    )}
+                  </div>
+
+                  <label className="block text-xs text-gray-400">
+                    Tier Name *
+                    <input
+                      required
+                      placeholder="e.g. Single Entry, General Admission"
+                      className={inputClass}
+                      value={tier.name}
+                      onChange={(e) =>
+                        setTicketTiers((prev) =>
+                          prev.map((row, i) =>
+                            i === idx ? { ...row, name: e.target.value } : row
+                          )
+                        )
+                      }
+                    />
+                  </label>
+
+                  <div className="grid grid-cols-2 gap-3">
+                    <label className="block text-xs text-gray-400">
+                      Price (₹)
+                      <input
+                        type="number"
+                        min="0"
+                        required
+                        className={inputClass}
+                        value={tier.price}
+                        onChange={(e) =>
+                          setTicketTiers((prev) =>
+                            prev.map((row, i) =>
+                              i === idx
+                                ? { ...row, price: e.target.value }
+                                : row
+                            )
+                          )
+                        }
+                      />
+                    </label>
+                    <label className="block text-xs text-gray-400">
+                      Quantity
+                      <input
+                        type="number"
+                        min="1"
+                        required
+                        className={inputClass}
+                        value={tier.totalQuantity}
+                        onChange={(e) =>
+                          setTicketTiers((prev) =>
+                            prev.map((row, i) =>
+                              i === idx
+                                ? { ...row, totalQuantity: e.target.value }
+                                : row
+                            )
+                          )
+                        }
+                      />
+                    </label>
+                  </div>
+                </div>
               ))}
             </div>
           </section>
