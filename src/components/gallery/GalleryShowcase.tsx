@@ -21,9 +21,10 @@ type GalleryItem = {
 type ApiGalleryItem = {
   id: string;
   title: string;
-  caption?: string | null;
+  description?: string | null;
   category: string;
-  mediaUrl: string;
+  url?: string | null;
+  thumbnailUrl?: string | null;
   event?: { title: string } | null;
 };
 
@@ -44,15 +45,15 @@ export default function GalleryShowcase() {
       .then((res) => res.json())
       .then((json) => {
         if (!active || !json.success) return;
-        const mapped: GalleryItem[] = (json.data?.items || []).map(
-          (g: ApiGalleryItem) => ({
+        const mapped: GalleryItem[] = (json.data?.items || [])
+          .map((g: ApiGalleryItem) => ({
             id: g.id,
             title: g.title,
             category: formatCategory(g.category),
-            subtitle: g.caption || g.event?.title || "IFE Showcase",
-            image: g.mediaUrl,
-          })
-        );
+            subtitle: g.description || g.event?.title || "IFE Showcase",
+            image: (g.url || g.thumbnailUrl || "").trim(),
+          }))
+          .filter((item: GalleryItem) => item.image.length > 0);
         setItems(mapped);
       })
       .catch(() => {})
