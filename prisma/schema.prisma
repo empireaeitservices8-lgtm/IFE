@@ -222,8 +222,10 @@ model Event {
   startAt DateTime
   endAt   DateTime
 
-  capacity Int
-  status   EventStatus @default(DRAFT)
+  capacity        Int
+  status          EventStatus @default(DRAFT)
+  isPopupFeatured Boolean     @default(false)
+  displayOrder    Int         @default(0)
 
   venueId String?
   venue   Venue? @relation(fields: [venueId], references: [id], onDelete: SetNull)

@@ -56,6 +56,7 @@ export default function NewEventPage() {
     state: "",
     country: "India",
     capacity: "500",
+    isPopupFeatured: false,
   });
   const [ticketTiers, setTicketTiers] = useState<
     { name: string; price: string; totalQuantity: string }[]
@@ -215,6 +216,7 @@ export default function NewEventPage() {
           endAt: endAt.toISOString(),
           capacity: totalCapacity,
           status: status === "Published" ? "PUBLISHED" : "DRAFT",
+          isPopupFeatured: form.isPopupFeatured,
           venueId: resolvedVenueId,
           ticketTypes: validTiers,
         }),
@@ -563,6 +565,21 @@ export default function NewEventPage() {
                 value={form.capacity}
                 onChange={(e) => updateField("capacity", e.target.value)}
               />
+            </label>
+
+            <label className="mt-4 flex cursor-pointer items-center gap-3 text-sm text-gray-300">
+              <input
+                type="checkbox"
+                checked={form.isPopupFeatured}
+                onChange={(e) =>
+                  setForm((current) => ({
+                    ...current,
+                    isPopupFeatured: e.target.checked,
+                  }))
+                }
+                className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
+              />
+              Feature this event in the Homepage Popup
             </label>
 
             <div className="mt-6 grid gap-4 md:grid-cols-3">

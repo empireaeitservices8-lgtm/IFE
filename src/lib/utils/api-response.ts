@@ -51,7 +51,11 @@ export function handleApiError(error: unknown) {
   }
 
   console.error("Unhandled API error:", error);
-  return fail("An unexpected internal error occurred.", 500);
+  const message =
+    process.env.NODE_ENV !== "production" && error instanceof Error
+      ? error.message
+      : "An unexpected internal error occurred.";
+  return fail(message, 500);
 }
 
 export class AppError extends Error {

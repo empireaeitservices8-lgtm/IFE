@@ -101,29 +101,29 @@ export async function listEvents(params: {
       where,
       skip,
       take: limit,
-      orderBy: { startAt: "asc" },
+      orderBy: [{ displayOrder: "asc" }, { startAt: "asc" }],
       include: isPublicQuery
         ? {
-            venue: { select: { id: true, name: true, city: true } },
-            ticketTypes: {
-              where: { status: { not: TicketStatus.PAUSED } },
-              orderBy: { price: "asc" },
-            },
-          }
+          venue: { select: { id: true, name: true, city: true } },
+          ticketTypes: {
+            where: { status: { not: TicketStatus.PAUSED } },
+            orderBy: { price: "asc" },
+          },
+        }
         : {
-            venue: true,
-            artists: {
-              include: {
-                artist: true,
-              },
-            },
-            ticketTypes: {
-              orderBy: { price: "asc" },
-            },
-            _count: {
-              select: { bookings: true },
+          venue: true,
+          artists: {
+            include: {
+              artist: true,
             },
           },
+          ticketTypes: {
+            orderBy: { price: "asc" },
+          },
+          _count: {
+            select: { bookings: true },
+          },
+        },
     }),
   ]);
 
@@ -209,6 +209,7 @@ export async function createEvent(
     endAt: Date;
     capacity: number;
     status?: EventStatus;
+    isPopupFeatured?: boolean;
     venueId?: string | null;
     artists?: { artistId: string; eventRole?: string | null }[];
     ticketTypes?: {
@@ -246,6 +247,13 @@ export async function createEvent(
   const status = input.status ?? EventStatus.DRAFT;
 
   const event = await prisma.$transaction(async (tx) => {
+    if (input.isPopupFeatured) {
+      await tx.event.updateMany({
+        where: { isPopupFeatured: true },
+        data: { isPopupFeatured: false },
+      });
+    }
+
     const created = await tx.event.create({
       data: {
         title: input.title,
@@ -258,29 +266,30 @@ export async function createEvent(
         endAt: input.endAt,
         capacity: input.capacity,
         status,
+        isPopupFeatured: input.isPopupFeatured ?? false,
         publishedAt: status === EventStatus.PUBLISHED ? new Date() : null,
         venueId: input.venueId ?? null,
         createdById: actorId,
         artists:
           input.artists && input.artists.length > 0
             ? {
-                create: input.artists.map((a) => ({
-                  artistId: a.artistId,
-                  eventRole: a.eventRole ?? null,
-                })),
-              }
+              create: input.artists.map((a) => ({
+                artistId: a.artistId,
+                eventRole: a.eventRole ?? null,
+              })),
+            }
             : undefined,
         ticketTypes:
           input.ticketTypes && input.ticketTypes.length > 0
             ? {
-                create: input.ticketTypes.map((t) => ({
-                  name: t.name,
-                  description: t.description ?? null,
-                  price: new Prisma.Decimal(t.price),
-                  totalQuantity: t.totalQuantity,
-                  status: t.status ?? TicketStatus.ACTIVE,
-                })),
-              }
+              create: input.ticketTypes.map((t) => ({
+                name: t.name,
+                description: t.description ?? null,
+                price: new Prisma.Decimal(t.price),
+                totalQuantity: t.totalQuantity,
+                status: t.status ?? TicketStatus.ACTIVE,
+              })),
+            }
             : undefined,
       },
       include: {
@@ -319,6 +328,7 @@ export async function updateEvent(
     endAt?: Date;
     capacity?: number;
     status?: EventStatus;
+    isPopupFeatured?: boolean;
     venueId?: string | null;
     artists?: { artistId: string; eventRole?: string | null }[];
     ticketTypes?: {
@@ -362,98 +372,106 @@ export async function updateEvent(
     ? await generateUniqueSlug(input.slug, id)
     : undefined;
 
-  const updated = await prisma.$transaction(async (tx) => {
-    if (input.artists !== undefined) {
-      await tx.artistEvent.deleteMany({ where: { eventId: id } });
-      if (input.artists.length > 0) {
-        await tx.artistEvent.createMany({
-          data: input.artists.map((a) => ({
-            eventId: id,
-            artistId: a.artistId,
-            eventRole: a.eventRole ?? null,
-          })),
+    await prisma.$transaction(async (tx) => {
+      if (input.isPopupFeatured) {
+        await tx.event.updateMany({
+          where: { id: { not: id }, isPopupFeatured: true },
+          data: { isPopupFeatured: false },
         });
       }
-    }
 
-    if (input.ticketTypes !== undefined) {
-      await Promise.all(
-        input.ticketTypes.map((t) =>
-          t.id
-            ? tx.ticketType.update({
-                where: { id: t.id, eventId: id },
-                data: {
-                  name: t.name,
-                  ...(t.description !== undefined
-                    ? { description: t.description }
-                    : {}),
-                  price: new Prisma.Decimal(t.price),
-                  totalQuantity: t.totalQuantity,
-                  ...(t.status ? { status: t.status } : {}),
-                },
-              })
-            : tx.ticketType.upsert({
-                where: {
-                  eventId_name: {
-                    eventId: id,
-                    name: t.name,
-                  },
-                },
-                update: {
-                  ...(t.description !== undefined
-                    ? { description: t.description }
-                    : {}),
-                  price: new Prisma.Decimal(t.price),
-                  totalQuantity: t.totalQuantity,
-                  ...(t.status ? { status: t.status } : {}),
-                },
-                create: {
+      if (input.artists !== undefined) {
+        await tx.artistEvent.deleteMany({ where: { eventId: id } });
+        if (input.artists.length > 0) {
+          await tx.artistEvent.createMany({
+            data: input.artists.map((a) => ({
+              eventId: id,
+              artistId: a.artistId,
+              eventRole: a.eventRole ?? null,
+            })),
+          });
+        }
+      }
+
+      if (input.ticketTypes !== undefined) {
+        for (const t of input.ticketTypes) {
+          if (t.id) {
+            await tx.ticketType.update({
+              where: { id: t.id, eventId: id },
+              data: {
+                name: t.name,
+                ...(t.description !== undefined
+                  ? { description: t.description }
+                  : {}),
+                price: new Prisma.Decimal(t.price),
+                totalQuantity: t.totalQuantity,
+                ...(t.status ? { status: t.status } : {}),
+              },
+            });
+          } else {
+            await tx.ticketType.upsert({
+              where: {
+                eventId_name: {
                   eventId: id,
                   name: t.name,
-                  description: t.description ?? null,
-                  price: new Prisma.Decimal(t.price),
-                  totalQuantity: t.totalQuantity,
-                  status: t.status ?? TicketStatus.ACTIVE,
                 },
-              })
-        )
-      );
-    }
+              },
+              update: {
+                ...(t.description !== undefined
+                  ? { description: t.description }
+                  : {}),
+                price: new Prisma.Decimal(t.price),
+                totalQuantity: t.totalQuantity,
+                ...(t.status ? { status: t.status } : {}),
+              },
+              create: {
+                eventId: id,
+                name: t.name,
+                description: t.description ?? null,
+                price: new Prisma.Decimal(t.price),
+                totalQuantity: t.totalQuantity,
+                status: t.status ?? TicketStatus.ACTIVE,
+              },
+            });
+          }
+        }
+      }
 
-    return tx.event.update({
-      where: { id },
-      data: {
-        ...(input.title !== undefined ? { title: input.title } : {}),
-        ...(nextSlug !== undefined ? { slug: nextSlug } : {}),
-        ...(input.category !== undefined ? { category: input.category } : {}),
-        ...(input.shortDescription !== undefined
-          ? { shortDescription: input.shortDescription }
-          : {}),
-        ...(input.description !== undefined
-          ? { description: input.description }
-          : {}),
-        ...(input.bannerUrl !== undefined ? { bannerUrl: input.bannerUrl } : {}),
-        ...(input.startAt !== undefined ? { startAt: input.startAt } : {}),
-        ...(input.endAt !== undefined ? { endAt: input.endAt } : {}),
-        ...(input.capacity !== undefined ? { capacity: input.capacity } : {}),
-        ...(input.venueId !== undefined ? { venueId: input.venueId } : {}),
-        ...(input.status !== undefined
-          ? {
+      return tx.event.update({
+        where: { id },
+        data: {
+          ...(input.title !== undefined ? { title: input.title } : {}),
+          ...(nextSlug !== undefined ? { slug: nextSlug } : {}),
+          ...(input.category !== undefined ? { category: input.category } : {}),
+          ...(input.shortDescription !== undefined
+            ? { shortDescription: input.shortDescription }
+            : {}),
+          ...(input.description !== undefined
+            ? { description: input.description }
+            : {}),
+          ...(input.bannerUrl !== undefined ? { bannerUrl: input.bannerUrl } : {}),
+          ...(input.startAt !== undefined ? { startAt: input.startAt } : {}),
+          ...(input.endAt !== undefined ? { endAt: input.endAt } : {}),
+          ...(input.capacity !== undefined ? { capacity: input.capacity } : {}),
+          ...(input.isPopupFeatured !== undefined
+            ? { isPopupFeatured: input.isPopupFeatured }
+            : {}),
+          ...(input.venueId !== undefined ? { venueId: input.venueId } : {}),
+          ...(input.status !== undefined
+            ? {
               status: input.status,
               publishedAt:
                 input.status === EventStatus.PUBLISHED && !existing.publishedAt
                   ? new Date()
                   : existing.publishedAt,
             }
-          : {}),
-      },
-      include: {
-        venue: true,
-        artists: { include: { artist: true } },
-        ticketTypes: true,
-      },
-    });
-  }, { timeout: 15000, maxWait: 10000 });
+            : {}),
+        },
+        select: { id: true, title: true },
+      });
+  }, { timeout: 25000, maxWait: 10000 });
+
+  const updated = await fetchEventByIdOrSlug(id, true);
 
   await recordAuditLog({
     actorId,
@@ -504,6 +522,58 @@ export async function updateEventStatus(
     entityType: "Event",
     entityId: id,
     description: `Changed status of "${existing.title}" to ${status}`,
+    ipAddress: ipAddress ?? null,
+  });
+
+  invalidatePublicEventCache();
+  return updated;
+}
+
+export async function setEventPopupFeatured(
+  id: string,
+  isPopupFeatured: boolean,
+  actorId: string,
+  ipAddress?: string
+) {
+  const existing = await prisma.event.findUnique({
+    where: { id },
+    select: { id: true, title: true, status: true },
+  });
+
+  if (!existing) {
+    throw new AppError("Event not found.", 404);
+  }
+
+  if (isPopupFeatured && existing.status !== EventStatus.PUBLISHED) {
+    throw new AppError(
+      "Only published events can be featured in the homepage popup.",
+      400
+    );
+  }
+
+  const updated = await prisma.$transaction(async (tx) => {
+    if (isPopupFeatured) {
+      await tx.event.updateMany({
+        where: { id: { not: id }, isPopupFeatured: true },
+        data: { isPopupFeatured: false },
+      });
+    }
+
+    return tx.event.update({
+      where: { id },
+      data: { isPopupFeatured },
+      select: { id: true, title: true, isPopupFeatured: true },
+    });
+  }, { timeout: 15000, maxWait: 10000 });
+
+  await recordAuditLog({
+    actorId,
+    action: "SET_POPUP_EVENT",
+    entityType: "Event",
+    entityId: id,
+    description: isPopupFeatured
+      ? `Set "${existing.title}" as homepage popup`
+      : `Removed "${existing.title}" from homepage popup`,
     ipAddress: ipAddress ?? null,
   });
 

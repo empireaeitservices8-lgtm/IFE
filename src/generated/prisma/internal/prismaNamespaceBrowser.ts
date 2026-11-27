@@ -154,6 +154,7 @@ export const EventScalarFieldEnum = {
   endAt: 'endAt',
   capacity: 'capacity',
   status: 'status',
+  isPopupFeatured: 'isPopupFeatured',
   displayOrder: 'displayOrder',
   venueId: 'venueId',
   createdById: 'createdById',

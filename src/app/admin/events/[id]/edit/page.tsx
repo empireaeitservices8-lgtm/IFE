@@ -61,6 +61,7 @@ export default function EditEventPage() {
     endTime: "",
     capacity: "500",
     status: "DRAFT",
+    isPopupFeatured: false,
     venueId: "",
   });
   const [newVenue, setNewVenue] = useState({
@@ -98,6 +99,7 @@ export default function EditEventPage() {
           endTime: toTimeInput(ev.endAt),
           capacity: String(ev.capacity ?? 500),
           status: ev.status || "DRAFT",
+          isPopupFeatured: Boolean(ev.isPopupFeatured),
           venueId: ev.venueId || "",
         });
         setTicketTypes(
@@ -221,6 +223,7 @@ export default function EditEventPage() {
           ).toISOString(),
           capacity: Number(form.capacity),
           status: form.status,
+          isPopupFeatured: form.isPopupFeatured,
           venueId: resolvedVenueId,
           ticketTypes: ticketTypes
             .filter((t) => t.name.trim().length > 0)
@@ -426,6 +429,18 @@ export default function EditEventPage() {
                       setForm({ ...form, description: e.target.value })
                     }
                   />
+                </label>
+
+                <label className="flex cursor-pointer items-center gap-3 text-sm text-gray-300 md:col-span-2">
+                  <input
+                    type="checkbox"
+                    checked={form.isPopupFeatured}
+                    onChange={(e) =>
+                      setForm({ ...form, isPopupFeatured: e.target.checked })
+                    }
+                    className="h-4 w-4 rounded border-white/20 bg-[#111] accent-[#D4AF6A]"
+                  />
+                  Feature this event in the Homepage Popup
                 </label>
               </div>
             </section>

@@ -42,6 +42,7 @@ type EventItem = {
   totalTickets: number;
   revenue: number;
   status: EventStatus;
+  isPopupFeatured: boolean;
 };
 
 type ApiEvent = {
@@ -51,6 +52,7 @@ type ApiEvent = {
   category: string;
   startAt: string;
   status: string;
+  isPopupFeatured?: boolean;
   venue?: { name: string } | null;
   ticketTypes?: { price: string | number; totalQuantity: number; soldQuantity: number }[];
 };
@@ -255,6 +257,7 @@ export default function AdminEventsPage() {
         totalTickets,
         revenue,
         status: mapEventStatus(ev.status),
+        isPopupFeatured: Boolean(ev.isPopupFeatured),
       };
     });
 
@@ -347,6 +350,28 @@ export default function AdminEventsPage() {
       await loadEvents();
     } catch {
       setError("Network error while updating event.");
+    }
+  };
+
+  const setPopupEvent = async (id: string, isPopupFeatured: boolean) => {
+    setMenuEventId(null);
+    setError("");
+    try {
+      const res = await fetch(`/api/events/${id}/popup`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isPopupFeatured }),
+      });
+      const json = await res.json();
+      if (!res.ok || !json.success) {
+        setError(json.message || "Failed to update homepage popup.");
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+      await loadEvents();
+    } catch {
+      setError("Network error while updating homepage popup.");
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -602,8 +627,13 @@ export default function AdminEventsPage() {
                             </div>
                           )}
                           <div>
-                            <p className="text-xs font-semibold text-white">
+                            <p className="flex flex-wrap items-center gap-2 text-xs font-semibold text-white">
                               {event.title}
+                              {event.isPopupFeatured && (
+                                <span className="rounded-full border border-[#D4AF6A]/40 bg-[#D4AF6A]/15 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-wider text-[#D4AF6A]">
+                                  Popup
+                                </span>
+                              )}
                             </p>
                             <p className="mt-1 text-[10px] text-gray-600">
                               ID: {event.id.slice(0, 10)}
@@ -710,6 +740,20 @@ export default function AdminEventsPage() {
                                 ? "Move to Draft"
                                 : "Publish Event"}
                             </button>
+
+                            {event.status === "Published" && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setPopupEvent(event.id, !event.isPopupFeatured)
+                                }
+                                className="w-full px-3 py-3 text-left text-[11px] text-[#D4AF6A] transition hover:bg-[#D4AF6A]/10"
+                              >
+                                {event.isPopupFeatured
+                                  ? "Remove from Popup"
+                                  : "Set as Homepage Popup"}
+                              </button>
+                            )}
 
                             {event.status !== "Cancelled" && (
                               <button

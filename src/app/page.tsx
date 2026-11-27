@@ -69,9 +69,10 @@ export default async function Home() {
   let popupEvent: PopupEvent | null = null;
 
   try {
-    const result = await listEvents({ limit: 3, includeUnpublished: false });
+    const result = await listEvents({ limit: 12, includeUnpublished: false });
     if (result.items.length > 0) {
-      const first = result.items[0];
+      const first =
+        result.items.find((ev) => ev.isPopupFeatured) ?? result.items[0];
       const firstMinPrice = first.ticketTypes?.length
         ? Math.min(...first.ticketTypes.map((t) => Number(t.price)))
         : null;
@@ -100,7 +101,7 @@ export default async function Home() {
             : "Passes Available",
       };
 
-      featuredEvents = result.items.map((ev) => {
+      featuredEvents = result.items.slice(0, 3).map((ev) => {
         const minPrice = ev.ticketTypes?.length
           ? Math.min(...ev.ticketTypes.map((t) => Number(t.price)))
           : null;
