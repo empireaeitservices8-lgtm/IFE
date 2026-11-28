@@ -74,13 +74,16 @@ async function getEvent(id: string): Promise<EventView | undefined> {
         day: "2-digit",
         month: "short",
         year: "numeric",
+        timeZone: "Asia/Kolkata",
       }),
       time: `${new Date(dbEvent.startAt).toLocaleTimeString("en-IN", {
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "Asia/Kolkata",
       })} – ${new Date(dbEvent.endAt).toLocaleTimeString("en-IN", {
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "Asia/Kolkata",
       })}`,
       location: dbEvent.venue
         ? `${dbEvent.venue.name}, ${dbEvent.venue.city}`

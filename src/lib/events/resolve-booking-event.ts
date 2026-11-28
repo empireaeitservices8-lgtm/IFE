@@ -31,10 +31,12 @@ export async function resolveBookingEvent(
         day: "2-digit",
         month: "short",
         year: "numeric",
+        timeZone: "Asia/Kolkata",
       }),
       time: start.toLocaleTimeString("en-IN", {
         hour: "2-digit",
         minute: "2-digit",
+        timeZone: "Asia/Kolkata",
       }),
       venue: dbEvent.venue
         ? `${dbEvent.venue.name}, ${dbEvent.venue.city}`

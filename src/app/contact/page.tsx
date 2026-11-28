@@ -293,7 +293,7 @@ export default function ContactPage() {
                       Hours
                     </p>
                     <p className="text-sm text-white">
-                      5:00 PM – 12:00 AM
+                      11:30 AM – 07:00 PM
                     </p>
                   </div>
                 </div>
